@@ -1,27 +1,31 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License. You can obtain
- * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
- * Header, with the fields enclosed by brackets [] replaced by your own
- * identifying information: "Portions Copyrighted [year]
- * [name of copyright owner]"
- * 
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
  * Contributor(s):
- * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -68,13 +72,14 @@ import javax.faces.view.ViewDeclarationLanguage;
 
 
 /**
- * <p><strong class="changed_modified_2_0">Application</strong>
- * represents a per-web-application singleton object where applications
- * based on JavaServer Faces (or implementations wishing to provide
- * extended functionality) can register application-wide singletons that
- * provide functionality required by JavaServer Faces.  Default
- * implementations of each object are provided for cases where the
- * application does not choose to customize the behavior.</p>
+ * <p><strong class="changed_modified_2_0
+ * changed_modified_2_0_rev_a">Application</strong> represents a
+ * per-web-application singleton object where applications based on
+ * JavaServer Faces (or implementations wishing to provide extended
+ * functionality) can register application-wide singletons that provide
+ * functionality required by JavaServer Faces.  Default implementations
+ * of each object are provided for cases where the application does not
+ * choose to customize the behavior.</p>
  *
  * <p>The instance of {@link Application} is created by calling the
  * <code>getApplication()</code> method of {@link ApplicationFactory}.
@@ -502,9 +507,10 @@ public abstract class Application {
     public abstract void setVariableResolver(VariableResolver resolver);
 
     /**
-     * <p>Cause an the argument <code>resolver</code> to be added to the
-     * resolver chain as specified in section JSF.5.5.1 of the JavaServer
-     * Faces Specification.</p>
+     * <p><span class="changed_modified_2_0_rev_a">Cause</span> an the
+     * argument <code>resolver</code> to be added to the resolver chain
+     * as specified in section JSF.5.5.1 of the JavaServer Faces
+     * Specification.</p>
      *
      * <p>It is not possible to remove an <code>ELResolver</code>
      * registered with this method, once it has been registered.</p>
@@ -525,9 +531,10 @@ public abstract class Application {
      * for the sole purpose of not breaking existing applications that extend
      * {@link Application}.</p>
 
-     * @throws IllegalStateException if called after the first
+     * @throws IllegalStateException <span
+     * class="changed_modified_2_0_rev_a">if called after the first
      * request to the {@link javax.faces.webapp.FacesServlet} has been
-     * serviced.
+     * serviced.</span>
 
      * @since 1.2
      */
@@ -960,10 +967,11 @@ public abstract class Application {
 
 
     /**
-     * <p class="changed_added_2_0">Instantiate and return a new {@link
-     * UIComponent} instance from the argument {@link Resource}.  An
-     * algorithm semantically equivalent to the following must be
-     * followed to instantiate the <code>UIComponent</code> to
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_0_rev_a">Instantiate</span> and return
+     * a new {@link UIComponent} instance from the argument {@link
+     * Resource}.  An algorithm semantically equivalent to the following
+     * must be followed to instantiate the <code>UIComponent</code> to
      * return.</p>
      *
      * <div class="changed_added_2_0">
@@ -987,11 +995,13 @@ public abstract class Application {
 	  uses JavaBeans as the API to the component metadata.</p></li>
 
 	  <li><p>Determine if the component author declared a
-	  <code>componentType</code> for this component instance by
-	  obtaining the <code>BeanDescriptor</code> from the component
-	  metadata and calling its <code>getValue()</code> method,
-	  passing {@link UIComponent#COMPOSITE_COMPONENT_TYPE_KEY} as
-	  the argument.  If non-<code>null</code>, the result must be a
+	  <code><span
+	  class="changed_modified_2_0_rev_a">componentType</span></code>
+	  for this component instance by obtaining the
+	  <code>BeanDescriptor</code> from the component metadata and
+	  calling its <code>getValue()</code> method, passing {@link
+	  UIComponent#COMPOSITE_COMPONENT_TYPE_KEY} as the argument.  If
+	  non-<code>null</code>, the result must be a
 	  <code>ValueExpression</code> whose value is the
 	  <code>component-type</code> of the <code>UIComponent</code> to
 	  be created for this <code>Resource</code> component.  Call
@@ -1683,8 +1693,7 @@ public abstract class Application {
      * @param source The source for the event of type
      * <code>systemEventClass</code>.
      *
-     * @throws NullPointerException if any arguments except for
-     * <code>sourceBaseType</code> are <code>null</code>
+     * @throws NullPointerException if any arguments are <code>null</code>
      *
      * @since 2.0
      */

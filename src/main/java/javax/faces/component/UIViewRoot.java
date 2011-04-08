@@ -1,27 +1,31 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License. You can obtain
- * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
- * Header, with the fields enclosed by brackets [] replaced by your own
- * identifying information: "Portions Copyrighted [year]
- * [name of copyright owner]"
- * 
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
  * Contributor(s):
- * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -322,8 +326,6 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * @param viewId The new view identifier
      */
     public void setViewId(String viewId) {
-        getFacesContext().getAttributes().put("com.sun.faces.viewId", viewId);
-
 
         getStateHelper().put(PropertyKeys.viewId, viewId);
 
@@ -346,13 +348,16 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     }
 
     /**
-     * <p><span class="changed_modified_2_0">Allow</span> an arbitrary
-     * method to be called for the "beforePhase" event as the UIViewRoot
-     * runs through its lifecycle.  This method will be called for all
-     * phases except {@link PhaseId#RESTORE_VIEW}.  Unlike a true
-     * {@link PhaseListener}, this approach doesn't allow for only
-     * receiving {@link PhaseEvent}s for a given phase.</p> <p/> <p>The
-     * method must conform to the signature of {@link
+     * <p><span class="changed_modified_2_0
+     * changed_modified_2_0_rev_a">Allow</span> an arbitrary method to
+     * be called for the "beforePhase" event as the UIViewRoot runs
+     * through its lifecycle.  This method will be called for all phases
+     * <span class="changed_modified_2_0_rev_a">except {@link
+     * PhaseId#RESTORE_VIEW}.  Unlike a true {@link PhaseListener}, this
+     * approach doesn't allow for only receiving {@link PhaseEvent}s for
+     * a given phase.</span></p>
+
+     * <p>The method must conform to the signature of {@link
      * PhaseListener#beforePhase}.</p>
      *
      * @param newBeforePhase the {@link MethodExpression} that will be
@@ -532,7 +537,8 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     }
 
     /**
-     * <p class="changed_added_2_0">Return an unmodifiable
+     * <p class="changed_added_2_0"><span
+     * class="changed_deleted_2_0_rev_a">Return</span> an unmodifiable
      * <code>List</code> of {@link UIComponent}s for the provided
      * <code>target</code> agrument.  Each <code>component</code> in the
      * <code>List</code> is assumed to represent a resource

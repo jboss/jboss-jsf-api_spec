@@ -1,27 +1,31 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License. You can obtain
- * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
- * Header, with the fields enclosed by brackets [] replaced by your own
- * identifying information: "Portions Copyrighted [year]
- * [name of copyright owner]"
- * 
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
  * Contributor(s):
- * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -73,21 +77,20 @@ import java.util.Iterator;
 
 // ------------------------------------------------------------- Private Classes
 // Private class to represent saved state information
+
 /**
- * <p><strong>UIData</strong> is a {@link UIComponent} that supports data
- * binding to a collection of data objects represented by a {@link DataModel}
- * instance, which is the current value of this component itself (typically
- * established via a {@link ValueExpression}). During iterative processing over
- * the rows of data in the data model, the object for the current row is exposed
- * as a request attribute under the key specified by the <code>var</code>
- * property.</p>
- * <p/>
- * <p>Only children of type {@link UIColumn} should be processed by renderers
- * associated with this component.</p>
- * <p/>
- * <p>By default, the <code>rendererType</code> property is set to
- * <code>javax.faces.Table</code>.  This value can be changed by calling the
- * <code>setRendererType()</code> method.</p>
+ * <p><strong class="changed_modified_2_0_rev_a">UIData</strong> is a
+ * {@link UIComponent} that supports data binding to a collection of
+ * data objects represented by a {@link DataModel} instance, which is
+ * the current value of this component itself (typically established via
+ * a {@link ValueExpression}). During iterative processing over the rows
+ * of data in the data model, the object for the current row is exposed
+ * as a request attribute under the key specified by the
+ * <code>var</code> property.</p> <p/> <p>Only children of type {@link
+ * UIColumn} should be processed by renderers associated with this
+ * component.</p> <p/> <p>By default, the <code>rendererType</code>
+ * property is set to <code>javax.faces.Table</code>.  This value can be
+ * changed by calling the <code>setRendererType()</code> method.</p>
  */
 
 public class UIData extends UIComponentBase
@@ -1083,8 +1086,10 @@ public class UIData extends UIComponentBase
     }
 
     /**
-     * <p class="changed_added_2_0">Override the behavior in {@link
-     * UIComponent#visitTree} to handle iteration correctly.</p>
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_0_rev_a">Override</span> the behavior
+     * in {@link UIComponent#visitTree} to handle iteration
+     * correctly.</p>
      *
      * <div class="changed_added_2_0">
 
@@ -1113,7 +1118,11 @@ public class UIData extends UIComponentBase
      * 	  <code>UIComponent</code> in the returned <code>Map</code>,
      * 	  call {@link UIComponent#visitTree}.</p></li>
 
-     * 	  <li><p>If this component has children, for each 
+     * 	  <li>
+
+     * <div class="changed_modified_2_0_rev_a">
+
+     *  <p>If this component has children, for each 
      * 	  <code>UIColumn</code> child:</p>
      * 
      *    <p>Call {@link VisitContext#invokeVisitCallback} on that 
@@ -1124,9 +1133,16 @@ public class UIData extends UIComponentBase
      *    <p>If the child <code>UIColumn</code> has facets, call
      *    {@link UIComponent#visitTree} on each one.</p>
      *
-     *    <p>Take no action on non-<code>UIColumn</code> children.</p></li>
+     *    <p>Take no action on non-<code>UIColumn</code> children.</p>
      *
-     *    <li><p>Save aside the result of a call to {@link
+     * </div>
+     * </li>
+     *
+     *    <li>
+
+     * <div class="changed_modified_2_0_rev_a">
+     *
+     * <p>Save aside the result of a call to {@link
      *    #getRowIndex}.</p>
 
      *    <p>For each child component of this <code>UIData</code> that is
@@ -1134,6 +1150,8 @@ public class UIData extends UIComponentBase
      *    </p>
 
      * 	  <p>Iterate over the rows.</p>
+
+     * </div>
 
      * <ul>
 
@@ -1151,7 +1169,8 @@ public class UIData extends UIComponentBase
      * <p>If {@link #isRowAvailable} returns <code>false</code>, take no
      * further action and return <code>false</code>.</p>
      *
-     * <p>Call {@link UIComponent#visitTree} on each of the children of this
+     * <p class="changed_modified_2_0_rev_a">>Call {@link
+     * UIComponent#visitTree} on each of the children of this
      * <code>UIColumn</code> instance.</p>
 
      *     </li>
@@ -1335,7 +1354,10 @@ public class UIData extends UIComponentBase
      */
     private boolean requiresRowIteration(FacesContext ctx) {
 
-        return (!PhaseId.RESTORE_VIEW.equals(ctx.getCurrentPhaseId()));
+        // PENDING: Visit Hints as FacesContext Attribute until add new hints to spec.
+        //    See: https://javaserverfaces-spec-public.dev.java.net/issues/show_bug.cgi?id=545
+        Object skipHint = ctx.getAttributes().get("javax.faces.visit.SKIP_ITERATION");
+        return !Boolean.TRUE.equals(skipHint);
 
     }
 

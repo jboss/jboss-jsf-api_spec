@@ -1,27 +1,31 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright 1997-2010 Sun Microsystems, Inc. All rights reserved.
- * 
+ *
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License. You can obtain
- * a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
- * or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
- * file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
- * Sun designates this particular file as subject to the "Classpath" exception
- * as provided by Sun in the GPL Version 2 section of the License file that
- * accompanied this code.  If applicable, add the following below the License
- * Header, with the fields enclosed by brackets [] replaced by your own
- * identifying information: "Portions Copyrighted [year]
- * [name of copyright owner]"
- * 
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
  * Contributor(s):
- * 
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
  * elects to include this software in this distribution under the [CDDL or GPL
@@ -39,6 +43,7 @@ package javax.faces.component;
 
 import java.io.IOException;
 import java.io.InputStream;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -79,12 +84,13 @@ import javax.faces.event.SystemEventListenerHolder;
 import javax.faces.render.Renderer;
 
 /**
- * <p><strong class="changed_modified_2_0">UIComponent</strong> is the
- * base class for all user interface components in JavaServer Faces.
- * The set of {@link UIComponent} instances associated with a particular
- * request and response are organized into a component tree under a
- * {@link UIViewRoot} that represents the entire content of the request
- * or response.</p>
+ * <p><strong class="changed_modified_2_0
+ * changed_modified_2_0_rev_a">UIComponent</strong> is the base class
+ * for all user interface components in JavaServer Faces.  The set of
+ * {@link UIComponent} instances associated with a particular request
+ * and response are organized into a component tree under a {@link
+ * UIViewRoot} that represents the entire content of the request or
+ * response.</p>
  *
  * <p>For the convenience of component developers,
  * {@link UIComponentBase} provides the default
@@ -668,17 +674,20 @@ public abstract class UIComponent implements PartialStateHolder, SystemEventList
 
 
     /**
-     * <p class="changed_modified_2_0">Set the parent
+     * <p class="changed_modified_2_0"><span
+     * class="changed_modified_2_0_rev_a">Set</span> the parent
      * <code>UIComponent</code> of this <code>UIComponent</code>.  <span
-     * class="changed_added_2_0">If <code>parent.isInView()</code>
-     * returns <code>true</code>, calling this method will first cause a
-     * {@link javax.faces.event.PreRemoveFromViewEvent} to be published,
-     * for this node, and then the children of this node.  Then, once
-     * the re-parenting has occurred, a {@link
+     * class="changed_added_2_0"><span
+     * class="changed_modified_2_0_rev_a">If
+     * <code>parent.isInView()</code> returns <code>true</code>, calling
+     * this method will first cause a {@link
+     * javax.faces.event.PreRemoveFromViewEvent} to be published, for
+     * this node, and then the children of this node.  Then, once the
+     * re-parenting has occurred, a {@link
      * javax.faces.event.PostAddToViewEvent} will be published as well,
      * first for this node, and then for the node's children, <span
      * class="changed_modified_2_0_rev_a">but only if any of the
-     * following conditions are true.</span></p>
+     * following conditions are true.</span></span></p>
 
      * <div class="changed_modified_2_0_rev_a">
 
@@ -1651,11 +1660,73 @@ private void doFind(FacesContext context, String clientId) {
 
     }
 
+    /**
+     * Temporary stack for JDK 1.5.  Replace with an ArrayDeque when we can have a dependency on JDK 1.6
+     */
+    private static class ComponentStack
+    {
+      public ComponentStack()
+      {
+        _components = new UIComponent[20];
+        _topIndex = 0;
+        
+        // if we have no context, the current element is null
+        _components[0] = null;
+      }
+      
+      public UIComponent pop()
+      {
+          UIComponent top = peek();
+          if (0 < _topIndex) {
+              _topIndex--;
+          }
 
-    private UIComponent previouslyPushed = null;
-    private UIComponent previouslyPushedCompositeComponent = null;
-    private boolean pushed;
-    private int depth;
+          return top;
+      }
+      
+      public void push(UIComponent component)
+      {
+        _topIndex++;
+        int newIndex = _topIndex;
+        int currSize = _components.length;
+        
+        if (newIndex == currSize)
+        {
+          UIComponent[] newArray = new UIComponent[currSize * 2];
+          System.arraycopy(_components, 0, newArray, 0, currSize);
+          
+          _components = newArray;
+        }
+        
+        _components[newIndex] = component;
+      }
+      
+      public UIComponent peek()
+      {
+        return _components[_topIndex];
+      }
+      
+      private UIComponent[] _components;
+      private int _topIndex;
+    }
+    
+    private static ComponentStack _getComponentELStack(String keyName, Map<Object, Object> contextAttributes)
+    {
+      ComponentStack elStack = (ComponentStack)contextAttributes.get(keyName);
+      
+      if (elStack == null)
+      {
+        elStack = new ComponentStack();
+        contextAttributes.put(keyName, elStack);
+      }
+      
+      return elStack;
+    }
+    
+    //private UIComponent previouslyPushed = null;
+    //private UIComponent previouslyPushedCompositeComponent = null;
+    //private boolean pushed;
+    //private int depth;
 
     /**
      * <p class="changed_added_2_0">Push the current
@@ -1700,29 +1771,40 @@ private void doFind(FacesContext context, String clientId) {
             component = this;
         }
 
-        Map<Object,Object> contextMap = context.getAttributes();
+        Map<Object, Object> contextAttributes = context.getAttributes();
+        ComponentStack componentELStack = _getComponentELStack(_CURRENT_COMPONENT_STACK_KEY,
+                                                               contextAttributes);
+        componentELStack.push(component);
+        component._isPushedAsCurrentRefCount++;
+        
+        // we only do this because of the spec
+        contextAttributes.put(UIComponent.CURRENT_COMPONENT, component);
+        
+        // if the pushed component is a composite component, we need to update that
+        // stack as well
+        if (UIComponent.isCompositeComponent(component))
+        {
+          _getComponentELStack(_CURRENT_COMPOSITE_COMPONENT_STACK_KEY,
+                               contextAttributes).push(component);
 
-        if (contextMap.get(CURRENT_COMPONENT) == component) {
-            depth++;
-            return;
+          // we only do this because of the spec
+          contextAttributes.put(UIComponent.CURRENT_COMPOSITE_COMPONENT, component);
         }
-        if (contextMap.get(CURRENT_COMPOSITE_COMPONENT) == component) {
-            depth++;
-            return;
-        }
-
-        pushed = true;
-        previouslyPushed = (UIComponent) contextMap.put(CURRENT_COMPONENT, component);
-        // If this is a composite component...
-        if (UIComponent.isCompositeComponent(component)) {
-            // make it so #{cc} resolves to this composite
-            // component, preserving the previous value if present
-            previouslyPushedCompositeComponent =
-                    (UIComponent) contextMap.put(CURRENT_COMPOSITE_COMPONENT, component);
-        }
-
     }
 
+  // track whether we have been pushed as current in order to handle mismatched pushes and
+  // pops of EL context stack.  We use a counter to handle cases where the same component
+  // is pushed on multiple times
+  private int _isPushedAsCurrentRefCount = 0;
+  
+  // key used to look up current component stack if FacesContext attributes
+  private static final String _CURRENT_COMPONENT_STACK_KEY = 
+                                                    "javax.faces.component.CURRENT_COMPONENT_STACK";
+  
+  // key used to look up current composite component stack if FacesContext attributes
+  private static final String _CURRENT_COMPOSITE_COMPONENT_STACK_KEY = 
+                                          "javax.faces.component.CURRENT_COMPOSITE_COMPONENT_STACK";
+  
 
     /**
      * <p class="changed_added_2_0">Pop the current
@@ -1738,42 +1820,60 @@ private void doFind(FacesContext context, String clientId) {
      *
      * @since 2.0
      */
-    public final void popComponentFromEL(FacesContext context) {
+    public final void popComponentFromEL(FacesContext context)
+    {
+      if (context == null)
+      {
+        throw new NullPointerException();
+      }
 
-        if (context == null) {
-            throw new NullPointerException();
-        }
+      // detect cases where the stack has become unbalanced.  Due to how UIComponentBase
+      // implemented pushing and pooping of components from the ELContext, components that
+      // overrode just one of encodeBegin or encodeEnd, or only called super in one case
+      // will become unbalanced.  Detect and correct for those cases here.
+ 
+      // detect case where push was never called.  In that case, pop should be a no-op
+      if (_isPushedAsCurrentRefCount < 1)
+        return;
+           
+      Map<Object, Object> contextAttributes = context.getAttributes();
+      
+      ComponentStack componentELStack = _getComponentELStack(_CURRENT_COMPONENT_STACK_KEY,
+                                                             contextAttributes);
+      
+      // check for the other unbalanced case, a component was pushed but never popped.  Keep
+      // popping those components until we get to our component
+      for (UIComponent topComponent = componentELStack.peek();
+           topComponent != this;
+           topComponent = componentELStack.peek())
+      {
+        topComponent.popComponentFromEL(context);
+      }
+      
+      // pop ourselves off of the stack
+      componentELStack.pop();
+      _isPushedAsCurrentRefCount--;
+            
+      // update the current component with the new top of stack.  We only do this because of the spec
+      contextAttributes.put(UIComponent.CURRENT_COMPONENT, componentELStack.peek());
+      
+      // if we're a composite component, we also have to pop ourselves off of the
+      // composite stack
+      if (UIComponent.isCompositeComponent(this))
+      {
+        ComponentStack compositeELStack=_getComponentELStack(_CURRENT_COMPOSITE_COMPONENT_STACK_KEY,
+                                                             contextAttributes);
+        compositeELStack.pop();        
 
-        if (depth > 0) {
-            depth--;
-            return;
-        }
-        
-        Map<Object,Object> contextMap = context.getAttributes();
-        if (contextMap != null) {
-
-            if (!pushed) {
-                return;
-            }
-            UIComponent c;
-            pushed = false;
-            if (previouslyPushed != null) {
-                c = (UIComponent) contextMap.put(CURRENT_COMPONENT, previouslyPushed);
-            } else {
-                c = (UIComponent) contextMap.remove(CURRENT_COMPONENT);
-            }
-
-            if (c != null && UIComponent.isCompositeComponent(c)) {
-                if (previouslyPushedCompositeComponent != null) {
-                    contextMap.put(CURRENT_COMPOSITE_COMPONENT,
-                                   previouslyPushedCompositeComponent);
-                } else {
-                    contextMap.remove(CURRENT_COMPOSITE_COMPONENT);
-                }
-            }
-        }
-
+        // update the current composite component with the new top of stack.
+        // We only do this because of the spec
+        contextAttributes.put(UIComponent.CURRENT_COMPOSITE_COMPONENT, compositeELStack.peek());
+      }
     }
+
+    // It is safe to cache this because components never go from being
+    // composite to non-composite.
+    private transient Boolean isCompositeComponent = null;
 
 
     /**
@@ -1791,7 +1891,15 @@ private void doFind(FacesContext context, String clientId) {
         if (component == null) {
             throw new NullPointerException();
         }
-        return (component.getAttributes().containsKey(Resource.COMPONENT_RESOURCE_KEY));
+        boolean result = false;
+        if (null != component.isCompositeComponent) {
+            result = component.isCompositeComponent.booleanValue();
+        } else {
+            result = component.isCompositeComponent =
+                    (component.getAttributes().containsKey(
+                               Resource.COMPONENT_RESOURCE_KEY));
+        }
+        return result;
 
     }
 
@@ -1853,12 +1961,7 @@ private void doFind(FacesContext context, String clientId) {
      * @since 2.0
      */
     public static UIComponent getCurrentComponent(FacesContext context) {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-        Map<Object, Object> contextMap = context.getAttributes();
-        return (UIComponent) contextMap.get(CURRENT_COMPONENT);
-
+      return (UIComponent)context.getAttributes().get(UIComponent.CURRENT_COMPONENT);
     }
 
 
@@ -1876,13 +1979,7 @@ private void doFind(FacesContext context, String clientId) {
      * @since 2.0
      */
     public static UIComponent getCurrentCompositeComponent(FacesContext context) {
-        if (context == null) {
-            throw new NullPointerException();
-        }
-
-        Map<Object, Object> contextMap = context.getAttributes();
-        return (UIComponent) contextMap.get(CURRENT_COMPOSITE_COMPONENT);
-
+      return (UIComponent)context.getAttributes().get(UIComponent.CURRENT_COMPOSITE_COMPONENT);
     }
     
     // -------------------------------------------------- Event Listener Methods
@@ -2215,6 +2312,7 @@ private void doFind(FacesContext context, String clientId) {
                 valueExpression.setValue(FacesContext.getCurrentInstance().getELContext(), 
                         this);
             }
+            isCompositeComponent = null;
 
         }
     }
@@ -2223,11 +2321,12 @@ private void doFind(FacesContext context, String clientId) {
 
 
     /**
-     * <p><span class="changed_modified_2_0">Perform</span> the
-     * component tree processing required by the <em>Process
-     * Validations</em> phase of the request processing lifecycle for
-     * all facets of this component, all children of this component, and
-     * this component itself, as follows.</p>
+     * <p><span class="changed_modified_2_0"><span
+     * class="changed_modified_2_0_rev_a">Perform</span></span> the component
+     * tree processing required by the <em>Process Validations</em>
+     * phase of the request processing lifecycle for all facets of this
+     * component, all children of this component, and this component
+     * itself, as follows.</p>
 
      * <ul>
      * <li>If the <code>rendered</code> property of this {@link UIComponent}
@@ -2236,10 +2335,10 @@ private void doFind(FacesContext context, String clientId) {
      * <li>Call the <code>processValidators()</code> method of all facets
      *     and children of this {@link UIComponent}, in the order determined
      *     by a call to <code>getFacetsAndChildren()</code>.</li>
-     * <li>After returning from calling
-     * <code>getFacetsAndChildren()</code> call {@link
-     * UIComponent#popComponentFromEL}.</li>
-     * </ul>
+
+     * <li><span class="changed_modified_2_0_rev_a">After returning from
+     * calling <code>getFacetsAndChildren()</code> call {@link
+     * UIComponent#popComponentFromEL}.</span></li> </ul>
      *
      * @param context {@link FacesContext} for the request we are processing
      *

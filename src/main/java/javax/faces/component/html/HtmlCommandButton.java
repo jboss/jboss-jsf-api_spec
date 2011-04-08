@@ -376,8 +376,7 @@ public class HtmlCommandButton extends javax.faces.component.UICommand implement
 
     /**
      * <p>Return the value of the <code>onkeypress</code> property.</p>
-     * <p>Contents: Javascript code executed when a key is
-     * pressed and released over this element.
+     * <p>Contents: Javascript code executed when a key is        pressed and released over this element.
      */
     public java.lang.String getOnkeypress() {
         return (java.lang.String) getStateHelper().eval(PropertyKeys.onkeypress);

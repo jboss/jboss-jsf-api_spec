@@ -415,8 +415,7 @@ public class HtmlSelectManyListbox extends javax.faces.component.UISelectMany im
 
     /**
      * <p>Return the value of the <code>onmousemove</code> property.</p>
-     * <p>Contents: Javascript code executed when a pointer button is
-     * moved within this element.
+     * <p>Contents: Javascript code executed when a pointer button is  moved within this element.
      */
     public java.lang.String getOnmousemove() {
         return (java.lang.String) getStateHelper().eval(PropertyKeys.onmousemove);

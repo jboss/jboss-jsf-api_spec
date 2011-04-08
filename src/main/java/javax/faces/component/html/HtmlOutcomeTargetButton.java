@@ -171,8 +171,7 @@ public class HtmlOutcomeTargetButton extends javax.faces.component.UIOutcomeTarg
     /**
      * <p>Return the value of the <code>image</code> property.</p>
      * <p>Contents: <p>
-     * Absolute or relative URL of the
-     * image to be displayed for this
+     * Absolute or relative URL of the  image to be displayed for this
      * button.  If specified, this
      * "input" element will be of type
      * "image".  Otherwise, it will be

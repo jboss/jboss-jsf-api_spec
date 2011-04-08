@@ -358,8 +358,7 @@ public class HtmlPanelGrid extends javax.faces.component.UIPanel implements Clie
 
     /**
      * <p>Return the value of the <code>headerClass</code> property.</p>
-     * <p>Contents: Space-separated list of CSS style class(es) that will be
-     * applied to any header generated for this table.
+     * <p>Contents: Space-separated list of CSS style class(es) that will be   applied to any header generated for this table.
      */
     public java.lang.String getHeaderClass() {
         return (java.lang.String) getStateHelper().eval(PropertyKeys.headerClass);
