@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -1693,7 +1693,8 @@ public abstract class Application {
      * @param source The source for the event of type
      * <code>systemEventClass</code>.
      *
-     * @throws NullPointerException if any arguments are <code>null</code>
+     * @throws NullPointerException if any arguments except for
+     * <code>sourceBaseType</code> are <code>null</code>
      *
      * @since 2.0
      */

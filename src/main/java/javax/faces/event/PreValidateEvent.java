@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,19 @@ import javax.faces.component.UIComponent;
 
 /**
  *
- * <p class="changed_added_2_0"></p>
+ * <p class="changed_added_2_0 changed_added_2_1">When an instance of
+ * this event is passed to {@link SystemEventListener#processEvent} or
+ * {@link ComponentSystemEventListener#processEvent}, the listener
+ * implementation may assume that the <code>source</code> of this event
+ * instance is the {@link UIComponent} instance that is about to be
+ * validated.</p>
+
+ * <p class="changed_added_2_1">Components with children
+ * must publish this event before processing their child nodes in
+ * {@link UIComponent#processValidators}.  This is especially important for
+ * iterating components such as
+ * <code>UIData</code>, and form components, such as <code>UIForm</code>.</p>
+
  *
  * @since 2.0
  */

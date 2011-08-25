@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -126,6 +126,21 @@ public abstract class ViewHandlerWrapper extends ViewHandler implements FacesWra
 
     }
 
+    /**
+     *
+     * <p class="changed_added_2_1">The default behavior of this method is to
+     * call {@link ViewHandler#deriveLogicalViewId(javax.faces.context.FacesContext, String)}
+     * on the wrapped {@link ViewHandler} object.</p>
+     *
+     * @see ViewHandler#deriveLogicalViewId(javax.faces.context.FacesContext, String)
+     * @since 2.1
+     */
+    @Override
+    public String deriveLogicalViewId(FacesContext context, String input) {
+
+        return getWrapped().deriveLogicalViewId(context, input);
+
+    }
     
     /**
      * <p>The default behavior of this method is to

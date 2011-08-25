@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,7 @@ import javax.faces.context.FacesContext;
 
 
 /**
- * <p class="changed_added_2_0"><strong>ResourceHandler</strong> is the
+ * <p class="changed_added_2_0"><strong class="changed_modified_2_0_rev_a">ResourceHandler</strong> is the
  * run-time API by which {@link javax.faces.component.UIComponent} and
  * {@link javax.faces.render.Renderer} instances can reference {@link
  * Resource} instances.  An implementation of this class must be thread-safe.</p>
@@ -85,7 +85,9 @@ import javax.faces.context.FacesContext;
 
  * <p class="changed_modified_2_0_rev_a">None of the segments in the
  * resourceIdentifier may be relative paths, such as
- * &#8216;../otherLibraryName&#8217;.</p>
+ * &#8216;../otherLibraryName&#8217;.  The implementation is not
+ * required to support the <code>libraryVersion</code> and
+ * <code>resourceVersion</code> segments for the JAR packaging case.</p>
 
  * <p>Note that <em>resourceName</em> is the only required segment.</p>
  *
@@ -167,11 +169,11 @@ public abstract class ResourceHandler {
           "javax.faces.RESOURCE_EXCLUDES";
 
     /**
-     * <p class="changed_added_2_0">The default value for the {@link
+     * <p class="changed_added_2_0 changed_modified_2_1">The default value for the {@link
      * #RESOURCE_EXCLUDES_PARAM_NAME} init param.</p>
      */
     public static final String RESOURCE_EXCLUDES_DEFAULT_VALUE =
-          ".class .jsp .jspx .properties .xhtml";
+          ".class .jsp .jspx .properties .xhtml .groovy";
 
 
 

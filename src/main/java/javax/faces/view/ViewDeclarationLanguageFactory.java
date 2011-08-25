@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,10 +43,11 @@ package javax.faces.view;
 import javax.faces.FacesWrapper;
 
 /**
- * <p class="changed_added_2_0"><strong>ViewDeclarationLanguageFactory</strong>
+ * <p class="changed_added_2_0"><strong
+ * class="changed_modified_2_1">ViewDeclarationLanguageFactory</strong>
  * is a factory object that creates (if needed) and returns a new {@link
- * ViewDeclarationLanguage} instance based on the VDL found in a specific
- * view.</p>
+ * ViewDeclarationLanguage} instance based on the VDL found in a
+ * specific view.</p>
  *
  * <div class="changed_added_2_0">
  * 
@@ -80,12 +81,14 @@ public abstract class ViewDeclarationLanguageFactory implements FacesWrapper<Vie
 
     
     /**
-     * <p class="changed_added_2_0">Return the
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_1">Return</span> the
      * <code>ViewDeclarationLanguage</code> instance suitable for
      * handling the VDL contained in the page referenced by the argument
      * <code>viewId</code>.  The default implementation must return a
      * valid <code>ViewDeclarationLanguage</code> instance for views
-     * written in either JSP or Facelets for JSF 2.</p>
+     * written in either JSP, Faces XML Views, or Facelets for JSF
+     * 2.</p>
      * 
      * @param viewId the viewId to be inspected for an appropriate 
      * <code>ViewDeclarationLanguage</code> implementation for the VDL used

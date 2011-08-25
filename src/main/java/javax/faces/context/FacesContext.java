@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@
 package javax.faces.context;
 
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +50,11 @@ import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.ProjectStage;
 import javax.faces.application.FacesMessage.Severity;
-import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.render.RenderKit;
 
 import javax.el.ELContext;
+import javax.faces.FactoryFinder;
 import javax.faces.event.PhaseId;
 
 
@@ -82,6 +83,27 @@ public abstract class FacesContext {
     @SuppressWarnings({"UnusedDeclaration"})
     private FacesContext defaultFacesContext;
     private boolean processingEvents = true;
+    private boolean isCreatedFromValidFactory = true;
+
+    public FacesContext() {
+        Thread curThread = Thread.currentThread();
+        StackTraceElement[] callstack = curThread.getStackTrace();
+        if (null != callstack) {
+            String declaringClassName = callstack[3].getClassName();
+            try {
+                ClassLoader curLoader = curThread.getContextClassLoader();
+                Class declaringClass = curLoader.loadClass(declaringClassName);
+                if (!FacesContextFactory.class.isAssignableFrom(declaringClass)) {
+                    isCreatedFromValidFactory = false;
+                }
+            } catch (ClassNotFoundException cnfe) {
+
+            }
+        }
+
+    }
+
+
 
     // -------------------------------------------------------------- Properties
 
@@ -138,9 +160,18 @@ public abstract class FacesContext {
         if (defaultFacesContext != null) {
             return defaultFacesContext.getAttributes();
         }
+        if (!isCreatedFromValidFactory) {
+            if (attributesForInvalidFactoryConstruction == null) {
+                attributesForInvalidFactoryConstruction = new HashMap<Object, Object>();
+            }
+            return attributesForInvalidFactoryConstruction;
+        }
         throw new UnsupportedOperationException();
  
     }
+
+    private Map<Object, Object> attributesForInvalidFactoryConstruction;
+
 
     /**
      * <p class="changed_added_2_0">Return the {@link PartialViewContext}
@@ -162,9 +193,20 @@ public abstract class FacesContext {
         if (defaultFacesContext != null) {
             return defaultFacesContext.getPartialViewContext();
         }
+        if (!isCreatedFromValidFactory) {
+            if (partialViewContextForInvalidFactoryConstruction == null) {
+                PartialViewContextFactory f = (PartialViewContextFactory)
+                      FactoryFinder.getFactory(FactoryFinder.PARTIAL_VIEW_CONTEXT_FACTORY);
+                partialViewContextForInvalidFactoryConstruction = f.getPartialViewContext(this);
+            }
+            return partialViewContextForInvalidFactoryConstruction;
+        }
         throw new UnsupportedOperationException();
 
     }
+
+    private PartialViewContext partialViewContextForInvalidFactoryConstruction = null;
+
 
 
     /**
@@ -499,11 +541,19 @@ public abstract class FacesContext {
 
 
     /**
-     * <p><span class="changed_modified_2_0">Set</span> the root
-     * component that is associated with this request.  This method can
-     * only be called by the application handler (or a class that the
-     * handler calls), and only during the <em>Invoke Application</em>
-     * phase of the request processing lifecycle.</p>
+     * <p><span class="changed_modified_2_0
+     * changed_modified_2_1">Set</span> the root component that is
+     * associated with this request.
+
+     * <p class="changed_modified_2_1">This method can be called by the
+     * application handler (or a class that the handler calls), during
+     * the <em>Invoke Application</em> phase of the request processing
+     * lifecycle and during the <em>Restore View</em> phase of the
+     * request processing lifecycle (especially when a new root
+     * component is created).  In the present version of the
+     * specification, implementations are not required to enforce this
+     * restriction, though a future version of the specification may
+     * require enforcement.</p>
 
      * <p class="changed_added_2_0">If the current
      * <code>UIViewRoot</code> is non-<code>null</code>, and calling
@@ -543,6 +593,21 @@ public abstract class FacesContext {
      */
     public abstract void addMessage(String clientId, FacesMessage message);
 
+    /**
+     * <p class="changed_added_2_1"> 
+     * Return a flag indicating if the resources associated with this 
+     * <code>FacesContext</code> instance have been released.</p>
+     * @return <code>true</code> if the resources have been released.
+     *
+     * @since 2.1
+     */  
+    public boolean isReleased() {
+        if (defaultFacesContext != null) {
+            return defaultFacesContext.isReleased();
+        }
+
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * <p><span class="changed_modified_2_0">Release</span> any
@@ -656,7 +721,9 @@ public abstract class FacesContext {
         if (defaultFacesContext != null) {
             return defaultFacesContext.getCurrentPhaseId();
         }
-
+        if (!isCreatedFromValidFactory) {
+            return this.currentPhaseIdForInvalidFactoryConstruction;
+        }
         throw new UnsupportedOperationException();
 
     }
@@ -678,11 +745,16 @@ public abstract class FacesContext {
 
         if (defaultFacesContext != null) {
             defaultFacesContext.setCurrentPhaseId(currentPhaseId);
+        } else if (!isCreatedFromValidFactory) {
+            this.currentPhaseIdForInvalidFactoryConstruction = currentPhaseId;
         } else {
             throw new UnsupportedOperationException();
         }
 
     }
+
+    private PhaseId currentPhaseIdForInvalidFactoryConstruction;
+
 
 
     /**

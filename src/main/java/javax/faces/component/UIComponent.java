@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -85,9 +85,9 @@ import javax.faces.render.Renderer;
 
 /**
  * <p><strong class="changed_modified_2_0
- * changed_modified_2_0_rev_a">UIComponent</strong> is the base class
- * for all user interface components in JavaServer Faces.  The set of
- * {@link UIComponent} instances associated with a particular request
+ * changed_modified_2_0_rev_a changed_modified_2_1">UIComponent</strong> is
+ * the base class for all user interface components in JavaServer Faces.
+ * The set of {@link UIComponent} instances associated with a particular request
  * and response are organized into a component tree under a {@link
  * UIViewRoot} that represents the entire content of the request or
  * response.</p>
@@ -109,11 +109,26 @@ import javax.faces.render.Renderer;
 
  */
 
-public abstract class UIComponent implements PartialStateHolder, SystemEventListenerHolder,
+public abstract class UIComponent implements PartialStateHolder, TransientStateHolder, SystemEventListenerHolder,
         ComponentSystemEventListener {
 
     private static Logger LOGGER = Logger.getLogger("javax.faces.component",
             "javax.faces.LogStrings");
+
+    /**
+     * <p class="changed_added_2_1">The <code>ServletContext</code> init
+     * parameter consulted by
+     * the <code>UIComponent</code> to tell whether or not the
+     * {@link #CURRENT_COMPONENT} and {@link #CURRENT_COMPOSITE_COMPONENT}
+     * attribute keys should be honored as specified.</p>
+     *
+     * <p>If this parameter is not specified, or is set to false, the contract
+     * specified by the {@link #CURRENT_COMPONENT} and
+     * {@link #CURRENT_COMPOSITE_COMPONENT} method is not honored. If this
+     * parameter is set to true, the contract is honored.</p>
+     */
+    public static final String HONOR_CURRENT_COMPONENT_ATTRIBUTES_PARAM_NAME =
+            "javax.faces.HONOR_CURRENT_COMPONENT_ATTRIBUTES";
     
     /**
      * <p class="changed_added_2_0">The key to which the
@@ -199,6 +214,19 @@ public abstract class UIComponent implements PartialStateHolder, SystemEventList
      */
     public static final String COMPOSITE_FACET_NAME = "javax.faces.component.COMPOSITE_FACET_NAME";
 
+    /**
+     * <p class="changed_added_2_1">This constant enables one to quickly discover
+     * the names of the declared composite component attributes that have been
+     * given default values by the composite component author.  The information
+     * is exposed as a <code>Collection&lt;String&gt;</code> returned from the
+     * <code>getValue()</code> method on the <em>composite component
+     * BeanDescriptor</em>, when this constant is passed as the argument.</p>
+     *
+     * @since 2.1
+     */
+    public static final String ATTRS_WITH_DECLARED_DEFAULT_VALUES =
+            "javax.faces.component.ATTR_NAMES_WITH_DEFAULT_VALUES";
+
     enum PropertyKeysPrivate {
         attributesThatAreSet
     }
@@ -223,7 +251,7 @@ public abstract class UIComponent implements PartialStateHolder, SystemEventList
      * on what has been set.
      */
     List<String> attributesThatAreSet;
-    StateHelper stateHelper = null;
+    ComponentStateHelper stateHelper = null;
     UIComponent compositeParent;
 
 
@@ -509,6 +537,75 @@ public abstract class UIComponent implements PartialStateHolder, SystemEventList
 
     }
 
+    /**
+     * <p class="changed_added_2_1">Return the {@link
+     * TransientStateHelper} instance for this <code>UIComponent</code>
+     * instance.  The default implementation simply calls through to
+     * {@link #getTransientStateHelper(boolean)} passing <code>true</code>
+     * as the argument.</p>
+     *
+     * @since 2.1
+     */
+    
+    public final TransientStateHelper getTransientStateHelper()
+    {
+        return getTransientStateHelper(true);
+    }
+    
+    /**
+     * <p class="changed_added_2_1">Return the {@link
+     * TransientStateHelper} instance for this <code>UIComponent</code>
+     * instance.</p>
+     *
+     * @param create if <code>true</code> create, if necessary, any
+     * internal data structures.  If <code>false</code>, do not create
+     * any instances.  In this case, it is possible for this method to
+     * return <code>null</code>.
+     *
+     * @since 2.1
+     */
+    
+    public TransientStateHelper getTransientStateHelper(boolean create) {
+        
+        if (create && stateHelper == null) {
+            stateHelper = new ComponentStateHelper(this);
+        }
+        return stateHelper;
+        
+    }
+
+    /**
+     * <p class="changed_added_2_1">For components that need to support
+     * the concept of transient state, this method will restore any
+     * state saved on a prior call to {@link #saveTransientState}.</p>
+     *
+     * @since 2.1
+     */
+    
+    public void restoreTransientState(FacesContext context, Object state)
+    {
+        boolean forceCreate = (state != null);
+        TransientStateHelper helper = getTransientStateHelper(forceCreate);
+
+        if (helper != null) {
+            helper.restoreTransientState(context, state);
+        }
+    }
+
+    /**
+     * <p class="changed_added_2_1">For components that need to support
+     * the concept of transient state, this method will save any state
+     * that is known to be transient in nature.</p>
+     *
+     * @since 2.1
+     */
+    
+    public Object saveTransientState(FacesContext context)
+    {
+        TransientStateHelper helper = getTransientStateHelper(false);
+
+        return (helper == null) ? null : helper.saveTransientState(context);
+    }
 
     private boolean isInView;
 
@@ -1193,9 +1290,10 @@ public abstract class UIComponent implements PartialStateHolder, SystemEventList
     public abstract UIComponent findComponent(String expr);
 
     /**
-     * <p>Starting at this component in the View hierarchy, search for a
-     * component with a <code>clientId</code> equal to the argument
-     * <code>clientId</code> and, if found, call the {@link
+     * <p><span class="changed_modified_2_1">Starting</span> at this
+     * component in the View hierarchy, search for a component with a
+     * <code>clientId</code> equal to the argument <code>clientId</code>
+     * and, if found, call the {@link
      * ContextCallback#invokeContextCallback} method on the argument
      * <code>callback</code>, passing the current {@link FacesContext}
      * and the found component as arguments. This method is similar to
@@ -1205,12 +1303,15 @@ public abstract class UIComponent implements PartialStateHolder, SystemEventList
      *
      * <p>The default implementation will first check if
      * <code>this.getClientId()</code> is equal to the argument
-     * <code>clientId</code>.  If so, call the {@link
-     * ContextCallback#invokeContextCallback} method on the argument callback,
-     * passing through the <code>FacesContext</code> argument and
-     * passing this as the component argument.  If an
-     * <code>Exception</code> is thrown by the callback, wrap it in a
-     * {@link FacesException} and re-throw it.  Otherwise, return
+     * <code>clientId</code>.  If so, <span
+     * class="changed_added_2_1">first call {@link #pushComponentToEL},
+     * then</span> call the {@link
+     * ContextCallback#invokeContextCallback} method on the argument
+     * callback, passing through the <code>FacesContext</code> argument
+     * and passing this as the component argument.  <span
+     * class="changed_added_2_1">Then call {@link #popComponentFromEL}.
+     * If an <code>Exception</code> is thrown by the callback, wrap it
+     * in a {@link FacesException} and re-throw it.  Otherwise, return
      * <code>true</code>.</p>
      *
      * <p>Otherwise, for each component returned by {@link
@@ -1287,10 +1388,13 @@ private void doFind(FacesContext context, String clientId) {
         boolean found = false;
         if (clientId.equals(this.getClientId(context))) {
             try {
+                this.pushComponentToEL(context, this);
                 callback.invokeContextCallback(context, this);
                 return true;
             } catch (Exception e) {
                 throw new FacesException(e);
+            } finally {
+                this.popComponentFromEL(context);
             }
         } else {
             Iterator<UIComponent> itr = this.getFacetsAndChildren();
@@ -1778,7 +1882,12 @@ private void doFind(FacesContext context, String clientId) {
         component._isPushedAsCurrentRefCount++;
         
         // we only do this because of the spec
-        contextAttributes.put(UIComponent.CURRENT_COMPONENT, component);
+        boolean setCurrentComponent = false;
+        String val = context.getExternalContext().getInitParameter(UIComponent.HONOR_CURRENT_COMPONENT_ATTRIBUTES_PARAM_NAME);
+        setCurrentComponent = Boolean.valueOf(val);
+        if (setCurrentComponent) {
+            contextAttributes.put(UIComponent.CURRENT_COMPONENT, component);
+        }
         
         // if the pushed component is a composite component, we need to update that
         // stack as well
@@ -1788,7 +1897,9 @@ private void doFind(FacesContext context, String clientId) {
                                contextAttributes).push(component);
 
           // we only do this because of the spec
-          contextAttributes.put(UIComponent.CURRENT_COMPOSITE_COMPONENT, component);
+          if (setCurrentComponent) {
+              contextAttributes.put(UIComponent.CURRENT_COMPOSITE_COMPONENT, component);
+          }
         }
     }
 
@@ -1853,9 +1964,16 @@ private void doFind(FacesContext context, String clientId) {
       // pop ourselves off of the stack
       componentELStack.pop();
       _isPushedAsCurrentRefCount--;
-            
+
+        boolean setCurrentComponent = false;
+        String val = context.getExternalContext().getInitParameter(UIComponent.HONOR_CURRENT_COMPONENT_ATTRIBUTES_PARAM_NAME);
+        setCurrentComponent = Boolean.valueOf(val);
+
+      
       // update the current component with the new top of stack.  We only do this because of the spec
-      contextAttributes.put(UIComponent.CURRENT_COMPONENT, componentELStack.peek());
+        if (setCurrentComponent) {
+            contextAttributes.put(UIComponent.CURRENT_COMPONENT, componentELStack.peek());
+        }
       
       // if we're a composite component, we also have to pop ourselves off of the
       // composite stack
@@ -1866,11 +1984,12 @@ private void doFind(FacesContext context, String clientId) {
         compositeELStack.pop();        
 
         // update the current composite component with the new top of stack.
-        // We only do this because of the spec
-        contextAttributes.put(UIComponent.CURRENT_COMPOSITE_COMPONENT, compositeELStack.peek());
+          // We only do this because of the spec
+        if (setCurrentComponent) {
+              contextAttributes.put(UIComponent.CURRENT_COMPOSITE_COMPONENT, compositeELStack.peek());
+        }
       }
     }
-
     // It is safe to cache this because components never go from being
     // composite to non-composite.
     private transient Boolean isCompositeComponent = null;
@@ -1961,7 +2080,11 @@ private void doFind(FacesContext context, String clientId) {
      * @since 2.0
      */
     public static UIComponent getCurrentComponent(FacesContext context) {
-      return (UIComponent)context.getAttributes().get(UIComponent.CURRENT_COMPONENT);
+        Map<Object, Object> contextAttributes = context.getAttributes();
+        ComponentStack componentELStack = _getComponentELStack(_CURRENT_COMPONENT_STACK_KEY,
+                                                               contextAttributes);
+
+      return componentELStack.peek();
     }
 
 
@@ -1979,7 +2102,11 @@ private void doFind(FacesContext context, String clientId) {
      * @since 2.0
      */
     public static UIComponent getCurrentCompositeComponent(FacesContext context) {
-      return (UIComponent)context.getAttributes().get(UIComponent.CURRENT_COMPOSITE_COMPONENT);
+      // return (UIComponent)context.getAttributes().get(UIComponent.CURRENT_COMPOSITE_COMPONENT);
+        Map<Object, Object> contextAttributes = context.getAttributes();
+        ComponentStack compositeELStack = _getComponentELStack(_CURRENT_COMPOSITE_COMPONENT_STACK_KEY,
+                                                             contextAttributes);
+        return compositeELStack.peek();
     }
     
     // -------------------------------------------------- Event Listener Methods
@@ -2064,144 +2191,48 @@ private void doFind(FacesContext context, String clientId) {
      */
     public abstract void queueEvent(FacesEvent event);
 
+
     /**
-     * <p class="changed_added_2_0">Install the listener instance
-     * referenced by argument <code>componentListener</code> as a
-     * listener for events of type <code>eventClass</code> originating
-     * from this specific instance of <code>UIComponent</code>.  The
-     * default implementation creates an inner {@link
-     * SystemEventListener} instance that wraps argument
-     * <code>componentListener</code> as the <code>listener</code>
-     * argument.  This inner class must call through to the argument
-     * <code>componentListener</code> in its implementation of {@link
-     * SystemEventListener#processEvent} and its implementation of
-     * {@link SystemEventListener#isListenerForSource} must return
-     * true if the instance class of this <code>UIComponent</code> is
-     * assignable from the argument to
-     * <code>isListenerForSource</code>.</p>
+     * <p class="changed_modified_2_1">This implementation throws
+     * <code>UnsupportedOperationException</code> and is provided
+     * for the sole purpose of not breaking existing applications that extend
+     * this class.  {@link UIComponentBase} provides the implementation of
+     * this method.</p>
      *
-     * @param eventClass the <code>Class</code> of event for which
-     * <code>listener</code> must be fired.
-     * @param componentListener the implementation of {@link
-     * ComponentSystemEventListener} whose {@link
-     * ComponentSystemEventListener#processEvent} method must be called
-     * when events of type <code>facesEventClass</code> are fired.
-     *
-     * @throws <code>NullPointerException</code> if any of the
-     * arguments are <code>null</code>.
-     *
-     * @since 2.0                                             
+     * @since 2.1
      */
     public void subscribeToEvent(Class<? extends SystemEvent> eventClass,
-                                 ComponentSystemEventListener componentListener) {
-
-        if (eventClass == null) {
-            throw new NullPointerException();
-        }
-        if (componentListener == null) {
-            throw new NullPointerException();
-        }
-
-        if (initialStateMarked()) {
-            initialState = false;
-        }
-        if (null == listenersByEventClass) {
-            listenersByEventClass = new HashMap<Class<? extends SystemEvent>,
-                                                List<SystemEventListener>>(3, 1.0f);
-        }
-        SystemEventListener facesLifecycleListener =
-              new ComponentSystemEventListenerAdapter(componentListener, this);
-        List<SystemEventListener> listenersForEventClass =
-              listenersByEventClass.get(eventClass);
-        if (listenersForEventClass == null) {
-            listenersForEventClass = new ArrayList<SystemEventListener>(3);
-            listenersByEventClass.put(eventClass, listenersForEventClass);
-        }
-        if (!listenersForEventClass.contains(facesLifecycleListener)) {
-            listenersForEventClass.add(facesLifecycleListener);
-        }
-
+                                          ComponentSystemEventListener componentListener) {
+        throw new UnsupportedOperationException();
     }
 
     /**
-     * <p class="changed_added_2_0">Remove the listener instance
-     *     referenced by argument <code>componentListener</code> as a
-     *     listener for events of type <code>eventClass</code>
-     *     originating from this specific instance of
-     *     <code>UIComponent</code>.  When doing the comparison to
-     *     determine if an existing listener is equal to the argument
-     *     <code>componentListener</code> (and thus must be removed),
-     *     the <code>equals()</code> method on the <em>existing
-     *     listener</em> must be invoked, passing the argument
-     *     <code>componentListener</code>, rather than the other way
-     *     around.</p>
+     * <p class="changed_modified_2_1">This implementation throws
+     * <code>UnsupportedOperationException</code> and is provided
+     * for the sole purpose of not breaking existing applications that extend
+     * this class.  {@link UIComponentBase} provides the implementation of
+     * this method.</p>
      *
-     * @param eventClass the <code>Class</code> of event for which
-     * <code>listener</code> must be removed.
-     * @param componentListener the implementation of {@link
-     * ComponentSystemEventListener} whose {@link
-     * ComponentSystemEventListener#processEvent} method must no longer be called
-     * when events of type <code>eventClass</code> are fired.
-     *
-     * @throws <code>NullPointerException</code> if any of the
-     * arguments are <code>null</code>.
-     *
-     * @since 2.0
+     * @since 2.1
      */
     public void unsubscribeFromEvent(Class<? extends SystemEvent> eventClass,
-                                     ComponentSystemEventListener componentListener) {
-
-        if (eventClass == null) {
-            throw new NullPointerException();
-        }
-        if (componentListener == null) {
-            throw new NullPointerException();
-        }
-
-        List<SystemEventListener> listeners =
-              getListenersForEventClass(eventClass);
-        if (listeners != null && !listeners.isEmpty()) {
-            for (Iterator<SystemEventListener> i = listeners.iterator(); i.hasNext();) {
-                SystemEventListener item = i.next();
-                ComponentSystemEventListenerAdapter csla =
-                      (ComponentSystemEventListenerAdapter) item;
-                ComponentSystemEventListener l = csla.getWrapped();
-                if (l.equals(componentListener)) {
-                    i.remove();
-                    break;
-                }
-            }
-        }
-
+                                              ComponentSystemEventListener componentListener) {
+        throw new UnsupportedOperationException();
     }
-
-    Map<Class<? extends SystemEvent>, List<SystemEventListener>> listenersByEventClass;
 
     /**
-     * <p class="changed_added_2_0">Return the
-     * <code>SystemEventListener</code> instances registered on this
-     * <code>UIComponent</code> instance that are interested in events
-     * of type <code>eventClass</code>.</p>
+     * <p class="changed_modified_2_1">This implementation throws
+     * <code>UnsupportedOperationException</code> and is provided
+     * for the sole purpose of not breaking existing applications that extend
+     * this class.  {@link UIComponentBase} provides the implementation of
+     * this method.</p>
      *
-     * @param eventClass the <code>Class</code> of event for which the
-     * listeners must be returned.
-
-     * @throws NullPointerException if argument <code>eventClass</code> is <code>null</code>.
-     *
-     * @since 2.0
+     * @since 2.1
      */
     public List<SystemEventListener> getListenersForEventClass(Class<? extends SystemEvent> eventClass) {
-
-        if (eventClass == null) {
-            throw new NullPointerException();
-        }
-        List<SystemEventListener> result = null;
-        if (listenersByEventClass != null) {
-            result = listenersByEventClass.get(eventClass);
-        }
-        return result;
-
+        throw new UnsupportedOperationException();
     }
+
 
 
     /**
