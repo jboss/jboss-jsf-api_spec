@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,7 +41,8 @@
 package javax.faces.component.visit;
 
 /**
- * <p class="changed_added_2_0">An enum that specifies hints that impact
+ * <p class="changed_added_2_0"><span class="changed_modified_2_1">An</span>
+ * enum that specifies hints that impact
  * the behavior of a component tree visit.</p>
 
  * @since 2.0
@@ -62,11 +63,20 @@ public enum VisitHint {
    */
   SKIP_TRANSIENT,
 
+  /** 
+   * <p class="changed_added_2_1">Hint that indicates that components
+   * that normally visit children multiple times (eg. <code>UIData</code>)
+   * in an iterative fashion should instead visit each child only one time.</p>
+   * @since 2.1
+   */
+  SKIP_ITERATION,
+
   /**
    * <p class="changed_added_2_0">Hint that indicates that the visit is
    * being performed as part of lifecycle phase execution and as such
    * phase-specific actions (initialization) may be taken.</p>
    * @since 2.0
    */
-  EXECUTE_LIFECYCLE
+  EXECUTE_LIFECYCLE,
+
 }

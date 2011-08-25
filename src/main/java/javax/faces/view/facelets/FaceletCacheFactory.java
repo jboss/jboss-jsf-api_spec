@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,23 +38,23 @@
  * holder.
  */
 
-package javax.faces.event;
+package javax.faces.view.facelets;
 
-import javax.faces.component.UIComponent;
+import javax.faces.FacesWrapper;
 
 /**
- *
- * <p>Erroneously added.  Please ignore.</p>
- *
- * @since 2.0
+ * <p class="changed_added_2_1">Allows customization of the
+ * implementation of {@link FaceletCache}.</p>
+
+ * @since 2.1
  */
-public class PostAddToViewNonPDLEvent extends PostAddToViewEvent {
+public abstract class FaceletCacheFactory implements FacesWrapper<FaceletCacheFactory> {
 
-    
+    public FaceletCacheFactory getWrapped() {
+        return null;
+    }
 
-    public PostAddToViewNonPDLEvent(UIComponent component) {
-        super(component);
+    public abstract FaceletCache getFaceletCache();
 
-    }    
 
 }

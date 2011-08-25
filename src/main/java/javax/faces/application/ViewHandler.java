@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -67,7 +67,7 @@ import javax.faces.view.ValueHolderAttachedObjectTarget;
 
 /**
  * <p><strong><span
- * class="changed_modified_2_0">ViewHandler</span></strong> is the
+ * class="changed_modified_2_0 changed_modified_2_1">ViewHandler</span></strong> is the
  * pluggablity mechanism for allowing implementations of or applications
  * using the JavaServer Faces specification to provide their own
  * handling of the activities in the <em>Render Response</em> and
@@ -128,10 +128,10 @@ public abstract class ViewHandler {
 
 
     /**
-     * <p>The value to use for the default extension if the webapp is using
-     * url extension mapping.</p>
+     * <p class="changed_modified_2_1">The value to use for the default
+     * extension if the webapp is using url extension mapping.</p>
      */
-    public static final String DEFAULT_SUFFIX = ".xhtml .jsp";
+    public static final String DEFAULT_SUFFIX = ".xhtml .view.xml .jsp";
     
     /**
      * <p class="changed_added_2_0">Allow the web application to define an
@@ -174,7 +174,6 @@ public abstract class ViewHandler {
     
     public static final String FACELETS_VIEW_MAPPINGS_PARAM_NAME = 
             "javax.faces.FACELETS_VIEW_MAPPINGS";
-
 
     // ---------------------------------------------------------- Public Methods
 
@@ -301,6 +300,28 @@ public abstract class ViewHandler {
         return rawViewId;
 
     }
+
+    /**
+     * <p class="changed_added_2_1">Derive and return the viewId from
+     * the current request, or the argument input by following the
+     * algorithm defined in specification section JSF.7.5.2.  Note that
+     * unlike <code>deriveViewId()</code>, this method does not require that
+     * a physical view be present.</p>
+     *
+     * <p>The default implementation of this method simply returns
+     * rawViewId unchanged.</p>
+     *
+     * @param context the <code>FacesContext</code> for this request
+     *
+     * @param rawViewId the <code>viewId</code> to derive,
+     *
+     * @since 2.1
+     */
+    public String deriveLogicalViewId(FacesContext context, String rawViewId) {
+
+        return rawViewId;
+
+    }
     
 
     /**
@@ -401,8 +422,8 @@ public abstract class ViewHandler {
 
 
     /**
-     * <p class="changed_added_2_0">Return the {@link
-     * ViewDeclarationLanguage} instance used for this <code>ViewHandler</code>
+     * <p class="changed_added_2_0"><span class="changed_modified_2_1">Return</span>
+     * the {@link ViewDeclarationLanguage} instance used for this <code>ViewHandler</code>
      * instance.</p>
      * 
      * <div class="changed_added_2_0">
@@ -417,6 +438,12 @@ public abstract class ViewHandler {
      * <p>The default implementation of this method returns null.</p>
      * 
      * </div>
+     *
+     * @param context the <code>FacesContext</code> for this request.
+     *
+     * @param viewId <span class="changed_modified_2_1">the logical view
+     * id, as returned from {@link #deriveLogicalViewId} for which the
+     * <code>ViewDeclarationLanguage</code> should be returned.</span>
 
      * @since 2.0
      */

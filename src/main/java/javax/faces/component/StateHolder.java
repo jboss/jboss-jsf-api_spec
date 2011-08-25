@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,8 +44,9 @@ import javax.faces.context.FacesContext;
 
 /**
  *
- * <p>This interface is implemented by classes that need to save their
- * state between requests.</p>
+ * <p><span class="changed_modified_2_0_rev_a">This</span> interface is
+ * implemented by classes that need to save their state between
+ * requests.</p>
  *
  * <p>An implementor <strong>must</strong> implement both {@link
  * #saveState} and {@link #restoreState} methods in this class, since
@@ -91,17 +92,20 @@ public interface StateHolder {
 
     /**
      *
-     * <p> Perform any processing required to restore the state from the
-     * entries in the state Object.</p>
+     * <p><span class="changed_modified_2_0_rev_a">Perform</state> any
+     * processing required to restore the state from the entries in the
+     * state Object.</p>
      *
      * <p>If the class that implements this interface has references to
      * instances that also implement StateHolder (such as a
      * <code>UIComponent</code> with event handlers, validators, etc.)
      * this method must call the {@link #restoreState} method on all those
      * instances as well. </p>
+
+     * <p class="changed_modified_2_0_rev_a">If the <code>state</code>
+     * argument is <code>null</code>, take no action and return.</p>
      * 
-     * @throws NullPointerException if either <code>context</code> or
-     *  <code>state</code> are <code>null</code>
+     * @throws NullPointerException if <code>context</code> is null.
      */
 
     public void restoreState(FacesContext context, Object state);
