@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,9 +59,9 @@ import java.util.*;
 
 
 /**
- * <p><span class="changed_modified_2_0">This</span> class allows the
- * Faces API to be unaware of the nature of its containing application
- * environment.  In particular, this class allows JavaServer Faces based
+ * <p><span class="changed_modified_2_0 changed_modified_2_1">This</span>
+ * class allows the Faces API to be unaware of the nature of its containing
+ * application environment.  In particular, this class allows JavaServer Faces based
  * appications to run in either a Servlet or a Portlet environment.</p>
  *
  * <p class="changed_modified_2_0">The documentation for this class only
@@ -1310,6 +1310,37 @@ public abstract class ExternalContext {
      */
     public abstract Object getSession(boolean create);
 
+    /**
+     * <p class="changed_added_2_1">Returns the maximum time interval, in seconds, that
+     * the servlet container will keep this session open between client accesses.
+     * After this interval, the servlet container will invalidate the session.
+     * The maximum time interval can be set with the
+     * {@link #setSessionMaxInactiveInterval} method. </p>
+     *
+     * <p class="changed_added_2_1">A return value of zero or less indicates
+     * that the session will never timeout. </p>
+     *
+     * <p><em>Servlet:</em> This must return the result of calling
+     * <code>getMaxInactiveInterval</code> on the underlying
+     * <code>javax.servlet.http.HttpServletRequest</code> instance.</p>
+     *
+     * <p>The default implementation throws
+     * <code>UnsupportedOperationException</code> and is provided
+     * for the sole purpose of not breaking existing applications that extend
+     * this class.</p>
+     *
+     * @since 2.1
+     */
+    public int getSessionMaxInactiveInterval() {
+        int result = 0;
+        if (defaultExternalContext != null) {
+            result = defaultExternalContext.getSessionMaxInactiveInterval();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+
+        return result;
+    }
 
     /**
      * <p>Return a mutable <code>Map</code> representing the session
@@ -1713,6 +1744,34 @@ public abstract class ExternalContext {
 
 
     /**
+     * <p class="changed_added_2_1">Specifies the time, in seconds, between
+     * client requests before the servlet container will invalidate this
+     * session.</p>
+     *
+     * <p class="changed_added_2_1">An interval value of zero or less indicates
+     * that the session should never timeout. </p>
+     *
+     * <p><em>Servlet:</em> This must call
+     * <code>setMaxInactiveInterval</code> on the underlying
+     * <code>javax.servlet.http.HttpServletRequest</code> instance.</p>
+     *
+     * <p>The default implementation throws
+     * <code>UnsupportedOperationException</code> and is provided
+     * for the sole purpose of not breaking existing applications that extend
+     * this class.</p>
+     *
+     * @since 2.1
+     */
+    public void setSessionMaxInactiveInterval(int interval) {
+        if (defaultExternalContext != null) {
+            defaultExternalContext.setSessionMaxInactiveInterval(interval);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+
+    }
+
+    /**
      * <p class="changed_added_2_0">Flushes the buffered response content to the
      * client.</p>
      *
@@ -1848,6 +1907,30 @@ public abstract class ExternalContext {
             return defaultExternalContext.encodePartialActionURL(url);
         }
         throw new UnsupportedOperationException();
+    }
+
+     /**
+     * <p class="changed_added_2_1">Returns a boolean indicating whether this request
+     * was made using a secure channel, such as HTTPS.
+     *
+     *
+     * <p><em>Servlet:</em> This must return the result of calling
+     * <code>isSecure</code> on the underlying
+     * <code>javax.servlet.http.HttpServletRequest</code> instance.</p>
+     *
+     * <p>The default implementation throws
+     * <code>UnsupportedOperationException</code> and is provided
+     * for the sole purpose of not breaking existing applications that extend
+     * this class.</p>
+     *
+     * @since 2.1
+     */
+    public boolean isSecure() {
+        if (defaultExternalContext != null) {
+            return defaultExternalContext.isSecure();
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 
 }

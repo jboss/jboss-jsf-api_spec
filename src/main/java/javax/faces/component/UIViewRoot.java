@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -73,11 +73,12 @@ import javax.faces.view.ViewMetadata;
 
 /**
  * <p><strong class="changed_modified_2_0"><span
- * class="changed_modified_2_0_rev_a">UIViewRoot</span></strong> is the
- * UIComponent that represents the root of the UIComponent tree.  This
- * component renders markup as the response to Ajax requests.  It also
- * serves as the root of the component tree, and as a place to hang
- * per-view {@link PhaseListener}s.</p>
+ * class="changed_modified_2_0_rev_a
+ * changed_modified_2_1">UIViewRoot</span></strong> is the UIComponent
+ * that represents the root of the UIComponent tree.  This component
+ * renders markup as the response to Ajax requests.  It also serves as
+ * the root of the component tree, and as a place to hang per-view
+ * {@link PhaseListener}s.</p>
  *
  * <p>For each of the following lifecycle phase methods:</p>
 
@@ -538,7 +539,8 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
     /**
      * <p class="changed_added_2_0"><span
-     * class="changed_deleted_2_0_rev_a">Return</span> an unmodifiable
+     * class="changed_deleted_2_0_rev_a
+     * changed_modified_2_1">Return</span> an unmodifiable
      * <code>List</code> of {@link UIComponent}s for the provided
      * <code>target</code> agrument.  Each <code>component</code> in the
      * <code>List</code> is assumed to represent a resource
@@ -560,7 +562,12 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * inadvertently rendered.</span></li>
 
      * <ul>
-     * <li>Set the <code>id</code> of the facet to be <code>target</code></li>
+
+     * <li class="changed_modified_2_1">Set the <code>id</code> of the
+     * facet to be a string created by prepending the literal string
+     * &#8220;<code>javax_faces_location_</code>&#8221; (without the
+     * quotes) to the value of the <code>target</code> argument</li>
+
      * <li>Add the facet to the facets <code>Map</code> using <code>target</code> as the key</li>
      * </ul>
      * <li>return the children of the facet</li>

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,21 +56,20 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.Future;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 
 
 /**
- * <p><strong class="changed_modified_2_0">FactoryFinder</strong>
+ * <p><strong class="changed_modified_2_0 changed_modified_2_1">FactoryFinder</strong>
  * implements the standard discovery algorithm for all factory objects
  * specified in the JavaServer Faces APIs.  For a given factory class
  * name, a corresponding implementation class is searched for based on
@@ -87,7 +86,7 @@ import java.net.URLConnection;
  * <li><p>If the JavaServer Faces configuration files named by the
  * <code>javax.faces.CONFIG_FILES</code> <code>ServletContext</code> init
  * parameter contain any <code>factory</code> entries of the given
- * factory class name, those factories are used, with the last one taking
+ * factory class name, those result are used, with the last one taking
  * precedence.</p></li> 
 
  * <li><p>If there are any JavaServer Faces configuration files bundled
@@ -107,7 +106,7 @@ import java.net.URLConnection;
 
  * </ul>
 
- * <p>If any of the factories found on any of the steps above happen to
+ * <p>If any of the result found on any of the steps above happen to
  * have a one-argument constructor, with argument the type being the
  * abstract factory class, that constructor is invoked, and the previous
  * match is passed to the constructor.  For example, say the container
@@ -179,6 +178,15 @@ public final class FactoryFinder {
          "javax.faces.context.FacesContextFactory";
 
     /**
+     * <p class="changed_added_2_1">The property name for the
+     * {@link javax.faces.view.facelets.FaceletCacheFactory} class name.</p>
+     *
+     * @since 2.1
+     */
+    public final static String FACELET_CACHE_FACTORY =
+         "javax.faces.view.facelets.FaceletCacheFactory";
+
+    /**
      * <p class="changed_added_2_0">The property name for the {@link
      * javax.faces.context.PartialViewContextFactory} class name.</p>
      */
@@ -229,8 +237,9 @@ public final class FactoryFinder {
     /**
      * <p>The set of JavaServer Faces factory classes for which the factory
      * discovery mechanism is supported.  The entries in this list must be 
-     * alphabetically ordered according to the entire string, not just
-     * the last part!</p>
+     * alphabetically ordered according to the entire string of the
+     * *value* of each of the literals, not just
+     * the last part of the literal!</p>
      */
     private static final String[] FACTORY_NAMES = {
          APPLICATION_FACTORY,
@@ -242,6 +251,7 @@ public final class FactoryFinder {
          VIEW_DECLARATION_LANGUAGE_FACTORY,
          PARTIAL_VIEW_CONTEXT_FACTORY,
          RENDER_KIT_FACTORY,
+         FACELET_CACHE_FACTORY,
          TAG_HANDLER_DELEGATE_FACTORY
     
     };
@@ -271,10 +281,10 @@ public final class FactoryFinder {
      * Faces factory class, based on the discovery algorithm described
      * in the class description.</p>
      *
-     * <p class="changed_added_2_0">The standard factories and wrappers
+     * <p class="changed_added_2_0">The standard result and wrappers
      * in JSF all implement the interface {@link FacesWrapper}.  If the
      * returned <code>Object</code> is an implementation of one of the
-     * standard factories, it must be legal to cast it to an instance of
+     * standard result, it must be legal to cast it to an instance of
      * <code>FacesWrapper</code> and call {@link
      * FacesWrapper#getWrapped} on the instance.</p>
      *
@@ -658,6 +668,10 @@ public final class FactoryFinder {
         }
 
     }
+    
+    private static void reInitializeFactoryManager() {
+        FACTORIES_CACHE.resetSpecialInitializationCaseFlags();
+    }
 
 
     // ----------------------------------------------------------- Inner Classes
@@ -665,75 +679,214 @@ public final class FactoryFinder {
 
     /**
      * Managed the mappings between a web application and its configured
-     * factories.
+     * result.
      */
     private static final class FactoryManagerCache {
 
-        private ConcurrentMap<ClassLoader,Future<FactoryManager>> applicationMap =
-              new ConcurrentHashMap<ClassLoader, Future<FactoryManager>>();
+        private ConcurrentMap<FactoryManagerCacheKey,FactoryManager> applicationMap =
+              new ConcurrentHashMap<FactoryManagerCacheKey, FactoryManager>();
+        private AtomicBoolean logNullFacesContext = new AtomicBoolean(false);
+        private AtomicBoolean logNonNullFacesContext = new AtomicBoolean(false);
 
 
         // ------------------------------------------------------ Public Methods
 
 
         private FactoryManager getApplicationFactoryManager(ClassLoader cl) {
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            boolean isSpecialInitializationCase = detectSpecialInitializationCase(facesContext);
 
-            while (true) {
-                Future<FactoryManager> factories = applicationMap.get(cl);
-                if (factories == null) {
-                    Callable<FactoryManager> callable =
-                          new Callable<FactoryManager>() {
-                              public FactoryManager call()
-                                    throws Exception {
-                                  return new FactoryManager();
-                              }
-                          };
+            FactoryManagerCacheKey key = new FactoryManagerCacheKey(facesContext,
+                    cl, applicationMap);
 
-                    FutureTask<FactoryManager> ft =
-                          new FutureTask<FactoryManager>(callable);
-                    factories = applicationMap.putIfAbsent(cl, ft);
-                    if (factories == null) {
-                        factories = ft;
-                        ft.run();
+            FactoryManager result = applicationMap.get(key);
+            if (result == null) {
+                boolean createNewFactoryManagerInstance = false;
+                
+                if (isSpecialInitializationCase) {
+                    // We need to obtain a reference to the correct
+                    // FactoryManager.  Iterate through the data structure 
+                    // containing all FactoryManager instances for this VM.
+                    FactoryManagerCacheKey curKey;
+                    boolean classLoadersMatchButContextsDoNotMatch = false;
+                    boolean foundNoMatchInApplicationMap = true;
+                    for (Map.Entry<FactoryManagerCacheKey, FactoryManager> cur : applicationMap.entrySet()) {
+                        curKey = cur.getKey();
+                        // If the current FactoryManager is for a
+                        // the same ClassLoader as the current ClassLoader...
+                        if (curKey.getClassLoader().equals(cl)) {
+                            foundNoMatchInApplicationMap = false;
+                            // Check the other descriminator for the
+                            // key: the context.  
+
+                            // If the context objects of the keys are
+                            // both non-null and non-equal, then *do*
+                            // create a new FactoryManager instance.
+
+                            if ((null != key.getContext() && null != curKey.getContext()) &&
+                                (!key.getContext().equals(curKey.getContext()))) {
+                                classLoadersMatchButContextsDoNotMatch = true;
+                            }
+                            else {
+                                // Otherwise, use this FactoryManager
+                                // instance.
+                                result = cur.getValue();
+                            }
+                            break;
+                        }
                     }
+                    // We must create a new FactoryManager if there was no match
+                    // at all found in the applicationMap, or a match was found
+                    // and the match is safe to use in this web app
+                    createNewFactoryManagerInstance = foundNoMatchInApplicationMap ||
+                            (null == result && classLoadersMatchButContextsDoNotMatch);
+                } else {
+                    createNewFactoryManagerInstance = true;
                 }
-
-                try {
-                    return factories.get();
-                } catch (CancellationException ce) {
-                    if (LOGGER.isLoggable(Level.FINEST)) {
-                        LOGGER.log(Level.FINEST,
-                                   ce.toString(),
-                                   ce);
-                    }
-                    applicationMap.remove(cl);
-                } catch (InterruptedException ie) {
-                    if (LOGGER.isLoggable(Level.FINEST)) {
-                        LOGGER.log(Level.FINEST,
-                                   ie.toString(),
-                                   ie);
-                    }
-                    applicationMap.remove(cl);
-                } catch (ExecutionException ee) {
-                    throw new FacesException(ee);
+                
+                if (createNewFactoryManagerInstance) {
+                    FactoryManager newResult = new FactoryManager();
+                    result = applicationMap.putIfAbsent(key, newResult);
+                    result = (null != result) ? result : newResult;
                 }
-
+                
             }
-
+            return result;
+        }
+        
+        /**
+         * This method is used to detect the following special initialization case.
+         * IF no FactoryManager can be found for key, 
+         * AND this call to getApplicationFactoryManager() *does* have a current FacesContext
+         * BUT a previous call to getApplicationFactoryManager *did not* have a current FacesContext
+         * 
+         * @param facesContext the current FacesContext for this request
+         * @return true if the current execution falls into the special initialization case.
+         */
+        private boolean detectSpecialInitializationCase(FacesContext facesContext) {
+            boolean result = false;
+            if (null == facesContext) {
+                logNullFacesContext.compareAndSet(false, true);
+            } else {
+                logNonNullFacesContext.compareAndSet(false, true);
+            }
+            result = logNullFacesContext.get() && logNonNullFacesContext.get();
+            
+            return result;
         }
 
 
         public void removeApplicationFactoryManager(ClassLoader cl) {
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            boolean isSpecialInitializationCase = detectSpecialInitializationCase(facesContext);
 
-            applicationMap.remove(cl);
+            FactoryManagerCacheKey key = new FactoryManagerCacheKey(facesContext,
+                    cl, applicationMap);
+            
+            applicationMap.remove(key);
+            if (isSpecialInitializationCase) {
+                logNullFacesContext.set(false);
+                logNonNullFacesContext.set(false);
+            }
 
+        }
+        
+        public void resetSpecialInitializationCaseFlags() {
+            logNullFacesContext.set(false);
+            logNonNullFacesContext.set(false);
         }
 
     } // END FactoryCache
 
+    private static final class FactoryManagerCacheKey {
+        private ClassLoader cl;
+        private Long marker;
+        private Object context;
+
+        private static final String KEY = FactoryFinder.class.getName() + "." +
+                FactoryManagerCacheKey.class.getSimpleName();
+
+        public FactoryManagerCacheKey(FacesContext facesContext, ClassLoader cl,
+                Map<FactoryManagerCacheKey,FactoryManager> factoryMap) {
+            this.cl = cl;
+            if (null != facesContext) {
+                ExternalContext extContext = facesContext.getExternalContext();
+                context = extContext.getContext();
+                Map<String, Object> appMap = extContext.getApplicationMap();
+                
+                Long val = (Long) appMap.get(KEY);
+                if (null == val) {
+                    marker = new Long(System.currentTimeMillis());
+                    appMap.put(KEY, marker);
+                } else {
+                    marker = val;
+                }
+            } else {
+                // We don't have a FacesContext.
+                // Our only recourse is to inspect the keys of the
+                // factoryMap and see if any of them has a classloader
+                // equal to our argument cl.
+                Set<FactoryManagerCacheKey> keys = factoryMap.keySet();
+                FactoryManagerCacheKey match = null;
+                for (FactoryManagerCacheKey cur : keys) {
+                    if (this.cl.equals(cur.cl)) {
+                        if (null != cur && null != match) {
+                            LOGGER.log(Level.WARNING, "Multiple JSF Applications found on same ClassLoader.  Unable to safely determine which FactoryManager instance to use. Defaulting to first match.");
+                            break;
+                        }
+                        match = cur;
+                    }
+                }
+                if (null != match) {
+                    this.marker = match.marker;
+                }
+            }
+        }
+        
+        public ClassLoader getClassLoader() {
+            return cl;
+        }
+        
+        public Object getContext() {
+            return context;
+        }
+        
+        private FactoryManagerCacheKey() {}
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final FactoryManagerCacheKey other = (FactoryManagerCacheKey) obj;
+            if (this.cl != other.cl && (this.cl == null || !this.cl.equals(other.cl))) {
+                return false;
+            }
+            if (this.marker != other.marker && (this.marker == null || !this.marker.equals(other.marker))) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 97 * hash + (this.cl != null ? this.cl.hashCode() : 0);
+            hash = 97 * hash + (this.marker != null ? this.marker.hashCode() : 0);
+            return hash;
+        }
+
+
+        
+
+    }
+
 
     /**
-     * Maintains the factories for a single web application.
+     * Maintains the result for a single web application.
      */
     private static final class FactoryManager {
 

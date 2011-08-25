@@ -1,0 +1,18 @@
+Some of the accompanying files contain or consist of material
+originally provided by Sun Microsystems, Inc.  In some cases, such
+files contain a Sun copyright notice followed by a statement to the
+effect that that the material in the file is proprietary and
+confidential and is subject to unstated license terms.
+
+In fact, the material in those files has been made publicly available
+by Sun, under circumstances indicating that whatever copyright
+interest Sun held in such material was placed by Sun under the open
+source license applicable to current releases of GlassFish Server,
+namely, the dual license consisting of the Common Development and
+Distribution License version 1.0 and the GNU General Public License
+version 2. See the accompanying file LICENSE.txt for details. We
+presume that the retention of superseded legal notices by upstream
+developers is an oversight that will eventually be corrected, but we
+have preserved those notices for historical interest.
+
+
