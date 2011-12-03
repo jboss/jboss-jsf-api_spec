@@ -690,7 +690,20 @@ public final class FactoryFinder {
 
 
         // ------------------------------------------------------ Public Methods
-
+        
+        private Object getFallbackFactory(ClassLoader cl, FactoryManager brokenFactoryManager,
+                String factoryName) {
+            Object result = null;
+            for (Map.Entry<FactoryManagerCacheKey,FactoryManager> cur : applicationMap.entrySet()) {
+                if (cur.getKey().getClassLoader().equals(cl) && !cur.getValue().equals(brokenFactoryManager)) {
+                    result = cur.getValue().getFactory(cl, factoryName);
+                    if (null != result) {
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
 
         private FactoryManager getApplicationFactoryManager(ClassLoader cl) {
             FacesContext facesContext = FacesContext.getCurrentInstance();
@@ -700,6 +713,7 @@ public final class FactoryFinder {
                     cl, applicationMap);
 
             FactoryManager result = applicationMap.get(key);
+            FactoryManager toCopy = null;
             if (result == null) {
                 boolean createNewFactoryManagerInstance = false;
                 
@@ -726,6 +740,7 @@ public final class FactoryFinder {
                             if ((null != key.getContext() && null != curKey.getContext()) &&
                                 (!key.getContext().equals(curKey.getContext()))) {
                                 classLoadersMatchButContextsDoNotMatch = true;
+                                toCopy = cur.getValue();
                             }
                             else {
                                 // Otherwise, use this FactoryManager
@@ -745,7 +760,12 @@ public final class FactoryFinder {
                 }
                 
                 if (createNewFactoryManagerInstance) {
-                    FactoryManager newResult = new FactoryManager();
+                    FactoryManager newResult;
+                    if (null != toCopy) {
+                        newResult = new FactoryManager(toCopy);
+                    } else {
+                        newResult = new FactoryManager();
+                    }
                     result = applicationMap.putIfAbsent(key, newResult);
                     result = (null != result) ? result : newResult;
                 }
@@ -809,19 +829,29 @@ public final class FactoryFinder {
         public FactoryManagerCacheKey(FacesContext facesContext, ClassLoader cl,
                 Map<FactoryManagerCacheKey,FactoryManager> factoryMap) {
             this.cl = cl;
-            if (null != facesContext) {
+            boolean resolveValueFromFactoryMap = false;
+            
+            
+            if (null == facesContext) {
+                resolveValueFromFactoryMap = true;
+            } else {
                 ExternalContext extContext = facesContext.getExternalContext();
                 context = extContext.getContext();
-                Map<String, Object> appMap = extContext.getApplicationMap();
-                
-                Long val = (Long) appMap.get(KEY);
-                if (null == val) {
-                    marker = new Long(System.currentTimeMillis());
-                    appMap.put(KEY, marker);
+                if (null == context) {
+                    resolveValueFromFactoryMap = true;
                 } else {
-                    marker = val;
+                    Map<String, Object> appMap = extContext.getApplicationMap();
+                
+                    Long val = (Long) appMap.get(KEY);
+                    if (null == val) {
+                        marker = new Long(System.currentTimeMillis());
+                        appMap.put(KEY, marker);
+                    } else {
+                        marker = val;
+                    }
                 }
-            } else {
+            } 
+            if (resolveValueFromFactoryMap) {
                 // We don't have a FacesContext.
                 // Our only recourse is to inspect the keys of the
                 // factoryMap and see if any of them has a classloader
@@ -891,6 +921,7 @@ public final class FactoryFinder {
     private static final class FactoryManager {
 
         private final Map<String,Object> factories;
+        private final Map<String, List<String>> savedFactoryNames;
         private final ReentrantReadWriteLock lock;
 
 
@@ -898,13 +929,21 @@ public final class FactoryFinder {
 
 
         public FactoryManager() {
+            lock = new ReentrantReadWriteLock(true);
             factories = new HashMap<String,Object>();
+            savedFactoryNames = new HashMap<String, List<String>>();
             for (String name : FACTORY_NAMES) {
                 factories.put(name, new ArrayList(4));
             }
-            lock = new ReentrantReadWriteLock(true);
         }
 
+        public FactoryManager(FactoryManager toCopy) {
+            lock = new ReentrantReadWriteLock(true);
+            factories = new HashMap<String,Object>();
+            savedFactoryNames = new HashMap<String, List<String>>();
+            factories.putAll(toCopy.savedFactoryNames);
+                
+        }
 
         // ------------------------------------------------------ Public Methods
 
@@ -946,6 +985,7 @@ public final class FactoryFinder {
                 if (!(factoryOrList instanceof List)) {
                     return factoryOrList;
                 }
+                savedFactoryNames.put(factoryName, new ArrayList((List)factoryOrList));
                 Object factory = getImplementationInstance(cl,
                                                            factoryName,
                                                            (List) factoryOrList);
@@ -954,7 +994,15 @@ public final class FactoryFinder {
                     ResourceBundle rb = LOGGER.getResourceBundle();
                     String message = rb.getString("severe.no_factory");
                     message = MessageFormat.format(message, factoryName);
-                    throw new IllegalStateException(message);
+                    if (LOGGER.isLoggable(Level.SEVERE)) {
+                        LOGGER.log(Level.SEVERE, message);
+                    }
+                    factory = FACTORIES_CACHE.getFallbackFactory(cl, this, factoryName);
+                    if (null == factory) {
+                        message = rb.getString("severe.no_factory_backup_failed");
+                        message = MessageFormat.format(message, factoryName);
+                        throw new IllegalStateException(message);
+                    }
                 }
 
                 // Record and return the new instance
@@ -964,7 +1012,7 @@ public final class FactoryFinder {
                 lock.writeLock().unlock();
             }
         }
-
+        
     } // END FactoryManager
 
 
