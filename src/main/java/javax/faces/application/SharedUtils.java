@@ -38,7 +38,7 @@
  * holder.
  */
 
-package javax.faces.component;
+package javax.faces.application;
 
 import javax.faces.context.FacesContext;
 import javax.faces.application.Application;
