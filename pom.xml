@@ -16,15 +16,15 @@
 
   <name>JavaServer Faces API</name>
   <description>JavaServer(tm) Faces API classes based on Version 2.1 of Specification</description>
-  
+
   <licenses>
     <license>
-      <name>lgpl</name>
-      <url>http://repository.jboss.org/licenses/lgpl-2.1.txt</url>
+      <name>CDDL or GPLv2 with exceptions</name>
+      <url>https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
-
+  
   <scm>
     <connection>scm:git:git@github.com:jboss/jboss-jsf-api_spec.git</connection>
     <developerConnection>scm:git:git@github.com:jboss/jboss-jsf-api_spec.git</developerConnection>
