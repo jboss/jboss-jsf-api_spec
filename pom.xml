@@ -14,8 +14,8 @@
   <version>2.0.2.Final-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>JavaServer Faces API</name>
-  <description>JavaServer(tm) Faces API classes based on Version 2.1 of Specification</description>
+  <name>JavaServer(TM) Faces 2.1 API</name>
+  <description>JSR-000314: JavaServer(TM) Faces 2.1 API</description>
 
   <licenses>
     <license>
@@ -30,6 +30,37 @@
     <developerConnection>scm:git:git@github.com:jboss/jboss-jsf-api_spec.git</developerConnection>
     <url>https://github.com/jboss/jboss-jsf-api_spec</url>
   </scm>
+
+  <build>
+    <plugins>
+      <!-- Include LICENSE.txt in the META-INF directory -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <resources>          
+                <resource>
+                  <directory>${basedir}</directory>
+                  <includes>
+                    <include>LICENSE</include>
+                    <include>README</include>
+                  </includes>
+                </resource>
+              </resources>              
+              <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
+            </configuration>            
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
   <dependencies>
     <dependency>
