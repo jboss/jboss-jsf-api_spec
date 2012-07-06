@@ -691,8 +691,8 @@ if (!((jsf && jsf.specversion && jsf.specversion >= 20000 ) &&
             // First, copy over core attributes
             for (iIndex = 0,iLength = coreElementAttributes.length; iIndex < iLength; iIndex++) {
                 attributeName = coreElementAttributes[iIndex];
-                newValue = source[attributeName];
-                oldValue = target[attributeName];
+                newValue = source.getAttribute(attributeName);
+                oldValue = target.getAttribute(attributeName);
                 if (oldValue != newValue) {
                     target[attributeName] = newValue;
                 }
@@ -702,8 +702,8 @@ if (!((jsf && jsf.specversion && jsf.specversion >= 20000 ) &&
             if (target.nodeName.toLowerCase() === 'input') {
                 for (iIndex = 0,iLength = inputElementAttributes.length; iIndex < iLength; iIndex++) {
                     attributeName = inputElementAttributes[iIndex];
-                    newValue = source[attributeName];
-                    oldValue = target[attributeName];
+                    newValue = source.getAttribute(attributeName);
+                    oldValue = target.getAttribute(attributeName);
                     if (oldValue != newValue) {
                         target[attributeName] = newValue;
                     }
@@ -1041,7 +1041,13 @@ if (!((jsf && jsf.specversion && jsf.specversion >= 20000 ) &&
                 var name = nodes[i].getAttribute('name');
                 var value = nodes[i].getAttribute('value');
                 if (!isIE()) {
-                    target.setAttribute(name, value);
+                    if (name === 'value') {
+                        target.value = value;
+                    } else if (name === 'disabled') {
+                        target.disabled = value;
+                    } else {
+                        target.setAttribute(name, value);
+                    }
                 } else { // if it's IE, then quite a bit more work is required
                     if (name === 'class') {
                         name = 'className';
