@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,7 +45,6 @@ import javax.el.MethodExpression;
 import javax.faces.FacesException;
 import javax.faces.FactoryFinder;
 import javax.faces.application.ProjectStage;
-import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
 import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
@@ -61,11 +60,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ListIterator;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.component.visit.VisitCallback;
-import javax.faces.component.visit.VisitContext;
 import javax.faces.event.*;
 import javax.faces.view.ViewDeclarationLanguage;
 import javax.faces.view.ViewMetadata;
@@ -1464,8 +1462,6 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
     }
     
-    private Map<String, Object> viewScope = null;
-
     /**
      * <p class="changed_added_2_0">This implementation simply calls through to {@link
      * #getViewMap(boolean)}, passing <code>true</code> as the argument, and
@@ -1516,16 +1512,38 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * @since 2.0
      */
     public Map<String, Object> getViewMap(boolean create) {
+        Map<String, Object> result = null;
+        String viewMapId = (String) getStateHelper().get(PropertyKeys.viewScope);
+        
+        if (create && viewMapId == null) {
+            ViewMap viewMap = new ViewMap(getFacesContext().getApplication().getProjectStage());
 
-        if (create && viewScope == null) {
-            viewScope = new ViewMap(getFacesContext().getApplication().getProjectStage());
+            Map<String, Object> sessionMap = getFacesContext().getExternalContext().getSessionMap();
+            synchronized(sessionMap) {
+                if (sessionMap.get("com.sun.faces.activeViewMaps") == null) {
+                    sessionMap.put("com.sun.faces.activeViewMaps", new HashMap<String, Object>());
+                }
+                Map<String, Object> viewMaps = (Map<String, Object>) sessionMap.get("com.sun.faces.activeViewMaps");
+                viewMapId = UUID.randomUUID().toString();
+                while(viewMaps.containsKey(viewMapId)) {
+                    viewMapId = UUID.randomUUID().toString();
+                }
+                viewMaps.put(viewMapId, viewMap);
+                getStateHelper().put(PropertyKeys.viewScope, viewMapId);
+            }
+            
             getFacesContext().getApplication()
                   .publishEvent(getFacesContext(),
                                 PostConstructViewMapEvent.class,
                                 this);
         }
-        return viewScope;
         
+        Map<String, Object> sessionMap = getFacesContext().getExternalContext().getSessionMap();
+        if (sessionMap.get("com.sun.faces.activeViewMaps") != null) {
+            Map<String, Object> viewMaps = (Map<String, Object>) sessionMap.get("com.sun.faces.activeViewMaps");
+            result = (Map<String, Object>) viewMaps.get(viewMapId);
+        }
+        return result;
     }
 
     Map<Class<? extends SystemEvent>,List<SystemEventListener>> viewListeners;
@@ -1687,10 +1705,9 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         }
 
         Object superState = super.saveState(context);
-        Object attachedState = saveAttachedState(context, viewScope);
 
-        if (superState != null || attachedState != null) {
-            values = new Object[] {superState, attachedState};
+        if (superState != null) {
+            values = new Object[] {superState};
         }
 
         return (values);
@@ -1709,9 +1726,6 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         
         values = (Object[]) state;
         super.restoreState(context, values[0]);
-        //noinspection unchecked
-        viewScope = (Map<String,Object>) restoreAttachedState(context, values[1]);
-        
     }
 
 
@@ -1767,7 +1781,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
             this.stage = stage;
 
         }
-
+        
 
         // ---------------------------------------------------- Methods from Map
 
@@ -1777,8 +1791,8 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
             FacesContext context = FacesContext.getCurrentInstance();
             context.getApplication().publishEvent(context,
-                                                  PreDestroyViewMapEvent.class,
-                                                  context.getViewRoot());
+                    PreDestroyViewMapEvent.class,
+                    context.getViewRoot());
             super.clear();
 
         }

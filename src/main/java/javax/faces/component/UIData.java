@@ -1390,7 +1390,7 @@ public class UIData extends UIComponentBase
         FacesContext facesContext = context.getFacesContext();
         // NOTE: that the visitRows local will be obsolete once the
         //       appropriate visit hints have been added to the API
-        boolean visitRows = requiresRowIteration(context);;
+        boolean visitRows = requiresRowIteration(context);
 
         // Clear out the row index is one is set so that
         // we start from a clean slate.
@@ -2028,26 +2028,26 @@ public class UIData extends UIComponentBase
         return (!idsToVisit.isEmpty());
     }
 
-    // Performs pre-phase initialization before visiting children
-    // (if necessary).
-    private void preVisitChildren(VisitContext visitContext) {
-
-        // If EXECUTE_LIFECYCLE hint is set, we need to do
-        // lifecycle-related initialization before visiting children
-        if (visitContext.getHints().contains(VisitHint.EXECUTE_LIFECYCLE)) {
-            FacesContext facesContext = visitContext.getFacesContext();
-            PhaseId phaseId = facesContext.getCurrentPhaseId();
-
-            if (phaseId == PhaseId.APPLY_REQUEST_VALUES)
-                preDecode(facesContext);
-            else if (phaseId == PhaseId.PROCESS_VALIDATIONS)
-                preValidate(facesContext);
-            else if (phaseId == PhaseId.UPDATE_MODEL_VALUES)
-                preUpdate(facesContext);
-            else if (phaseId == PhaseId.RENDER_RESPONSE)
-                preEncode(facesContext);
-        }
-    }
+//    // Performs pre-phase initialization before visiting children
+//    // (if necessary).
+//    private void preVisitChildren(VisitContext visitContext) {
+//
+//        // If EXECUTE_LIFECYCLE hint is set, we need to do
+//        // lifecycle-related initialization before visiting children
+//        if (visitContext.getHints().contains(VisitHint.EXECUTE_LIFECYCLE)) {
+//            FacesContext facesContext = visitContext.getFacesContext();
+//            PhaseId phaseId = facesContext.getCurrentPhaseId();
+//
+//            if (phaseId == PhaseId.APPLY_REQUEST_VALUES)
+//                preDecode(facesContext);
+//            else if (phaseId == PhaseId.PROCESS_VALIDATIONS)
+//                preValidate(facesContext);
+//            else if (phaseId == PhaseId.UPDATE_MODEL_VALUES)
+//                preUpdate(facesContext);
+//            else if (phaseId == PhaseId.RENDER_RESPONSE)
+//                preEncode(facesContext);
+//        }
+//    }
 
     // Visit each facet of this component exactly once.
     private boolean visitFacets(VisitContext context,

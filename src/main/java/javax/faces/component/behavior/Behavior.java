@@ -40,19 +40,8 @@
 
 package javax.faces.component.behavior;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-import javax.faces.event.AbortProcessingException;
 import javax.faces.event.BehaviorEvent;
-import javax.faces.event.BehaviorListener;
-import javax.faces.render.RenderKit;
 
 /**
  * <p class="changed_added_2_0">The <strong>Behavior</strong> interface is 
@@ -83,7 +72,7 @@ public interface Behavior {
      *
      * @param event The {@link BehaviorEvent} to be broadcast
      *
-     * @throws AbortProcessingException Signal the JavaServer Faces
+     * @throws javax.faces.event.AbortProcessingException Signal the JavaServer Faces
      *  implementation that no further processing on the current event
      *  should be performed
      * @throws IllegalArgumentException if the implementation class

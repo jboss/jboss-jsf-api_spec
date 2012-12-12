@@ -351,7 +351,7 @@ public final class FacesServlet implements Servlet {
         allowedUnknownHttpMethods = Collections.emptySet();
         allowedKnownHttpMethods = defaultAllowedHttpMethods;
         
-        String[] methods = {};
+        String[] methods;
         String allowedHttpMethodsString = servletConfig.getServletContext().getInitParameter(ALLOWED_HTTP_METHODS_ATTR);
         if (null != allowedHttpMethodsString) {
             methods = allowedHttpMethodsString.split("\\s+");
@@ -562,10 +562,10 @@ public final class FacesServlet implements Servlet {
         String pathInfo = request.getPathInfo();
         if (pathInfo != null) {
             pathInfo = pathInfo.toUpperCase();
-            if (pathInfo.startsWith("/WEB-INF/")
-                || pathInfo.equals("/WEB-INF")
-                || pathInfo.startsWith("/META-INF/")
-                || pathInfo.equals("/META-INF")) {
+            if (pathInfo.contains("/WEB-INF/")
+                || pathInfo.contains("/WEB-INF")
+                || pathInfo.contains("/META-INF/")
+                || pathInfo.contains("/META-INF")) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
