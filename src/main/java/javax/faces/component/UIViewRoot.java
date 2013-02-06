@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,9 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package javax.faces.component;
-
 
 import javax.el.MethodExpression;
 import javax.faces.FacesException;
@@ -49,7 +47,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
 import javax.faces.webapp.FacesServlet;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -60,7 +57,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ListIterator;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -145,16 +141,16 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     // ------------------------------------------------------ Manifest Constants
 
     public static final String METADATA_FACET_NAME = "javax_faces_metadata";
-
+    
     /**
      * <p class="changed_added_2_0">The key in the value set of the
-     * <em>view metadata BeanDescriptor</em>, the value of which is a
+     * <em>view metadata BeanDescriptor</em>, the value of which is a 
      * <code>List&lt;{@link UIViewParameter.Reference}&gt;</code>.</p>
      *
      * @since 2.0
      */
     public static final String VIEW_PARAMETERS_KEY = "javax.faces.component.VIEW_PARAMETERS_KEY";
-
+    
     /** <p>The standard component type for this component.</p> */
     public static final String COMPONENT_TYPE = "javax.faces.ViewRoot";
 
@@ -180,7 +176,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     static {
         LOCATION_IDENTIFIER_MAP.put("head", LOCATION_IDENTIFIER_PREFIX + "HEAD");
         LOCATION_IDENTIFIER_MAP.put("form", LOCATION_IDENTIFIER_PREFIX + "FORM");
-        LOCATION_IDENTIFIER_MAP.put("body", LOCATION_IDENTIFIER_PREFIX + "BODY");
+        LOCATION_IDENTIFIER_MAP.put("body", LOCATION_IDENTIFIER_PREFIX + "BODY");        
     }
 
     enum PropertyKeys {
@@ -198,7 +194,6 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         beforePhase,
         afterPhase,
         phaseListeners,
-        viewScope  // RELEASE_PENDING
     }
 
 
@@ -241,7 +236,6 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * meaning between phases.
      */
     private ListIterator<PhaseListener> phaseListenerIterator;
-
 
     // -------------------------------------------------------------- Properties
 
@@ -427,11 +421,11 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
     }
 
-
+    
     /**
-     *
-     * <p class="changed_added_2_0">Return an unmodifiable list of the
-     * <code>PhaseListener</code> instances attached to this
+     * 
+     * <p class="changed_added_2_0">Return an unmodifiable list of the 
+     * <code>PhaseListener</code> instances attached to this 
      * <code>UIViewRoot</code> instance.</p>
      *
      * @since 2.0
@@ -454,14 +448,14 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * to this view.  A resource instance is rendered by a resource
      * <code>Renderer</code>, as described in the Standard HTML
      * RenderKit. The default implementation must call through to
-     * {@link #addComponentResource(javax.faces.context.FacesContext,
+     * {@link #addComponentResource(javax.faces.context.FacesContext, 
      * javax.faces.component.UIComponent, java.lang.String)}.</p>
      *
      * <div class="changed_added_2_0">
      * <p>
-     *
+     * 
      * @param context {@link FacesContext} for the current request
-     * @param componentResource The {@link UIComponent} representing a
+     * @param componentResource The {@link UIComponent} representing a 
      * {@link javax.faces.application.Resource} instance
      *
      * @since 2.0
@@ -503,10 +497,10 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * </ul>
 
      * </div>
-     *
+     *  
      * @param context {@link FacesContext} for the current request
-     * @param componentResource The {@link UIComponent} representing a
-     * {@link javax.faces.application.Resource} instance
+     * @param componentResource The {@link UIComponent} representing a 
+     * {@link javax.faces.application.Resource} instance 
      * @param target The name of the facet for which the {@link UIComponent} will be added
      *
      * @since 2.0
@@ -573,7 +567,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
      * </div>
      *
-     * @param target The name of the facet for which the components will be returned.
+     * @param target The name of the facet for which the components will be returned. 
      *
      * @return A <code>List</code> of {@link UIComponent} children of
      * the facet with the name <code>target</code>.  If no children are
@@ -584,7 +578,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      *
      * @since 2.0
      */
-    public List<UIComponent> getComponentResources(FacesContext context,
+    public List<UIComponent> getComponentResources(FacesContext context, 
                                                    String target) {
         if (target == null) {
             throw new NullPointerException();
@@ -599,7 +593,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
                 : Collections.<UIComponent>emptyList());
 
     }
-
+    
     /**
      * <p class="changed_added_2_0">Remove argument <code>component</code>,
      * which is assumed to represent a resource instance, as a resource
@@ -607,9 +601,9 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      *
      * <div class="changed_added_2_0">
      * <p>
-     *
+     * 
      * @param context {@link FacesContext} for the current request
-     * @param componentResource The {@link UIComponent} representing a
+     * @param componentResource The {@link UIComponent} representing a 
      * {@link javax.faces.application.Resource} instance
      *
      * @since 2.0
@@ -617,7 +611,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     public void removeComponentResource(FacesContext context, UIComponent componentResource) {
         removeComponentResource(context, componentResource, null);
     }
-
+    
     /**
      * <p class="changed_added_2_0">Remove argument <code>component</code>,
      * which is assumed to represent a resource instance, as a resource
@@ -638,10 +632,10 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * </ul>
      * </p>
      * </div>
-     *
+     *  
      * @param context {@link FacesContext} for the current request
-     * @param componentResource The {@link UIComponent} representing a
-     * {@link javax.faces.application.Resource} instance
+     * @param componentResource The {@link UIComponent} representing a 
+     * {@link javax.faces.application.Resource} instance 
      * @param target The name of the facet for which the {@link UIComponent} will be added
      *
      * @since 2.0
@@ -820,7 +814,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
                   !events.get(phaseId.getOrdinal()).isEmpty();
 
         } while (hasMoreAnyPhaseEvents || hasMoreCurrentPhaseEvents);
-
+    
     }
 
     // ------------------------------------------------ Lifecycle Phase Handlers
@@ -843,7 +837,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
             notifyPhaseListeners(context, phaseId, true);
         }
     }
-
+    
     // avoid creating the PhaseEvent if possible by doing redundant
     // null checks.
     private void notifyAfter(FacesContext context, PhaseId phaseId) {
@@ -877,7 +871,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         super.processRestoreState(context, state);
 
     }
-
+    
 
     /**
      * <div class="changed_added_2_0">
@@ -886,17 +880,17 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * {@link PhaseId#APPLY_REQUEST_VALUES} if:
      * <ul>
      * <li>{@link javax.faces.context.PartialViewContext#isPartialRequest}
-     * returns <code>true</code> and we don't have a request to process all
+     * returns <code>true</code> and we don't have a request to process all 
      * components in the view
      * ({@link javax.faces.context.PartialViewContext#isExecuteAll} returns
      * <code>false</code>)</li>
      * </ul>
-     * Perform full processing by calling
-     * {@link UIComponentBase#processDecodes} if one of the following
+     * Perform full processing by calling 
+     * {@link UIComponentBase#processDecodes} if one of the following 
      * conditions are met:
      * <ul>
      * <li> {@link javax.faces.context.PartialViewContext#isPartialRequest}
-     * returns <code>true</code> and we have a request to process all
+     * returns <code>true</code> and we have a request to process all 
      * components in the view
      * ({@link javax.faces.context.PartialViewContext#isExecuteAll} returns
      * <code>true</code>)</li>
@@ -905,11 +899,11 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * </ul>
      * </p>
      * </div>
-     * <p class="changed_modified_2_0">Override the default
-     * {@link UIComponentBase#processDecodes} behavior to broadcast any queued
-     * events after the default processing or partial processing has been
-     * completed and to clear out any events for later phases if the event
-     * processing for this phase caused {@link FacesContext#renderResponse}
+     * <p class="changed_modified_2_0">Override the default 
+     * {@link UIComponentBase#processDecodes} behavior to broadcast any queued 
+     * events after the default processing or partial processing has been 
+     * completed and to clear out any events for later phases if the event 
+     * processing for this phase caused {@link FacesContext#renderResponse} 
      * or {@link FacesContext#responseComplete} to be called.</p>
      *
      * @param context {@link FacesContext} for the request we are processing
@@ -961,11 +955,11 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         }
     }
 
-    /**
+    /** 
      * <p class="changed_added_2_0">If {@link
-     * javax.faces.context.PartialViewContext#isAjaxRequest} returns
+     * javax.faces.context.PartialViewContext#isAjaxRequest} returns 
      * <code>true</code>, perform partial rendering by calling
-     * {@link javax.faces.context.PartialViewContext#processPartial} with
+     * {@link javax.faces.context.PartialViewContext#processPartial} with 
      * {@link PhaseId#RENDER_RESPONSE}.  If {@link
      * javax.faces.context.PartialViewContext#isAjaxRequest} returns
      * <code>false</code>, delegate to the parent {@link
@@ -1000,7 +994,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     public void encodeEnd(FacesContext context) throws IOException {
         super.encodeEnd(context);
         encodeViewParameters(context);
-        notifyAfter(context, PhaseId.RENDER_RESPONSE);
+        notifyAfter(context, PhaseId.RENDER_RESPONSE);               
     }
 
     /**
@@ -1144,11 +1138,11 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * </ul>
      * </p>
      * </div>
-     * <p class="changed_modified_2_0">Override the default
-     * {@link UIComponentBase#processValidators} behavior to broadcast any
-     * queued events after the default processing or partial processing has been
-     * completed and to clear out any events for later phases if the event
-     * processing for this phase caused {@link FacesContext#renderResponse} or
+     * <p class="changed_modified_2_0">Override the default 
+     * {@link UIComponentBase#processValidators} behavior to broadcast any 
+     * queued events after the default processing or partial processing has been 
+     * completed and to clear out any events for later phases if the event 
+     * processing for this phase caused {@link FacesContext#renderResponse} or 
      * {@link FacesContext#responseComplete} to be called.</p>
      *
      * @param context {@link FacesContext} for the request we are processing
@@ -1204,9 +1198,9 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * </p>
      *</div>
      * <p class="changed_modified_2_0">Override the default {@link UIComponentBase}
-     * behavior to broadcast any queued events after the default processing or
-     * partial processing has been completed and to clear out any events for
-     * later phases if the event processing for this phase caused
+     * behavior to broadcast any queued events after the default processing or 
+     * partial processing has been completed and to clear out any events for 
+     * later phases if the event processing for this phase caused 
      * {@link FacesContext#renderResponse} or
      * {@link FacesContext#responseComplete} to be called.</p>
      *
@@ -1461,7 +1455,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         FacesContext.getCurrentInstance().getELContext().setLocale(locale);
 
     }
-
+    
     /**
      * <p class="changed_added_2_0">This implementation simply calls through to {@link
      * #getViewMap(boolean)}, passing <code>true</code> as the argument, and
@@ -1473,7 +1467,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     public Map<String, Object> getViewMap() {
 
         return getViewMap(true);
-
+        
     }
 
     /**
@@ -1499,7 +1493,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * <code>Serializable</code>.  In general, it is a good idea to
      * ensure that any objects stored in the view map are
      * <code>Serializable</code>.</p>
-     *
+     * 
      * <p>See {@link FacesContext#setViewRoot} for the specification of when the
      * <code>clear()</code> method must be called.</p>
      * <p/>
@@ -1512,39 +1506,16 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * @since 2.0
      */
     public Map<String, Object> getViewMap(boolean create) {
-        Map<String, Object> result = null;
-        String viewMapId = (String) getStateHelper().get(PropertyKeys.viewScope);
+        Map<String, Object> viewMap = (Map<String, Object>) 
+                getTransientStateHelper().getTransient("com.sun.faces.application.view.viewMap");
 
-        if (create && viewMapId == null) {
-            ViewMap viewMap = new ViewMap(getFacesContext().getApplication().getProjectStage());
-
-            Map<String, Object> sessionMap = getFacesContext().getExternalContext().getSessionMap();
-            synchronized(sessionMap) {
-                if (sessionMap.get("com.sun.faces.activeViewMaps") == null) {
-                    sessionMap.put("com.sun.faces.activeViewMaps", new HashMap<String, Object>());
-                }
-                Map<String, Object> viewMaps = (Map<String, Object>) sessionMap.get("com.sun.faces.activeViewMaps");
-                viewMapId = UUID.randomUUID().toString();
-                while(viewMaps.containsKey(viewMapId)) {
-                    viewMapId = UUID.randomUUID().toString();
-                }
-                viewMaps.put(viewMapId, viewMap);
-                ComponentStateHelper helper = (ComponentStateHelper)getStateHelper();
-                helper.putInDeltaMap(PropertyKeys.viewScope, viewMapId);
-            }
-
-            getFacesContext().getApplication()
-                  .publishEvent(getFacesContext(),
-                                PostConstructViewMapEvent.class,
-                                this);
+        if (create && viewMap == null) {
+            viewMap = new ViewMap(getFacesContext().getApplication().getProjectStage());
+            getTransientStateHelper().putTransient("com.sun.faces.application.view.viewMap", viewMap);
+            getFacesContext().getApplication().publishEvent(getFacesContext(), PostConstructViewMapEvent.class, this);
         }
-
-        Map<String, Object> sessionMap = getFacesContext().getExternalContext().getSessionMap();
-        if (sessionMap.get("com.sun.faces.activeViewMaps") != null) {
-            Map<String, Object> viewMaps = (Map<String, Object>) sessionMap.get("com.sun.faces.activeViewMaps");
-            result = (Map<String, Object>) viewMaps.get(viewMapId);
-        }
-        return result;
+        
+        return viewMap;
     }
 
     Map<Class<? extends SystemEvent>,List<SystemEventListener>> viewListeners;
@@ -1582,7 +1553,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         if (listener == null) {
             throw new NullPointerException();
         }
-
+        
         if (viewListeners == null) {
             viewListeners = new HashMap<Class<? extends SystemEvent>, List<SystemEventListener>>(4, 1.0f);
         }
@@ -1659,9 +1630,9 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
             return viewListeners.get(systemEvent);
         }
         return null;
-
+        
     }
-
+    
 
     private void encodeViewParameters(FacesContext context) {
 
@@ -1704,11 +1675,12 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         if (context == null) {
             throw new NullPointerException();
         }
-
+        
+        String viewMapId = (String) getTransientStateHelper().getTransient("com.sun.faces.application.view.viewMapId");        
         Object superState = super.saveState(context);
 
-        if (superState != null) {
-            values = new Object[] {superState};
+        if (superState != null || viewMapId != null) {
+            values = new Object[] {superState, viewMapId};
         }
 
         return (values);
@@ -1724,12 +1696,27 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         if (state == null) {
             return;
         }
-
+        
         values = (Object[]) state;
-        super.restoreState(context, values[0]);
+        
+        if (!context.getAttributes().containsKey("com.sun.faces.application.view.restoreViewScopeOnly")) {
+            super.restoreState(context, values[0]);
+        }
+        
+        String viewMapId = (String) values[1];
+
+        getTransientStateHelper().putTransient("com.sun.faces.application.view.viewMapId", viewMapId);
+
+        Map<String, Object> viewMaps = (Map<String, Object>) context.getExternalContext().
+                getSessionMap().get("com.sun.faces.application.view.activeViewMaps");
+
+        if (viewMaps != null) {
+            Map<String, Object> viewMap = (Map<String, Object>) viewMaps.get(viewMapId);
+            getTransientStateHelper().putTransient("com.sun.faces.application.view.viewMap", viewMap);
+        }
     }
 
-
+    
     // --------------------------------------------------------- Private Methods
 
 
@@ -1765,7 +1752,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         return ((facet != null) ? facet.getChildren() : null);
 
     }
-
+    
 
     private static final class ViewMap extends HashMap<String,Object> {
 
@@ -1773,7 +1760,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
         private ProjectStage stage;
 
-
+        
         // -------------------------------------------------------- Constructors
 
 
@@ -1782,7 +1769,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
             this.stage = stage;
 
         }
-
+        
 
         // ---------------------------------------------------- Methods from Map
 

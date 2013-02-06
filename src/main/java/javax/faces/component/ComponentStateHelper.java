@@ -63,7 +63,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
     private Map<Serializable, Object> deltaMap;
     private Map<Serializable, Object> defaultMap;
     private Map<Object, Object> transientState;
-
+    
     // ------------------------------------------------------------ Constructors
 
 
@@ -90,7 +90,15 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
     public Object put(Serializable key, Object value) {
 
         if(component.initialStateMarked() || value instanceof PartialStateHolder) {
-            return putInDeltaMap(key, value);
+            Object retVal = deltaMap.put(key, value);
+
+            if(retVal==null) {
+                return defaultMap.put(key,value);
+            }
+            else {
+                defaultMap.put(key,value);
+                return retVal;
+            }
         }
         else {
             return defaultMap.put(key,value);
@@ -270,7 +278,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
         if (state == null) {
             return;
         }
-
+        
         if (!component.initialStateMarked() && !defaultMap.isEmpty())
         {
             defaultMap.clear();
@@ -279,7 +287,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
                 deltaMap.clear();
             }
         }
-
+        
         Object[] savedState = (Object[]) state;
         if (savedState[savedState.length - 1] != null) {
             component.initialState = (Boolean) savedState[savedState.length - 1];
@@ -328,7 +336,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
         return isTransient;
     }
 
-
+    
     /**
      * @see StateHolder#setTransient(boolean)
      */
@@ -435,20 +443,6 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
         return ret;
     }
 
-    // package-private method can be used to make sure a value is stored
-    // in the deltaMap as well as the defaultMap even when initialStateMarked()
-    // is false
-    Object putInDeltaMap(Serializable key, Object value) {
-        Object retVal = deltaMap.put(key, value);
-
-        if(retVal==null) {
-            return defaultMap.put(key,value);
-        }
-        else {
-            defaultMap.put(key,value);
-            return retVal;
-        }
-    }
 
     public Object getTransient(Object key)
     {
@@ -479,7 +473,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
     {
         transientState = (Map<Object, Object>) state;
     }
-
+    
     public Object saveTransientState(FacesContext context)
     {
         return transientState;
