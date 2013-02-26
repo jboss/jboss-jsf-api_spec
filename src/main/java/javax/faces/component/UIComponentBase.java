@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -77,6 +77,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -213,7 +214,55 @@ public abstract class UIComponentBase extends UIComponent {
 
     }
 
+    @Override
+    public Map<String, Object> getPassThroughAttributes() {
+        
+        return getPassThroughAttributes(true);
+    }
+    
+    @Override
+    public Map<String, Object> getPassThroughAttributes(boolean create) {
+        Map<String, Object> result = (Map<String, Object>) 
+                this.getStateHelper().get(PropertyKeys.passThroughAttributes);
+        if (null == result) {
+            if (create) {
+                result = new PassThroughAttributesMap<String, Object>();
+                this.getStateHelper().put(PropertyKeys.passThroughAttributes, 
+                        result);
+            }
+        }
+        
+        return result;
 
+    }
+
+    private static class PassThroughAttributesMap<K, V> extends ConcurrentHashMap<String, Object> implements Serializable {
+        @Override
+        public Object put(String key, Object value) {
+            if (null == key || null == value) {
+                throw new NullPointerException();
+            }
+            validateKey(key);
+            return super.put(key, value);
+        }
+        
+        @Override
+        public Object putIfAbsent(String key, Object value) {
+            if (null == key || null == value) {
+                throw new NullPointerException();
+            }
+            validateKey(key);
+            return super.putIfAbsent(key, value);
+        }
+        
+        private void validateKey(Object key) {
+            if (!(key instanceof String) || (key instanceof ValueExpression) || !(key instanceof Serializable)) {
+                throw new IllegalArgumentException();
+            }
+        }
+        
+    }
+    
     // ---------------------------------------------------------------- Bindings
 
 
@@ -879,8 +928,6 @@ public abstract class UIComponentBase extends UIComponent {
             Renderer renderer = this.getRenderer(context);
             if (renderer != null) {
                 renderer.encodeEnd(context, this);
-            } else {
-                // We've already logged for this component
             }
         }
         popComponentFromEL(context);
@@ -1542,7 +1589,7 @@ public abstract class UIComponentBase extends UIComponent {
                 values[4] = stateHelper.saveState(context);
             }
             values[5] = id;
-
+            
             return (values);
         }
     }
@@ -2701,8 +2748,8 @@ public abstract class UIComponentBase extends UIComponent {
 
         public UIComponent remove(int index) {
             UIComponent child = get(index);
-            child.setParent(null);
             super.remove(index);
+            child.setParent(null);
             return (child);
         }
 
@@ -2712,10 +2759,8 @@ public abstract class UIComponentBase extends UIComponent {
                 throw new NullPointerException();
             }
 
-            if (super.indexOf(element) != -1) {
-                element.setParent(null);
-            }            
             if (super.remove(element)) {
+                element.setParent(null);
                 return (true);
             } else {
                 return (false);

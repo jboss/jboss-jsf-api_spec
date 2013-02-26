@@ -86,7 +86,7 @@ import javax.faces.render.Renderer;
 
 /**
  * <p><strong class="changed_modified_2_0
- * changed_modified_2_0_rev_a changed_modified_2_1">UIComponent</strong> is
+ * changed_modified_2_0_rev_a changed_modified_2_1 changed_modified_2_2">UIComponent</strong> is
  * the base class for all user interface components in JavaServer Faces.
  * The set of {@link UIComponent} instances associated with a particular request
  * and response are organized into a component tree under a {@link
@@ -132,25 +132,38 @@ public abstract class UIComponent implements PartialStateHolder, TransientStateH
             "javax.faces.HONOR_CURRENT_COMPONENT_ATTRIBUTES";
     
     /**
-     * <p class="changed_added_2_0">The key to which the
+     * <p class="changed_added_2_0"><span
+     * class="changed_deleted_2_2">The</span> key to which the
      * <code>UIComponent</code> currently being processed will be
-     * associated with within the {@link FacesContext} attributes map.</p>
+     * associated with within the {@link FacesContext} attributes
+     * map. <span class="changed_deleted_2_2">The use of this constant is
+     * deprecated.  Please see {@link
+     * #HONOR_CURRENT_COMPONENT_ATTRIBUTES_PARAM_NAME} to enable its
+     * use.</span></p>
      *
      * @see javax.faces.context.FacesContext#getAttributes()
      *
      * @since 2.0
+     *
+     * @deprecated
      */
     public static final String CURRENT_COMPONENT = "javax.faces.component.CURRENT_COMPONENT";
 
     /**
-     * <p class="changed_added_2_0">The key to which the
+     * <p class="changed_added_2_0"><span
+     * class="changed_deleted_2_2">The</span> key to which the
      * <em>composite</em> <code>UIComponent</code> currently being
      * processed will be associated with within the {@link FacesContext}
-     * attributes map.</p>
+     * attributes map. <span class="changed_deleted_2_2">The use of this
+     * constant is deprecated.  Please see {@link
+     * #HONOR_CURRENT_COMPONENT_ATTRIBUTES_PARAM_NAME} to enable its
+     * use.</span></p>
      *
      * @see javax.faces.context.FacesContext#getAttributes()
      *
      * @since 2.0
+     *
+     * @deprecated
      */
     public static final String CURRENT_COMPOSITE_COMPONENT = "javax.faces.component.CURRENT_COMPOSITE_COMPONENT";
 
@@ -241,14 +254,15 @@ public abstract class UIComponent implements PartialStateHolder, TransientStateH
         bindings,
         rendererType,
         systemEventListeners,
-        behaviors
+        behaviors,
+        passThroughAttributes
     }
 
     /**
      * List of attributes that have been set on the component (this
      * may be from setValueExpression, the attributes map, or setters
      * from the concrete HTML components.  This allows
-     * for faster rendering of attributes as this list is authoratative
+     * for faster rendering of attributes as this list is authoritative
      * on what has been set.
      */
     List<String> attributesThatAreSet;
@@ -297,6 +311,48 @@ public abstract class UIComponent implements PartialStateHolder, TransientStateH
      */
     public abstract Map<String, Object> getAttributes();
     
+    /**
+     * <p class="changed_added_2_2">Return a data structure containing the attributes
+     * of this component that should be rendered directly to the output without
+     * interpretation by the {@link javax.faces.render.Renderer}.  This method must
+     * never return {@code null}.  The returned
+     * {@code Map} implementation must support all of the standard and optional 
+     * {@code Map} methods, plus support the following additional requirements.</p>
+     * 
+     * <div class="changed_added_2_2">
+     * 
+     * <p>The {@code Map} implementation must implement {@code java.io.Serializable}.</p>
+     * 
+     * <p>Any attempt to add a {@code null} key or value must throw a {@code NullPointerException}.</p>
+     * 
+     * <p>Any attempt to add a key that is not a {@code String} must
+     * throw an {@code IllegalArgumentException}.</p>
+     * 
+     * </div>
+     *
+     * @since 2.2
+     */
+
+    public abstract Map<String, Object> getPassThroughAttributes();
+    
+    
+    /**
+     * <p class="changed_added_2_2">This method has the same specification as 
+     * {@link #getPassThroughAttributes() } except that it is allowed to return 
+     * {@code null} if and only if the argument {@code create} is {@code false}
+     * and no pass through attribute data structure exists for this instance.</p>
+
+     * @param create if <code>true</code>, a new {@code Map}
+     * instance will be created if it does not exist already.  If
+     * <code>false</code>, and there is no existing
+     * <code>Map</code> instance, one will not be created and
+     * <code>null</code> will be returned.
+     * @return A {@code Map} instance, or {@code null}.
+     * 
+     * @since 2.2
+     */
+    
+    public abstract Map<String, Object> getPassThroughAttributes(boolean create);
     
     // ---------------------------------------------------------------- Bindings
 
@@ -1239,12 +1295,24 @@ public abstract class UIComponent implements PartialStateHolder, TransientStateH
 
 
     /**
-     * <p>Search for and return the {@link UIComponent} with an <code>id</code>
-     * that matches the specified search expression (if any), according to the
-     * algorithm described below.</p>
-     *
-     * <p>For a method to find a component given a simple
-     * <code>clientId</code>, see {@link #invokeOnComponent}.</p>
+     * <p><span class="changed_modified_2_2">Search</span> for and
+     * return the {@link UIComponent} with an <code>id</code> that
+     * matches the specified search expression (if any), according to
+     * the algorithm described below.</p>
+
+     * <p class="changed_added_2_2">WARNING: The found
+     * <code>UIComponent</code> instance, if any, is returned
+     * <strong>without</strong> regard for its tree traversal context.
+     * Retrieving an EL-bound attribute from the component is not safe.
+     * EL expressions can contain implicit objects, such as
+     * <code>#{component}</code>, which assume they are being evaluated
+     * within the scope of a tree traversal context.  Evaluating
+     * expressions with these kinds of implicit objects outside of a
+     * tree traversal context produces undefined results.  See {@link
+     * #invokeOnComponent} for a method that <strong>does</strong>
+     * correctly account for the tree traversal context when operating
+     * on the found <code>UIComponent</code> instance.  {@link #invokeOnComponent}
+     * is also useful to find components given a simple <code>clientId</code>.
      *
      * <p>Component identifiers are required to be unique within the scope of
      * the closest ancestor {@link NamingContainer} that encloses this
@@ -2453,7 +2521,7 @@ private void doFind(FacesContext context, String clientId) {
 
 
     static final class ComponentSystemEventListenerAdapter
-       implements SystemEventListener, StateHolder, FacesWrapper<ComponentSystemEventListener> {
+       implements ComponentSystemEventListener, SystemEventListener, StateHolder, FacesWrapper<ComponentSystemEventListener> {
 
         ComponentSystemEventListener wrapped;
         Class<?> instanceClass;
@@ -2487,7 +2555,14 @@ private void doFind(FacesContext context, String clientId) {
 
         }
 
+        // ------------------------------------ Methods from SystemEventListener
 
+
+        public void processEvent(ComponentSystemEvent event) throws AbortProcessingException {
+
+            wrapped.processEvent(event);
+
+        }
         public boolean isListenerForSource(Object component) {
 
             if (wrapped instanceof SystemEventListener) {

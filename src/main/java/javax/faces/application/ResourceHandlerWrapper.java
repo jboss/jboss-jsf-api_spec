@@ -46,13 +46,12 @@ import javax.faces.FacesWrapper;
 import javax.faces.context.FacesContext;
 
 /**
- * <p class="changed_added_2_0"><span
- * class="changed_modified_2_0_rev_a">Provides</span> a simple
- * implementation of {@link ResourceHandler} that can be subclassed by
- * developers wishing to provide specialized behavior to an existing
- * {@link ResourceHandler} instance.  The default implementation of all
- * methods is to call through to the wrapped {@link
- * ResourceHandler}.</p>
+ * <p class="changed_added_2_0"><span class="changed_modified_2_0_rev_a
+ * changed_modified_2_2">Provides</span> a simple implementation of
+ * {@link ResourceHandler} that can be subclassed by developers wishing
+ * to provide specialized behavior to an existing {@link
+ * ResourceHandler} instance.  The default implementation of all methods
+ * is to call through to the wrapped {@link ResourceHandler}.</p>
  *
  * <div class="changed_added_2_0">
  *
@@ -68,6 +67,7 @@ public abstract class ResourceHandlerWrapper extends ResourceHandler implements 
     /**
      * @return the instance that we are wrapping.
      */ 
+    @Override
     public abstract ResourceHandler getWrapped();
 
 
@@ -79,9 +79,24 @@ public abstract class ResourceHandlerWrapper extends ResourceHandler implements 
      * is to call {@link ResourceHandler#createResource(String)} on the
      * wrapped {@link ResourceHandler} object.</p>
      */
+    @Override
     public Resource createResource(String resourceName) {
 
         return getWrapped().createResource(resourceName);
+
+    }
+
+    /**
+     * <p class="changed_added_2_2">The default behavior of this method
+     * is to call {@link ResourceHandler#createResourceFromId(String)} on the
+     * wrapped {@link ResourceHandler} object.</p>
+     *
+     * @since 2.2
+     */
+    @Override
+    public Resource createResourceFromId(String resourceId) {
+
+        return getWrapped().createResourceFromId(resourceId);
 
     }
 
@@ -91,18 +106,30 @@ public abstract class ResourceHandlerWrapper extends ResourceHandler implements 
      * is to call {@link ResourceHandler#createResource(String, String)} on the wrapped
      * {@link ResourceHandler} object.</p>
      */
+    @Override
     public Resource createResource(String resourceName, String libraryName) {
 
         return getWrapped().createResource(resourceName, libraryName);
 
     }
 
+    /**
+     * <p class="changed_added_2_2">The default behavior of this method
+     * is to call {@link ResourceHandler#createViewResource} on the wrapped
+     * {@link ResourceHandler} object.</p>
+     */
+
+    @Override
+    public Resource createViewResource(FacesContext context, String resourceName) {
+        return getWrapped().createViewResource(context, resourceName);
+    }
 
     /**
      * <p class="changed_added_2_0">The default behavior of this method
      * is to call {@link ResourceHandler#createResource(String, String,
      * String)} on the wrapped {@link ResourceHandler} object.</p>
      */
+    @Override
     public Resource createResource(String resourceName,
                                    String libraryName,
                                    String contentType) {
@@ -120,6 +147,7 @@ public abstract class ResourceHandlerWrapper extends ResourceHandler implements 
      * ResourceHandler#handleResourceRequest(javax.faces.context.FacesContext)}
      * on the wrapped {@link ResourceHandler} object.</p>
      */
+    @Override
     public void handleResourceRequest(FacesContext context) throws IOException {
 
         getWrapped().handleResourceRequest(context);
@@ -132,11 +160,24 @@ public abstract class ResourceHandlerWrapper extends ResourceHandler implements 
      * is to call {@link ResourceHandler#isResourceRequest(javax.faces.context.FacesContext)} on the
      * wrapped {@link ResourceHandler} object.</p>
      */
+    @Override
     public boolean isResourceRequest(FacesContext context) {
 
         return getWrapped().isResourceRequest(context);
 
     }
+
+    /**
+     * <p class="changed_added_2_0">The default behavior of this method
+     * is to call {@link ResourceHandler#isResourceURL} on the
+     * wrapped {@link ResourceHandler} object.</p>
+     */
+    @Override
+    public boolean isResourceURL(String url) {
+        return getWrapped().isResourceURL(url);
+    }
+    
+    
 
 
     /**
@@ -144,6 +185,7 @@ public abstract class ResourceHandlerWrapper extends ResourceHandler implements 
      * is to call {@link ResourceHandler#libraryExists(String)} on the
      * wrapped {@link ResourceHandler} object.</p>
      */
+    @Override
     public boolean libraryExists(String libraryName) {
 
         return getWrapped().libraryExists(libraryName);
@@ -156,6 +198,7 @@ public abstract class ResourceHandlerWrapper extends ResourceHandler implements 
      * is to call {@link ResourceHandler#getRendererTypeForResourceName(String)} on the
      * wrapped {@link ResourceHandler} object.</p>
      */
+    @Override
     public String getRendererTypeForResourceName(String resourceName) {
 
         return getWrapped().getRendererTypeForResourceName(resourceName);

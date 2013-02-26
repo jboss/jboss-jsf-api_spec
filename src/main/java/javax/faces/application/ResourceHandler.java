@@ -46,10 +46,15 @@ import javax.faces.context.FacesContext;
 
 
 /**
- * <p class="changed_added_2_0"><strong class="changed_modified_2_0_rev_a">ResourceHandler</strong> is the
- * run-time API by which {@link javax.faces.component.UIComponent} and
- * {@link javax.faces.render.Renderer} instances can reference {@link
- * Resource} instances.  An implementation of this class must be thread-safe.</p>
+ * <p class="changed_added_2_0"><strong
+ * class="changed_modified_2_0_rev_a
+ * changed_modified_2_2">ResourceHandler</strong> is the run-time API by
+ * which {@link javax.faces.component.UIComponent} and {@link
+ * javax.faces.render.Renderer} instances<span
+ * class="changed_added_2_2">, and the {@link
+ * javax.faces.view.ViewDeclarationLanguage} can reference {@link
+ * Resource} instances.</span>  An implementation of this class must be
+ * thread-safe.</p>
  *
  * <div class="changed_added_2_0">
  *
@@ -71,12 +76,26 @@ import javax.faces.context.FacesContext;
  *
  * <p><code>resources/&lt;resourceIdentifier&gt;</code></p>
  *
- * <p>relative to the web app root.</p>
+ * <p>relative to the web app root.  <span
+ * class="changed_added_2_2">"resources" is the default location, but
+ * this location can be changed by the value of the {@link
+ * #WEBAPP_RESOURCES_DIRECTORY_PARAM_NAME}
+ * <code>&lt;context-param&gt;</code>.</span></p>
  *
  * <p>For the default implementation, resources packaged in the
  * classpath must reside under the JAR entry name</p>
- *
+
  * <p><code>META-INF/resources/&lt;resourceIdentifier&gt;</code></p>
+
+ * <div class="changed_added_2_2">
+
+ * <p>In the case of Faces Flows packaged
+ * within jar files, resources packaged in the classpath must reside
+ * under the jar entry name</p>
+
+ * <p><code>META-INF/flows/&lt;resourceIdentifier&gt;</code></p>
+
+ * </div>
 
  * <p><code>&lt;resourceIdentifier&gt;</code> consists of several
  * segments, specified as follows.</p>
@@ -106,6 +125,9 @@ import javax.faces.context.FacesContext;
  *  to obtain the encoded URI for the resource.  See {@link
  *  Resource#getRequestPath} and the Standard HTML RenderKit specification for
  *  the complete specification.</p>
+
+ * <p class="changed_added_2_2">This usage of resources does not apply
+ * for resources that correspond to VDL resources.</p>
  *
  * </ul>
  *
@@ -119,7 +141,10 @@ import javax.faces.context.FacesContext;
  *  orchestrated by {@link #handleResourceRequest}, which calls {@link
  *  Resource#getInputStream} to obtain bytes of the resource.  See
  *  {@link #handleResourceRequest} for the complete specification.</p>
- *
+
+ * <p class="changed_added_2_2">This usage of resources does not apply
+ * for resources that correspond to VDL resources.</p>
+
  * </ul>
  *
  * </div>
@@ -139,6 +164,54 @@ public abstract class ResourceHandler {
      */
     public static final String RESOURCE_IDENTIFIER = "/javax.faces.resource";
 
+
+    /**
+     * <p class="changed_added_2_2">The name of the marker file that
+     * the implementation must scan for, within sub-directories
+     * <code>META-INF/contracts</code>, to identify the set of available
+     * resource library contracts.</p>
+
+     * @since 2.2
+     */
+
+    public static final String RESOURCE_CONTRACT_XML = "javax.faces.contract.xml";
+
+
+    /**
+
+     * <p class="changed_added_2_2">If a
+     * <code>&lt;context-param&gt;</code> with the param name equal to
+     * the value of {@link #WEBAPP_RESOURCES_DIRECTORY_PARAM_NAME}
+     * exists, the runtime must interpret its value as a path, relative
+     * to the web app root, where resources are to be located.  This
+     * param value must not start with a "/", though it may contain "/"
+     * characters.  If no such <code>&lt;context-param&gt;</code> exists, or
+     * its value is invalid, the value "resources", without the quotes,
+     * must be used by the runtime as the value.</p>
+     *
+     * @since 2.2
+     */
+
+    public static final String WEBAPP_RESOURCES_DIRECTORY_PARAM_NAME = 
+        "javax.faces.WEBAPP_RESOURCES_DIRECTORY";
+
+    /**
+
+     * <p class="changed_added_2_2">If a
+     * <code>&lt;context-param&gt;</code> with the param name equal to
+     * the value of {@link #WEBAPP_CONTRACTS_DIRECTORY_PARAM_NAME}
+     * exists, the runtime must interpret its value as a path, relative
+     * to the web app root, where resource library contracts are to be located.  This
+     * param value must not start with a "/", though it may contain "/"
+     * characters.  If no such <code>&lt;context-param&gt;</code> exists, or
+     * its value is invalid, the value "contracts", without the quotes,
+     * must be used by the runtime as the value.</p>
+     *
+     * @since 2.2
+     */
+
+    public static final String WEBAPP_CONTRACTS_DIRECTORY_PARAM_NAME = 
+        "javax.faces.WEBAPP_CONTRACTS_DIRECTORY";
 
     /**
      * <p class="changed_added_2_0">The name of a key within the
@@ -181,7 +254,8 @@ public abstract class ResourceHandler {
     
 
     /**
-     * <p class="changed_added_2_0">Create an instance of
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_2">Create</span> an instance of
      * <code>Resource</code> given the argument
      * <code>resourceName</code>.  The content-type of the resource is
      * derived by passing the <em>resourceName</em> to {@link
@@ -189,11 +263,16 @@ public abstract class ResourceHandler {
 
      * <div class="changed_added_2_0">
 
-     * <p>The algorithm specified in section JSF.2.6.1.4 of the spec prose
-     * document <a
+     * <p>The algorithm specified in section JSF.2.6.1.4 of the spec
+     * prose document <a
      * href="../../../overview-summary.html#prose_document">linked in
      * the overview summary</a> must be executed to create the
-     * <code>Resource</code></p>
+     * <code>Resource</code>.  <span class="changed_added_2_2">New
+     * requirements were introduced in version 2.2 of the specification.
+     * For historical reasons, this method operate correctly when the
+     * argument {@code resourceName} is of the form
+     * {@code libraryName/resourceName}, even when {@code resourceName}
+     * contains '/' characters.  </span></p>
 
      * </div>
 
@@ -206,33 +285,126 @@ public abstract class ResourceHandler {
      * for use in encoding or decoding the named resource.
      */
     public abstract Resource createResource(String resourceName);
+    
+    /**
+     * <p class="changed_added_2_2">Create an instance of <code>Resource</code>
+     * given the argument <code>resourceName</code>, which may contain "/" 
+     * characters.  The {@link javax.faces.view.ViewDeclarationLanguage} calls
+     * this method when it needs to load a view from a persistent store, such as
+     * a filesystem.  This method is functionality equivalent to 
+     * {@link #createResource(java.lang.String)}, but all callsites that need
+     * to load VDL views must use this method so that classes that want to 
+     * decorate the <code>ResourceHandler</code> in order to only affect the
+     * loading of views may do so without affecting the processing of other
+     * kinds of resources, such as scripts and stylesheets.
+     * A {@link javax.faces.context.FacesContext} must be present
+     * before calling this method.  To preserve compatibility with prior revisions of the
+     * specification, a default implementation must be provided that calls
+     * {@link #createResource(java.lang.String)}. </p>
 
+     * <div class="changed_added_2_2">
+
+     * <p>PENDING(edburns): I think we need to put an additional check
+     * in to avoid returning false hits from this method when a
+     * viewResource happens to be named the same as one of the templates
+     * in a resource library contract.  Perhaps we could set some kind
+     * of flag in the tag handler of all facelet tags that are valid for
+     * using resource library contracts (maybe just ui:composition and
+     * ui:decorate) and make it so the getResourceLibraryContracts part
+     * of this method only takes effect if that flag is set?</p>
+     
+     * <p>Call {@link FacesContext#getResourceLibraryContracts}.  If the
+     * result is non-{@code null} and not empty, for each value in the
+     * list, treat the value as the name of a resource library contract.
+     * If the argument {@code resoureName} exists as a resource in the
+     * resource library contract, return it.  Otherwise, return the
+     * resource (not in the resource library contract), if found.
+     * Otherwise, return {@code null}.</p>
+
+     * </div>
+
+     * @param context the {@link FacesContext} for this request.
+
+     * @param resourceName the name of the resource to be interpreted as a view
+     * by the {@link javax.faces.view.ViewDeclarationLanguage}.
+
+     * @throws NullPointerException if <code>resourceName</code> is
+     *  {@code null}.
+
+     * @return a newly created <code>Resource</code> instance, suitable
+     * for use by the {@link javax.faces.view.ViewDeclarationLanguage}.
+     * 
+     * @since 2.2
+
+     */
+    
+    public Resource createViewResource(FacesContext context, String resourceName) {
+        return context.getApplication().getResourceHandler().createResource(resourceName);
+    }
 
     /**
-     * <p class="changed_added_2_0">Create an instance of
+     * <p class="changed_added_2_2">Create an instance of
+     * <code>Resource</code> given the argument
+     * <code>resourceId</code>.  The content-type of the resource is
+     * derived by passing the <em>resourceName</em> to {@link
+     * javax.faces.context.ExternalContext#getMimeType}</p>
+
+     * <div class="changed_added_2_2">
+
+     * <p>The resource must be identified according to the specification
+     * in JSF.2.6.1.3 of the spec prose document <a
+     * href="../../../overview-summary.html#prose_document">linked in
+     * the overview summary</a>.  New requirements were introduced in
+     * version 2.2 of the specification.</p>
+
+     * </div>
+
+     * @param resourceId the resource identifier of the resource.
+     *
+     * @throws NullPointerException if <code>resourceId</code> is
+     *  <code>null</code>.
+     *
+     * @return a newly created <code>Resource</code> instance, suitable
+     * for use in encoding or decoding the named resource.
+     * 
+     * @since 2.2
+     */
+
+    public Resource createResourceFromId(String resourceId) {
+        return null;
+    }
+
+    /**
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_2">Create</span> an instance of
      * <code>Resource</code> with a resourceName given by the value of
      * the argument <code>resourceName</code> that is a member of the
      * library named by the argument <code>libraryName</code>.  The
      * content-type of the resource is derived by passing the
-     * <em>resourceName</em> to
-     * {@link javax.faces.context.ExternalContext#getMimeType}.</p>
+     * <em>resourceName</em> to {@link
+     * javax.faces.context.ExternalContext#getMimeType}.</p>
      *
      * <div class="changed_added_2_0">
 
-     * <p>The algorithm specified in section JSF.2.6.1.4 of the spec prose
-     * document <a
+     * <p>The algorithm specified in section JSF.2.6.1.4 of the spec
+     * prose document <a
      * href="../../../overview-summary.html#prose_document">linked in
      * the overview summary</a> must be executed to create the
-     * <code>Resource</code></p>
+     * <code>Resource</code>. <span class="changed_added_2_2">New
+     * requirements were introduced in version 2.2 of the
+     * specification.</span></p>
 
      * </div>
 
      * @param resourceName the name of the resource.
      *
-     * @param libraryName the name of the library in which this resource
-     * resides, may be <code>null</code>. <span
+     * @param libraryOrContractName <span class="changed_modified_2_2">the
+     * name of the library (or contract) in which this resource
+     * resides, may be <code>null</code>. If there is a conflict between
+     * the name of a resource library and a resource library contract,
+     * the resource library takes precedence.  <span
      * class="changed_modified_2_0_rev_a">May not include relative
-     * paths, such as "../".</span>
+     * paths, such as "../".</span></span>
      *
      * @throws <code>NullPointerException</code> if
      * <code>resourceName</code> is <code>null</code>
@@ -241,11 +413,12 @@ public abstract class ResourceHandler {
      * for use in encoding or decoding the named resource.
      */
     public abstract Resource createResource(String resourceName,
-                                            String libraryName);
+                                            String libraryOrContractName);
 
 
     /**
-     * <p class="changed_added_2_0">Create an instance of
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_2">Create</span> an instance of
      * <code>Resource</code> with a <em>resourceName</em> given by the
      * value of the argument <code>resourceName</code> that is a member
      * of the library named by the argument <code>libraryName</code>
@@ -254,11 +427,13 @@ public abstract class ResourceHandler {
      *
      * <div class="changed_added_2_0">
 
-     * <p>The algorithm specified in section JSF.2.6.1.4 of the spec prose
-     * document <a
+     * <p>The algorithm specified in section JSF.2.6.1.4 of the spec
+     * prose document <a
      * href="../../../overview-summary.html#prose_document">linked in
      * the overview summary</a> must be executed to create the
-     * <code>Resource</code></p>
+     * <code>Resource</code>. <span class="changed_added_2_2">New
+     * requirements were introduced in version 2.2 of the
+     * specification.</span></p>
 
      * </div>
 
@@ -287,9 +462,20 @@ public abstract class ResourceHandler {
                                             String contentType);
     
     /**
-     * <p class="changed_added_2_0">Return <code>true</code> if the 
-     * resource library named by the argument <code>libraryName</code>
-     * can be found.</p>
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_2">Return</span> <code>true</code> if
+     * the resource library named by the argument
+     * <code>libraryName</code> can be found.  <span
+     * class="changed_added_2_2">If there is a <code>localePrefix</code>
+     * for this application, as defined in {@link #LOCALE_PREFIX}, first
+     * look for the library with the prefix.  If no such library is
+     * found, look for the library without the prefix.  This allows
+     * developers to avoid duplication of files.  For example, consider
+     * the case where the developer wants to have a resource library
+     * containing a localized image resource and a non-localized script
+     * resource.  By checking both locations for the existence of the
+     * library, along with other spec changes in section 2.6.1.4, this
+     * scenario is enabled.</span></p>
      *
      * @since 2.0
      * 
@@ -404,6 +590,27 @@ public abstract class ResourceHandler {
      * request, <code>false</code> otherwise.
      */
     public abstract boolean isResourceRequest(FacesContext context);
+    
+    /**
+     * <p class="changed_added_2_2">Return {@code true} if the argument {@code url}
+     * contains the string given by the value of the constant
+     * {@link ResourceHandler#RESOURCE_IDENTIFIER}, false otherwise.</p>
+     * 
+     * @param url the url to inspect for the presence of {@link ResourceHandler#RESOURCE_IDENTIFIER}.
+
+     * @throws NullPointerException if the argument url is {@code null}.
+     */
+    
+    public boolean isResourceURL(String url) {
+        boolean result = false;
+        if (null == url) {
+            throw new NullPointerException("null url");
+        }
+        result = url.contains(ResourceHandler.RESOURCE_IDENTIFIER);
+        
+        return result;
+        
+    }
     
     /**
      * <p class="changed_added_2_0">Return the <code>renderer-type</code> for a 

@@ -41,9 +41,9 @@
 package javax.faces.context;
 
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -56,15 +56,18 @@ import javax.faces.render.RenderKit;
 
 import javax.el.ELContext;
 import javax.faces.FactoryFinder;
+import javax.faces.component.UINamingContainer;
+import javax.faces.component.visit.ComponentModificationManager;
 import javax.faces.event.PhaseId;
 
 
 /**
- * <p><strong class="changed_modified_2_0 changed_modified_2_1">FacesContext</strong>
- * contains all of the per-request state information related to the
- * processing of a single JavaServer Faces request, and the rendering of
- * the corresponding response.  It is passed to, and potentially
- * modified by, each phase of the request processing lifecycle.</p>
+ * <p><strong class="changed_modified_2_0 changed_modified_2_1
+ * changed_modified_2_2">FacesContext</strong> contains all of the
+ * per-request state information related to the processing of a single
+ * JavaServer Faces request, and the rendering of the corresponding
+ * response.  It is passed to, and potentially modified by, each phase
+ * of the request processing lifecycle.</p>
  *
  * <p>A {@link FacesContext} instance is associated with a particular
  * request at the beginning of request processing, by a call to the
@@ -325,7 +328,7 @@ public abstract class FacesContext {
     /**
      * <p>Return the maximum severity level recorded on any
      * {@link javax.faces.application.FacesMessage}s that has been queued, whether or not they are
-     * associated with any specific {@link UIComponent}.  If no such messages
+     * associated with any specific {@link javax.faces.component.UIComponent}.  If no such messages
      * have been queued, return <code>null</code>.</p>
      *
      * @throws IllegalStateException if this method is called after
@@ -425,6 +428,18 @@ public abstract class FacesContext {
      *  this instance has been released
      */
     public abstract Iterator<FacesMessage> getMessages(String clientId);
+    
+    /**
+     * <p class="changed_added_2_2">Return the result of calling {@link
+     * UINamingContainer#getSeparatorChar}, passing <code>this</code> as
+     * the argument.  Note that this enables accessing the value of this
+     * property from the EL expression
+     * <code>#{facesContext.namingContainerSeparatorChar}</code>.</p>
+     */
+
+    public char getNamingContainerSeparatorChar() {
+        return UINamingContainer.getSeparatorChar(this);
+    }
 
 
     /**
@@ -458,6 +473,56 @@ public abstract class FacesContext {
      *  this instance has been released
      */
     public abstract boolean getResponseComplete();
+    
+    
+    /**
+     * <p class="changed_added_2_2">Return the list of resource library 
+     * contracts that have been calculated
+     * to be appropriate for use with this view, or {@code null} if there are 
+     * no such resource library contracts.  The list returned by this method
+     * must be immutable.  For backward compatibility with implementations
+     * of the specification prior to when this method was introduced, an
+     * implementation is provided that returns {@code null}.  Implementations
+     * compliant with the version in which this method was introduced must
+     * implement this method as specified.</p>
+     * 
+     * @throws IllegalStateException if this method is called after
+     *  this instance has been released
+     *
+     * @since 2.2 
+     */
+    public List<String> getResourceLibraryContracts() {
+        return null;
+    }
+    
+    /**
+     * <p class="changed_added_2_2">Set the resource library contracts
+     * calculated as valid to use with this view.  The implementation must 
+     * copy the contents of the incoming {@code List} into an immutable 
+     * {@code List} for return from {@link #getResourceLibraryContracts}.
+     * If the argument is {@code null} or empty, the action taken is the same as if
+     * the argument is {@code null}: a subsequent call to {@code getResourceLibraryContracts}
+     * returns {@code null}.  This method may only be called during the 
+     * processing of {@link javax.faces.view.ViewDeclarationLanguage#createView}
+     * and during the VDL tag handler for the tag corresponding to
+     * an instance of {@code UIViewRoot}.  For backward compatibility with implementations
+     * of the specification prior to when this method was introduced, an
+     * implementation is provided that takes no action.  Implementations
+     * compliant with the version in which this method was introduced must
+     * implement this method as specified.
+     * 
+     * </p>
+     * 
+     * @param contracts The new contracts to be returned, as an immutable 
+     * {@code List}. from a subsequent call to {@link #getResourceLibraryContracts}.
+     * 
+     * @throws IllegalStateException if this method is called after
+     *  this instance has been released
+     *
+     */
+    
+    public void setResourceLibraryContracts(List<String> contracts) {
+    }    
 
     /**
      * <p class="changed_added_2_0">Return <code>true</code> if the <code>validationFailed()</code>
@@ -728,6 +793,30 @@ public abstract class FacesContext {
         if (!isCreatedFromValidFactory) {
             return this.currentPhaseIdForInvalidFactoryConstruction;
         }
+        throw new UnsupportedOperationException();
+
+    }
+
+    /**
+     * <p class="changed_added_2_2"> Return the {@link
+     * javax.faces.component.visit.ComponentModificationManager} for
+     * this single run through the JSF request processing lifecycle.</p>
+     *
+     * <p class="changed_added_2_2">The default implementation throws
+     * <code>UnsupportedOperationException</code> and is provided
+     * for the sole purpose of not breaking existing applications that extend
+     * this class.</p>
+     * 
+     * @throws IllegalStateException if this method is called after
+     *  this instance has been released
+     *
+     * @since 2.2
+     */
+    public ComponentModificationManager getComponentModificationManager() {
+        if (defaultFacesContext != null) {
+            return defaultFacesContext.getComponentModificationManager();
+        }
+
         throw new UnsupportedOperationException();
 
     }

@@ -56,10 +56,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Principal;
 import java.util.*;
+import javax.faces.lifecycle.ClientWindow;
 
 
 /**
- * <p><span class="changed_modified_2_0 changed_modified_2_1">This</span>
+ * <p><span class="changed_modified_2_0 changed_modified_2_1 changed_modified_2_2">This</span>
  * class allows the Faces API to be unaware of the nature of its containing
  * application environment.  In particular, this class allows JavaServer Faces based
  * appications to run in either a Servlet or a Portlet environment.</p>
@@ -123,7 +124,7 @@ public abstract class ExternalContext {
     // ---------------------------------------------------------- Public Methods
 
     /**
-     * <p class="changed_added_2_0">Adds the cookie represented by the
+     * <p class="changed_added_2_0"><span class="changed_modified_2_2">Adds</span> the cookie represented by the
      * arguments to the response.</p>
      *
      * <div class="changed_added_2_0">
@@ -200,6 +201,16 @@ public abstract class ExternalContext {
      *
      * </tr>
      *
+     * <tr class="changed_added_2_2">
+     *
+     * <td>httpOnly</td>
+     *
+     * <td>Boolean</td>
+     *
+     * <td>setHttpOnly</td>
+     *
+     * </tr>
+     *
      * </table>
      *
      * <p>The default implementation throws
@@ -239,32 +250,52 @@ public abstract class ExternalContext {
 
 
     /**
-     * <p>Dispatch a request to the specified resource to create output
+     * <p><span class="changed_modified_2_2">Dispatch</span> a request to the specified resource to create output
      * for this response.</p>
      *
      * <p><em>Servlet:</em> This must be accomplished by calling the
      * <code>javax.servlet.ServletContext</code> method
      * <code>getRequestDispatcher(path)</code>, and calling the
      * <code>forward()</code> method on the resulting object.</p>
+     * <p class="changed_added_2_2">If the call to <code>getRequestDisatcher(path)</code> 
+     * returns <code>null</code>, send a<code>ServletResponse SC_NOT_FOUND</code> 
+     * error code.</p>
      *
      * @param path Context relative path to the specified resource,
      *  which must start with a slash ("/") character
      *
      * @throws javax.faces.FacesException thrown if a <code>ServletException</code> occurs
-     * @throws IllegalArgumentException if no request dispatcher
-     *  can be created for the specified path
      * @throws IOException if an input/output error occurs
-     * @throws NullPointerException if <code>path</code>
-     *  is <code>null</code>
      */
     public abstract void dispatch(String path)
 	throws IOException;
 
 
     /**
-     * <p>Return the input URL, after performing any rewriting needed to
+     * <p><span class="changed_modified_2_2">Return</span> the input URL, after performing any rewriting needed to
      * ensure that it will correctly identify an addressable action in the
      * current application.<p>
+     * 
+     * <p class="changed_added_2_2">Encoding the {@link javax.faces.lifecycle.ClientWindow}</p>
+     *
+     * <ul>
+     * 
+     * <p class="changed_added_2_2">Call {@link javax.faces.lifecycle.ClientWindow#isClientWindowRenderModeEnabled(javax.faces.context.FacesContext) }.
+     * If the result is <code>false</code> take no further action and return
+     * the rewritten URL.  If the result is <code>true</code>, call {@link #getClientWindow()}.
+     * If the result is non-<code>null</code>, call {@link javax.faces.lifecycle.ClientWindow#getId()}
+     * and append the id to the query string of the URL, making the necessary
+     * allowances for a pre-existing query string or no query-string.</p>
+     * 
+     * <p>Call {@link javax.faces.lifecycle.ClientWindow#getQueryURLParameters}.
+     * If the result is non-{@code null}, for each parameter in the map, 
+     * unconditionally add that parameter to the URL.</p>
+     * 
+     * <p>The name
+     * of the query string parameter is given by the value of the constant
+     * {@link javax.faces.render.ResponseStateManager#CLIENT_WINDOW_URL_PARAM}.</p>
+     * 
+     * </ul>
      *
      * <p><em>Servlet:</em> This must be the value returned by the
      * <code>javax.servlet.http.HttpServletResponse</code> method
@@ -279,16 +310,16 @@ public abstract class ExternalContext {
     
 
     /**
-     * <p>Return the specified name, after prefixing it with a namespace
-     * that ensures that it will be unique within the context of a
-     * particular page.</p>
+     * <p><span class="changed_modified_2_2">Return</span> the specified
+     * name, after prefixing it with a namespace that ensures that it
+     * will be unique within the context of a particular page.</p>
      *
      * <p><em>Servlet:</em> The input value must be returned unchanged.</p>
      *
      * @param name Name to be encoded
+     * 
+     * <!-- Removed the throws clause in 2.2 -->
      *
-     * @throws NullPointerException if <code>name</code>
-     *  is <code>null</code>
      */
     public abstract String encodeNamespace(String name);
 
@@ -297,7 +328,7 @@ public abstract class ExternalContext {
      * <p>Return the input URL, after performing any rewriting needed to
      * ensure that it will correctly identify an addressable resource in the
      * current application.<p>
-     *
+     * 
      * <p><em>Servlet:</em> This must be the value returned by the
      * <code>javax.servlet.http.HttpServletResponse</code> method
      * <code>encodeURL(url)</code>.</p>
@@ -479,6 +510,37 @@ public abstract class ExternalContext {
         
     }
 
+    /**
+     * 
+     * <p class="changed_added_2_2">Return the name of the container
+     * context for this application.  </p>
+     *
+     * <p class="changed_added_2_2"><em>Servlet:</em>
+     * Return the result of calling
+     * <code>getContextPath()</code> on the
+     * <code>ServletContext</code> instance for this application.</p>
+
+     * <p>It is valid to call this method during application startup or
+     * shutdown.</p>
+     *
+     * <p>The default implementation throws
+     * <code>UnsupportedOperationException</code> and is provided for
+     * the sole purpose of not breaking existing applications that
+     * extend this class.</p>
+     *
+     *
+     * @since 2.2
+     */
+
+    public String getApplicationContextPath() {
+
+        if (defaultExternalContext != null) {
+            return defaultExternalContext.getApplicationContextPath();
+        }
+
+        throw new UnsupportedOperationException();
+        
+    }
 
 
 
@@ -1309,6 +1371,37 @@ public abstract class ExternalContext {
      *  created if there is no session associated with the current request
      */
     public abstract Object getSession(boolean create);
+    
+    /**
+     * <p class="changed_added_2_2">Return the id of the current session
+     * or the empty string if no session has been created and the 
+     * <code>create</code> parameter is <code>false</code>.</p>
+     * 
+     * <div class="changed_added_2_2">
+     *
+     * <p><em>Servlet:</em> If <code>create</code> is true, obtain
+     * a reference to the <code>HttpSession</code> for the current request
+     * (creating the session if necessary) and return its id.  If 
+     * <code>create</code> is <code>false</code>, obtain a reference to the
+     * current session, if one exists, and return its id.  If no session exists,
+     * return the empty string.</p>
+     * 
+     * </div>
+     * 
+     * @since 2.2
+     * 
+     * @param create Flag indicating whether or not a new session should be
+     *  created if there is no session associated with the current request
+     */
+    public String getSessionId(boolean create) {
+        String result = "";
+        if (defaultExternalContext != null) {
+            result = defaultExternalContext.getSessionId(create);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        return result;
+    }
 
     /**
      * <p class="changed_added_2_1">Returns the maximum time interval, in seconds, that
@@ -1390,6 +1483,24 @@ public abstract class ExternalContext {
      *
      */
     public abstract Principal getUserPrincipal();
+    
+    
+    /**
+     * <p class="changed_added_2_2">Return the {@link ClientWindow} set in a preceding
+     * call to {@link #setClientWindow}, or <code>null</code> if no such call has
+     * been made.</p>
+     * 
+     * @since 2.2
+     *
+     */
+    public ClientWindow getClientWindow() {
+        if (defaultExternalContext != null) {
+            return defaultExternalContext.getClientWindow();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        
+    }
 
 
     /**
@@ -1770,6 +1881,23 @@ public abstract class ExternalContext {
         }
 
     }
+    
+    /**
+     * <p class="changed_added_2_2">Associate this instance with a {@link ClientWindow}.</p>
+     * 
+     * @param window the window with which this instance is associated.
+     * 
+     * @since 2.2
+     */
+    
+    public void setClientWindow(ClientWindow window) {
+        if (defaultExternalContext != null) {
+            defaultExternalContext.setClientWindow(window);
+        } else {
+            throw new UnsupportedOperationException();
+        }
+        
+    }
 
     /**
      * <p class="changed_added_2_0">Flushes the buffered response content to the
@@ -1824,13 +1952,18 @@ public abstract class ExternalContext {
 
     /**
      * <p class="changed_added_2_0">
-     * The purpose of this method is to generate a query string from the collection of Parameter
+     * <span class="changed_modified_2_2">The</span> purpose of this method is 
+     * to generate a query string from the collection of Parameter
      * objects provided by the parameters argument and append that query string to the baseUrl.
      * This method must be able to encode the parameters to a baseUrl that may or may not have
      * existing query parameters. The parameter values should be encoded appropriately for the
      * environment so that the resulting URL can be used as the target of a link (e.g., in an
      * href attribute) in a JSF response.  It's possible for an ExternalContext implementation to
      * override this method in any way that would make the URL bookmarkable in that environment.
+     * </p>
+     * 
+     * <p class="changed_added_2_2">See {@link #encodeActionURL(java.lang.String)} 
+     * for the required specification of how to encode the {@link javax.faces.lifecycle.ClientWindow}.
      * </p>
      *
      * <p>
@@ -1856,12 +1989,16 @@ public abstract class ExternalContext {
     }
 
     /**
-     * The purpose of this method is to generate a query string from the collection of Parameter
+     * <span class="changed_modified_2_2">The</span> purpose of this method is to generate a query string from the collection of Parameter
      * objects provided by the parameters argument and append that query string to the baseUrl.
      * This method must be able to encode the parameters to a baseUrl that may or may not have existing query parameters. The parameter values should be encoded appropriately for the
      * environment so that the resulting URL can be used as the target of a redirect. It's
      * possible for an ExternalContext implementation to override this method to accomodate the
      * definition of redirect for that environment.
+     * 
+     * <p class="changed_added_2_2">See {@link #encodeActionURL(java.lang.String)} 
+     * for the required specification of how to encode the {@link javax.faces.lifecycle.ClientWindow}.
+     * </p>
      *
      * @param baseUrl    The base URL onto which the query string generated by this method will be appended. The URL may contain query parameters.
      * @param parameters The collection of Parameter objects, representing name=value pairs that are used to produce a query string
@@ -1878,10 +2015,15 @@ public abstract class ExternalContext {
     }
 
     /**
-     * <p class="changed_added_2_0">Return the input URL, after performing
+     * <p class="changed_added_2_0"><span class="changed_modified_2_2">Return</span>
+     * the input URL, after performing
      * any rewriting needed to ensure that it can be used in a partial page
      * submission (ajax request) to correctly identify an addressable action
      * in the current application.</p>
+     *
+     * <p class="changed_added_2_2">See {@link #encodeActionURL(java.lang.String)} 
+     * for the required specification of how to encode the {@link javax.faces.lifecycle.ClientWindow}.
+     * </p>
      *
      * <div class="changed_added_2_0">
      *

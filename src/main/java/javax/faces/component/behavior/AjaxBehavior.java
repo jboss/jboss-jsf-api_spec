@@ -62,7 +62,7 @@ import javax.faces.event.AjaxBehaviorListener;
 
 /**
  * <p class="changed_added_2_0"><span
- * class="changed_modified_2_0_rev_a">An</span> instance of this class
+ * class="changed_modified_2_0_rev_a changed_modified_2_2">An</span> instance of this class
  * is added as a {@link ClientBehavior} to a component using the {@link
  * javax.faces.component.behavior.ClientBehaviorHolder#addClientBehavior}
  * contract that components implement.  The presence of this {@link
@@ -93,12 +93,18 @@ public class AjaxBehavior extends ClientBehaviorBase {
 
     private String onerror;
     private String onevent;
+    private String delay;
     private List<String> execute;
     private List<String> render;
     private Boolean disabled;
     private Boolean immediate;
+    private Boolean resetValues;
 
     private Map<String, ValueExpression> bindings;
+    
+    public AjaxBehavior() {
+        
+    }
 
     // ---------------------------------------------------------- Public Methods
     @Override
@@ -216,6 +222,35 @@ public class AjaxBehavior extends ClientBehaviorBase {
 
         clearInitialState();
     }
+    
+    /**
+     * <p class="changed_added_2_2">Returns the delay value, or <code>null</code>
+     * if no value was set.</p>
+     *
+     * @since 2.2
+     */
+    public String getDelay() {
+        return (String) eval(DELAY, delay);
+    }
+
+    /**
+     * <p class="changed_added_2_2">If less than
+     * <em>delay</em> milliseconds elapses between calls to
+     * <em>request()</em> only the most recent one is sent and all other
+     * requests are discarded. The default value of this option is
+     * 300.</code> If the value of <em>delay</em> is the literal string
+     * <code>'none'</code> without the quotes, no delay is used.</p>
+     *
+     * @param delay the ajax delay value
+     *
+     * @since 2.2
+     */
+    public void setDelay(String delay) {
+        this.delay = delay;
+        
+        clearInitialState();
+    }
+    
 
     /**
      * <p class="changed_added_2_0">Return a non-empty
@@ -250,6 +285,33 @@ public class AjaxBehavior extends ClientBehaviorBase {
 
         clearInitialState();
     }
+    
+    /**
+     * <p class="changed_added_2_2">
+     * Return the resetValues status of this behavior.</p>
+     * 
+     * @since 2.2
+     */
+
+    public boolean isResetValues() {
+        Boolean result = (Boolean) eval(RESET_VALUES, resetValues);
+        return ((result != null) ? result : false);
+    }
+
+    /**
+     * <p class="changed_added_2_2">
+     * Set the resetValues status of this behavior.</p>
+     * 
+     * @since 2.2
+     */
+
+    public void setResetValues(boolean resetValues) {
+        this.resetValues = resetValues;
+        
+        clearInitialState();
+    }
+    
+    
 
     /**
      * <p class="changed_added_2_0">Return the disabled status of this behavior.</p>
@@ -277,7 +339,7 @@ public class AjaxBehavior extends ClientBehaviorBase {
 
     /**
      * <p class="changed_added_2_0">Return the immediate status of this 
-     * behaivor.</p>
+     * behavior.</p>
      *
      * @since 2.0
      */
@@ -313,6 +375,18 @@ public class AjaxBehavior extends ClientBehaviorBase {
      */
     public boolean isImmediateSet() {
         return ((immediate != null) || (getValueExpression(IMMEDIATE) != null));
+    }
+
+    /**
+     * <p class="changed_added_2_2">Tests whether the resetValues attribute
+     * is specified.  Returns true if the resetValues attribute is specified,
+     * either as a locally set property or as a value expression. 
+     * </p>
+     *
+     * @since 2.2
+     */
+    public boolean isResetValuesSet() {
+        return ((resetValues != null) || (getValueExpression(RESET_VALUES) != null));
     }
 
     /**
@@ -433,16 +507,18 @@ public class AjaxBehavior extends ClientBehaviorBase {
                 values = new Object[] { superState };
             }
         } else {
-            values = new Object[8];
+            values = new Object[10];
       
             values[0] = superState;
             values[1] = onerror;
             values[2] = onevent;
             values[3] = disabled;
             values[4] = immediate;
-            values[5] = saveList(execute);
-            values[6] = saveList(render);
-            values[7] = saveBindings(context, bindings);
+            values[5] = resetValues;
+            values[6] = delay;
+            values[7] = saveList(execute);
+            values[8] = saveList(render);
+            values[9] = saveBindings(context, bindings);
         }
 
         return values;
@@ -464,9 +540,11 @@ public class AjaxBehavior extends ClientBehaviorBase {
                 onevent = (String)values[2];
                 disabled = (Boolean)values[3];
                 immediate = (Boolean)values[4];
-                execute = restoreList(EXECUTE, values[5]);
-                render = restoreList(RENDER, values[6]);
-                bindings = restoreBindings(context, values[7]);
+                resetValues = (Boolean)values[5];
+                delay = (String)values[6];
+                execute = restoreList(EXECUTE, values[7]);
+                render = restoreList(RENDER, values[8]);
+                bindings = restoreBindings(context, values[9]);
 
                 // If we saved state last time, save state again next time.
                 clearInitialState();
@@ -624,10 +702,14 @@ public class AjaxBehavior extends ClientBehaviorBase {
 
         if (ONEVENT.equals(propertyName)) {
             onevent = (String)value;
+        } else if (DELAY.equals(propertyName)) {
+            delay = (String)value;
         } else if (ONERROR.equals(propertyName)) {
             onerror = (String)value;
         } else if (IMMEDIATE.equals(propertyName)) {
             immediate = (Boolean)value;
+        } else if (RESET_VALUES.equals(propertyName)) {
+            resetValues = (Boolean)value;
         } else if (DISABLED.equals(propertyName)) {
             disabled = (Boolean)value;
         } else if (EXECUTE.equals(propertyName)) {
@@ -723,9 +805,11 @@ public class AjaxBehavior extends ClientBehaviorBase {
     private static final String ONEVENT = "onevent";
     private static final String ONERROR = "onerror";
     private static final String IMMEDIATE = "immediate";
+    private static final String RESET_VALUES = "resetValues";
     private static final String DISABLED = "disabled";
     private static final String EXECUTE = "execute";
     private static final String RENDER = "render";
+    private static final String DELAY = "delay";
 
     // Id keyword constants
     private static String ALL = "@all";

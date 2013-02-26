@@ -104,6 +104,7 @@ public class HtmlCommandLink extends javax.faces.component.UICommand implements 
         onmouseup,
         rel,
         rev,
+        role,
         shape,
         style,
         styleClass,
@@ -517,6 +518,37 @@ public class HtmlCommandLink extends javax.faces.component.UICommand implements 
     public void setRev(java.lang.String rev) {
         getStateHelper().put(PropertyKeys.rev, rev);
         handleAttribute("rev", rev);
+    }
+
+
+    /**
+     * <p>Return the value of the <code>role</code> property.</p>
+     * <p>Contents: <p class="changed_added_2_2">Per the WAI-ARIA spec and its
+     * relationship to HTML5 (Section title ARIA Role Attriubute),
+     * every HTML element may have a "role" attribute whose value
+     * must be passed through unmodified on the element on which it
+     * is declared in the final rendered markup.  The attribute, if
+     * specified, must have a value that is a string literal that is,
+     * or an EL Expression that evaluates to, a set of
+     * space-separated tokens representing the various WAI-ARIA roles
+     * that the element belongs to.
+     * </p>
+     * 
+     * <p class="changed_added_2_2">It is the page author's
+     * responsibility to ensure that the user agent is capable of
+     * correctly interpreting the value of this attribute.</p>
+     */
+    public java.lang.String getRole() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.role);
+
+    }
+
+    /**
+     * <p>Set the value of the <code>role</code> property.</p>
+     */
+    public void setRole(java.lang.String role) {
+        getStateHelper().put(PropertyKeys.role, role);
+        handleAttribute("role", role);
     }
 
 

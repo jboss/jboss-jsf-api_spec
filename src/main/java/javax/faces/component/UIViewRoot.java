@@ -43,6 +43,7 @@ import javax.el.MethodExpression;
 import javax.faces.FacesException;
 import javax.faces.FactoryFinder;
 import javax.faces.application.ProjectStage;
+import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
 import javax.faces.lifecycle.Lifecycle;
 import javax.faces.lifecycle.LifecycleFactory;
@@ -60,15 +61,16 @@ import java.util.ListIterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.component.visit.VisitCallback;
+import javax.faces.component.visit.VisitContext;
 import javax.faces.event.*;
 import javax.faces.view.ViewDeclarationLanguage;
 import javax.faces.view.ViewMetadata;
 
-
 /**
  * <p><strong class="changed_modified_2_0"><span
- * class="changed_modified_2_0_rev_a
- * changed_modified_2_1">UIViewRoot</span></strong> is the UIComponent
+ * class="changed_modified_2_0_rev_a changed_modified_2_1
+ * changed_modified_2_2">UIViewRoot</span></strong> is the UIComponent
  * that represents the root of the UIComponent tree.  This component
  * renders markup as the response to Ajax requests.  It also serves as
  * the root of the component tree, and as a place to hang per-view
@@ -194,8 +196,8 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         beforePhase,
         afterPhase,
         phaseListeners,
+        resourceLibraryContracts
     }
-
 
     // ------------------------------------------------------------ Constructors
 
@@ -241,7 +243,9 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
 
     /**
-     * <p class="changed_added_2_0">Return <code>trues</code>.</p>
+     * <p class="changed_added_2_0">Override superclass method to always return 
+     * {@code true} because a {@code UIViewRoot} is 
+     * defined to always be in a view.</p>
      *
      * @since 2.0
      */
@@ -931,6 +935,33 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
             notifyAfter(context, PhaseId.APPLY_REQUEST_VALUES);
         }
     }
+    
+    /**
+     * <p class="changed_added_2_2">Visit the clientIds and, if the component is 
+     * an instance of {@link EditableValueHolder}, 
+     * call its {@link EditableValueHolder#resetValue} method.  
+     * Use {@link #visitTree} to do the visiting.</p>
+     * 
+     * @since 2.2
+
+     * @param context the {@link FacesContext} for the request we are processing.
+     * @param clientIds The client ids to be visited, on which the described action will be taken.
+     */
+    
+    public void resetValues(FacesContext context, Collection<String> clientIds) {
+        this.visitTree(VisitContext.createVisitContext(context, clientIds, null), 
+                new DoResetValues());
+    }
+
+    private static class DoResetValues implements VisitCallback {
+        @Override
+            public VisitResult visit(VisitContext context, UIComponent target) {
+            if (target instanceof EditableValueHolder) {
+                ((EditableValueHolder)target).resetValue();
+            }
+            return VisitResult.ACCEPT;
+        }
+    }        
 
     /**
      * <p><span class="changed_added_2_0">Override</span> the default
@@ -1014,7 +1045,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         }
         return value;
     }
-
+    
     /**
      * <p>Utility method that notifies phaseListeners for the given
      * phaseId.  Assumes that either or both the MethodExpression or
@@ -1273,9 +1304,11 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     }
 
     /**
-     * <p>Generate an identifier for a component.  The identifier will
-     * be prefixed with UNIQUE_ID_PREFIX, and will be unique within
-     * this UIViewRoot.</p>
+     * <p><span class="changed_modified_2_2">Generate</span> an
+     * identifier for a component.  The identifier will be prefixed with
+     * UNIQUE_ID_PREFIX, and will be unique within <span
+     * class="changed_added_2_2">the non-{@link NamingContainer} child
+     * sub-trees of</span> this UIViewRoot.</p>
      */
     public String createUniqueId() {
         return createUniqueId(getFacesContext(), null);
@@ -1471,7 +1504,8 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     }
 
     /**
-     * <p class="changed_added_2_0">Returns a <code>Map</code> that acts as the
+     * <p class="changed_added_2_0"><span class="changed_modified_2_2">Returns</span>
+     * a <code>Map</code> that acts as the
      * interface to the data store that is the "view scope", or, if this
      * instance does not have such a <code>Map</code> and the
      * <code>create</code> argument is <code>true</code>, creates one and
@@ -1493,6 +1527,14 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * <code>Serializable</code>.  In general, it is a good idea to
      * ensure that any objects stored in the view map are
      * <code>Serializable</code>.</p>
+     * 
+     * <p class="changed_added_2_2">For reasons made clear in {@link javax.faces.view.ViewScoped},
+     * this map must ultimately be stored in the session.  For this reason, a 
+     * {@code true} value for the {@code create} argument will force the 
+     * session to be created with a call to 
+     * {@link javax.faces.context.ExternalContext#getSession(boolean)}.
+     * 
+     * </p>
      * 
      * <p>See {@link FacesContext#setViewRoot} for the specification of when the
      * <code>clear()</code> method must be called.</p>
@@ -1661,6 +1703,32 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         }
     }
 
+    /**
+
+     * <p class="changed_added_2_2">Restore ViewScope state. This is
+     * needed to allow the use of view scoped beans for EL-expressions
+     * in the template from which the component tree is built.  For
+     * example: <code>&lt;ui:include
+     * src="#{viewScopedBean.includeFileName}"/&gt;</code>. </p>
+
+     * 
+     * @param context
+     *            current FacesContext.
+     * @param state
+     *            the state object.
+     */
+    public void restoreViewScopeState(FacesContext context, Object state) {
+        if (context == null) {
+            throw new NullPointerException();
+        }
+        if (state == null) {
+            return;
+        }
+
+        values = (Object[]) state;
+        super.restoreState(context, values[0]);
+    }
+
     // END TENATIVE
 
     // ----------------------------------------------------- StateHolder Methods
@@ -1715,8 +1783,8 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
             getTransientStateHelper().putTransient("com.sun.faces.application.view.viewMap", viewMap);
         }
     }
+        
 
-    
     // --------------------------------------------------------- Private Methods
 
 
@@ -1769,7 +1837,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
             this.stage = stage;
 
         }
-        
+
 
         // ---------------------------------------------------- Methods from Map
 
@@ -1779,8 +1847,8 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
             FacesContext context = FacesContext.getCurrentInstance();
             context.getApplication().publishEvent(context,
-                    PreDestroyViewMapEvent.class,
-                    context.getViewRoot());
+                                                  PreDestroyViewMapEvent.class,
+                                                  context.getViewRoot());
             super.clear();
 
         }

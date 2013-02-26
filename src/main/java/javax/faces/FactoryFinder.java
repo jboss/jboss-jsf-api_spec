@@ -41,6 +41,7 @@
 package javax.faces;
 
 
+import com.sun.faces.spi.InjectionProvider;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -62,6 +63,7 @@ import java.util.logging.Level;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.faces.context.ExternalContext;
@@ -69,7 +71,7 @@ import javax.faces.context.FacesContext;
 
 
 /**
- * <p><strong class="changed_modified_2_0 changed_modified_2_1">FactoryFinder</strong>
+ * <p><strong class="changed_modified_2_0 changed_modified_2_1 changed_modified_2_2">FactoryFinder</strong>
  * implements the standard discovery algorithm for all factory objects
  * specified in the JavaServer Faces APIs.  For a given factory class
  * name, a corresponding implementation class is searched for based on
@@ -86,7 +88,7 @@ import javax.faces.context.FacesContext;
  * <li><p>If the JavaServer Faces configuration files named by the
  * <code>javax.faces.CONFIG_FILES</code> <code>ServletContext</code> init
  * parameter contain any <code>factory</code> entries of the given
- * factory class name, those result are used, with the last one taking
+ * factory class name, those injectionProvider are used, with the last one taking
  * precedence.</p></li> 
 
  * <li><p>If there are any JavaServer Faces configuration files bundled
@@ -97,7 +99,7 @@ import javax.faces.context.FacesContext;
 
  * <li><p>If a <code>META-INF/services/{factory-class-name}</code>
  * resource is visible to the web application class loader for the
- * calling application (typically as a result of being present in the
+ * calling application (typically as a injectionProvider of being present in the
  * manifest of a JAR file), its first line is read and assumed to be the
  * name of the factory implementation class to use.</p></li>
 
@@ -106,7 +108,7 @@ import javax.faces.context.FacesContext;
 
  * </ul>
 
- * <p>If any of the result found on any of the steps above happen to
+ * <p>If any of the injectionProvider found on any of the steps above happen to
  * have a one-argument constructor, with argument the type being the
  * abstract factory class, that constructor is invoked, and the previous
  * match is passed to the constructor.  For example, say the container
@@ -187,6 +189,24 @@ public final class FactoryFinder {
          "javax.faces.view.facelets.FaceletCacheFactory";
 
     /**
+     * <p class="changed_added_2_2">The property name for the
+     * {@link javax.faces.context.FlashFactory} class name.</p>
+     * 
+     * @since 2.2
+     */
+    public final static String FLASH_FACTORY =
+         "javax.faces.context.FlashFactory";
+
+    /**
+     * <p class="changed_added_2_2">The property name for the
+     * {@link javax.faces.flow.FlowHandlerFactory} class name.</p>
+     * 
+     * @since 2.2
+     */
+    public final static String FLOW_HANDLER_FACTORY =
+         "javax.faces.flow.FlowHandlerFactory";
+
+    /**
      * <p class="changed_added_2_0">The property name for the {@link
      * javax.faces.context.PartialViewContextFactory} class name.</p>
      */
@@ -250,7 +270,6 @@ public final class FactoryFinder {
     private static final Logger LOGGER;
 
     static {
-
         FACTORIES_CACHE = new FactoryManagerCache();
 
         FACTORY_NAMES = new String [] {
@@ -259,6 +278,8 @@ public final class FactoryFinder {
             EXCEPTION_HANDLER_FACTORY,
             EXTERNAL_CONTEXT_FACTORY,
             FACES_CONTEXT_FACTORY,
+            FLASH_FACTORY,
+            FLOW_HANDLER_FACTORY,
             PARTIAL_VIEW_CONTEXT_FACTORY,
             LIFECYCLE_FACTORY,
             RENDER_KIT_FACTORY,
@@ -273,29 +294,34 @@ public final class FactoryFinder {
         
         factoryClasses = new HashMap<String, Class>(FACTORY_NAMES.length);
         factoryClasses.put(APPLICATION_FACTORY,
-                           javax.faces.application.ApplicationFactory.class);
-        factoryClasses.put(EXCEPTION_HANDLER_FACTORY,
-                           javax.faces.context.ExceptionHandlerFactory.class);
-        factoryClasses.put(EXTERNAL_CONTEXT_FACTORY,
-                           javax.faces.context.ExternalContextFactory.class);
-        factoryClasses.put(FACES_CONTEXT_FACTORY,
-                           javax.faces.context.FacesContextFactory.class);
+                 javax.faces.application.ApplicationFactory.class);
         factoryClasses.put(VISIT_CONTEXT_FACTORY,
-                           javax.faces.component.visit.VisitContextFactory.class);
-        factoryClasses.put(LIFECYCLE_FACTORY,
-                           javax.faces.lifecycle.LifecycleFactory.class);
+                 javax.faces.component.visit.VisitContextFactory.class);
+        factoryClasses.put(EXCEPTION_HANDLER_FACTORY,
+                 javax.faces.context.ExceptionHandlerFactory.class);
+        factoryClasses.put(EXTERNAL_CONTEXT_FACTORY,
+                 javax.faces.context.ExternalContextFactory.class);
+        factoryClasses.put(FACES_CONTEXT_FACTORY,
+                 javax.faces.context.FacesContextFactory.class);
+        factoryClasses.put(FLASH_FACTORY,
+                 javax.faces.context.FlashFactory.class);
         factoryClasses.put(PARTIAL_VIEW_CONTEXT_FACTORY,
-                           javax.faces.context.PartialViewContextFactory.class);
+                 javax.faces.context.PartialViewContextFactory.class);
+        factoryClasses.put(LIFECYCLE_FACTORY,
+                 javax.faces.lifecycle.LifecycleFactory.class);
         factoryClasses.put(RENDER_KIT_FACTORY,
-                           javax.faces.render.RenderKitFactory.class);
+                 javax.faces.render.RenderKitFactory.class);
         factoryClasses.put(VIEW_DECLARATION_LANGUAGE_FACTORY,
-                           javax.faces.view.ViewDeclarationLanguageFactory.class);
+                 javax.faces.view.ViewDeclarationLanguageFactory.class);
+        factoryClasses.put(FACELET_CACHE_FACTORY,
+                 javax.faces.view.facelets.FaceletCacheFactory.class);
         factoryClasses.put(TAG_HANDLER_DELEGATE_FACTORY,
-                           javax.faces.view.facelets.TagHandlerDelegateFactory.class);
-        
+                 javax.faces.view.facelets.TagHandlerDelegateFactory.class);
+        factoryClasses.put(FLOW_HANDLER_FACTORY,
+                 javax.faces.flow.FlowHandlerFactory.class);
+
         LOGGER = Logger.getLogger("javax.faces", "javax.faces.LogStrings");
     }
-
 
     // --------------------------------------------------------- Public Methods
 
@@ -307,10 +333,10 @@ public final class FactoryFinder {
      * Faces factory class, based on the discovery algorithm described
      * in the class description.</p>
      *
-     * <p class="changed_added_2_0">The standard result and wrappers
+     * <p class="changed_added_2_0">The standard injectionProvider and wrappers
      * in JSF all implement the interface {@link FacesWrapper}.  If the
      * returned <code>Object</code> is an implementation of one of the
-     * standard result, it must be legal to cast it to an instance of
+     * standard injectionProvider, it must be legal to cast it to an instance of
      * <code>FacesWrapper</code> and call {@link
      * FacesWrapper#getWrapped} on the instance.</p>
      *
@@ -390,6 +416,34 @@ public final class FactoryFinder {
 
         // Identify the web application class loader
         ClassLoader cl = getClassLoader();
+        
+        if (!FACTORIES_CACHE.applicationMap.isEmpty()) {
+        
+            FactoryManager fm = FACTORIES_CACHE.getApplicationFactoryManager(cl);
+            InjectionProvider provider = fm.getInjectionProvider();
+            if (null != provider) {
+                Collection factories = null;
+                for (Map.Entry<FactoryManagerCacheKey, FactoryManager> entry : 
+                        FACTORIES_CACHE.applicationMap.entrySet()) {
+                    factories = entry.getValue().getFactories();
+                    for (Object curFactory : factories) {
+                        try {
+                            provider.invokePreDestroy(curFactory);
+                        } catch (Exception ex) {
+                            if (LOGGER.isLoggable(Level.SEVERE)) {
+                                String message = MessageFormat.format("Unable to invoke @PreDestroy annotated methods on {0}.", 
+                                        curFactory);
+                                LOGGER.log(Level.SEVERE, message, ex);
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (LOGGER.isLoggable(Level.SEVERE)) {
+                    LOGGER.log(Level.SEVERE, "Unable to call @PreDestroy annotated methods because no InjectionProvider can be found. Does this container implement the Mojarra Injection SPI?");
+                }
+            }
+        }
 
         FACTORIES_CACHE.removeApplicationFactoryManager(cl);
 
@@ -397,8 +451,7 @@ public final class FactoryFinder {
 
 
     // -------------------------------------------------------- Private Methods
-
-
+    
     /**
      * <p>Identify and return the class loader that is associated with the
      * calling web application.</p>
@@ -612,6 +665,7 @@ public final class FactoryFinder {
         Object[] newInstanceArgs = new Object[1];
         Constructor ctor;
         Object result = null;
+        InjectionProvider provider = null;
 
         // if we have a previousImpl and the appropriate one arg ctor.
         if ((null != previousImpl) &&
@@ -623,6 +677,19 @@ public final class FactoryFinder {
                 ctor = clazz.getConstructor(getCtorArg);
                 newInstanceArgs[0] = previousImpl;
                 result = ctor.newInstance(newInstanceArgs);
+                
+                FactoryManager fm = FACTORIES_CACHE.getApplicationFactoryManager(classLoader);
+                provider = fm.getInjectionProvider();
+                if (null != provider) {
+                    provider.inject(result);
+                    provider.invokePostConstruct(result);
+                } else {
+                    if (LOGGER.isLoggable(Level.SEVERE)) {
+                        LOGGER.log(Level.SEVERE, "Unable to inject {0} because no InjectionProvider can be found. Does this container implement the Mojarra Injection SPI?", result);
+                    }
+                }
+                
+                
             }
             catch (NoSuchMethodException nsme) {
                 // fall through to "zero-arg-ctor" case
@@ -685,7 +752,7 @@ public final class FactoryFinder {
 
     /**
      * Managed the mappings between a web application and its configured
-     * result.
+     * injectionProvider.
      */
     private static final class FactoryManagerCache {
 
@@ -710,8 +777,13 @@ public final class FactoryFinder {
             }
             return result;
         }
-
+        
         private FactoryManager getApplicationFactoryManager(ClassLoader cl) {
+            FactoryManager result = getApplicationFactoryManager(cl, true);
+            return result;
+        }
+
+        private FactoryManager getApplicationFactoryManager(ClassLoader cl, boolean create) {
             FacesContext facesContext = FacesContext.getCurrentInstance();
             boolean isSpecialInitializationCase = detectSpecialInitializationCase(facesContext);
 
@@ -720,7 +792,7 @@ public final class FactoryFinder {
 
             FactoryManager result = applicationMap.get(key);
             FactoryManager toCopy = null;
-            if (result == null) {
+            if (result == null && create) {
                 boolean createNewFactoryManagerInstance = false;
                 
                 if (isSpecialInitializationCase) {
@@ -803,6 +875,11 @@ public final class FactoryFinder {
 
 
         public void removeApplicationFactoryManager(ClassLoader cl) {
+            FactoryManager fm = this.getApplicationFactoryManager(cl, false);
+            if (null != fm) {
+                fm.clearInjectionProvider();
+            }
+            
             FacesContext facesContext = FacesContext.getCurrentInstance();
             boolean isSpecialInitializationCase = detectSpecialInitializationCase(facesContext);
 
@@ -922,13 +999,16 @@ public final class FactoryFinder {
 
 
     /**
-     * Maintains the result for a single web application.
+     * Maintains the injectionProvider for a single web application.
      */
     private static final class FactoryManager {
 
         private final Map<String,Object> factories;
         private final Map<String, List<String>> savedFactoryNames;
         private final ReentrantReadWriteLock lock;
+        private static final String INJECTION_PROVIDER_KEY = 
+                FactoryFinder.class.getPackage().getName() + "INJECTION_PROVIDER_KEY";
+                
 
 
         // -------------------------------------------------------- Consturctors
@@ -941,6 +1021,7 @@ public final class FactoryFinder {
             for (String name : FACTORY_NAMES) {
                 factories.put(name, new ArrayList(4));
             }
+            copyInjectionProviderFromFacesContext();
         }
 
         public FactoryManager(FactoryManager toCopy) {
@@ -948,10 +1029,35 @@ public final class FactoryFinder {
             factories = new HashMap<String,Object>();
             savedFactoryNames = new HashMap<String, List<String>>();
             factories.putAll(toCopy.savedFactoryNames);
+            copyInjectionProviderFromFacesContext();
                 
         }
+        
+        private void copyInjectionProviderFromFacesContext() {
+            InjectionProvider injectionProvider = null;
+            FacesContext context = FacesContext.getCurrentInstance();
+            if (null != context) {
+                injectionProvider = (InjectionProvider) context.getAttributes().get("com.sun.faces.config.ConfigManager_INJECTION_PROVIDER_TASK");
+            } 
+            
+            if (null != injectionProvider) {
+                factories.put(INJECTION_PROVIDER_KEY, injectionProvider);
+            } else {
+                if (LOGGER.isLoggable(Level.SEVERE)) {
+                    LOGGER.log(Level.SEVERE, "Unable to obtain InjectionProvider from init time FacesContext. Does this container implement the Mojarra Injection SPI?");
+                }
+            }
+        
+        }
+
+
+        
 
         // ------------------------------------------------------ Public Methods
+        
+        public Collection<Object> getFactories() {
+            return factories.values();
+        }
 
 
         public void addFactory(String factoryName, String implementation) {
@@ -967,6 +1073,14 @@ public final class FactoryFinder {
             }
         }
 
+        InjectionProvider getInjectionProvider() {
+            InjectionProvider result = (InjectionProvider) factories.get(INJECTION_PROVIDER_KEY);
+            return result;
+        }
+        
+        void clearInjectionProvider() {
+            factories.remove(INJECTION_PROVIDER_KEY);
+        }
 
         public Object getFactory(ClassLoader cl, String factoryName) {
 

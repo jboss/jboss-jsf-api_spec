@@ -51,7 +51,8 @@ import java.io.IOException;
 
 
 /**
- * <p><strong class="changed_modified_2_0 changed_modified_2_1">StateManager</strong>
+ * <p>
+ * <strong class="changed_modified_2_0 changed_modified_2_1 changed_modified_2_2">StateManager</strong>
  * directs the process of saving and
  * restoring the view between requests.  <span class="changed_added_2_0">An
  * implementation
@@ -154,6 +155,24 @@ public abstract class StateManager {
      */
     public final static String IS_BUILDING_INITIAL_STATE =
             "javax.faces.IS_BUILDING_INITIAL_STATE";
+    
+    /**
+     * <p class="changed_added_2_2">
+     * If this param is set, and calling toLowerCase().equals("true") on a
+     * String representation of its value returns true, and the
+     * javax.faces.STATE_SAVING_METHOD is set to "server" (as indicated
+     * below), the server state must be guaranteed to be Serializable such
+     * that the aggregate state implements java.io.Serializable. The intent
+     * of this parameter is to ensure that the act of writing out the state
+     * to an ObjectOutputStream would not throw a NotSerializableException,
+     * but the runtime is not required verify this before saving the state.      
+     * </p>
+     * 
+     * @since 2.2
+     */
+        
+    public static final String SERIALIZE_SERVER_STATE_PARAM_NAME = 
+            "javax.faces.SERIALIZE_SERVER_STATE";
 
     /**
      * <p>Constant value for the initialization parameter named by
@@ -171,6 +190,9 @@ public abstract class StateManager {
     public static final String STATE_SAVING_METHOD_SERVER = "server";
 
     // ---------------------------------------------------- State Saving Methods
+
+    private static final String IS_CALLED_FROM_API_CLASS =
+        "javax.faces.ensureOverriddenInvocation";
 
 
     /**
@@ -200,11 +222,18 @@ public abstract class StateManager {
      * return.  If the return is an <code>Object []</code>, it casts the
      * result to an <code>Object []</code> wrapping the first and second
      * elements in an instance of {@link SerializedView}, which it then
-     * returns.  Otherwise, it return <code>null</code>
+     * returns.  Otherwise, it returns <code>null</code>
      */
     public SerializedView saveSerializedView(FacesContext context) {
 
-        Object stateObj = saveView(context);
+        context.getAttributes().put(IS_CALLED_FROM_API_CLASS, Boolean.TRUE);
+        Object stateObj = null;
+        try {
+            stateObj = saveView(context);
+        } finally {
+            context.getAttributes().remove(IS_CALLED_FROM_API_CLASS);
+        }
+
         SerializedView result = null;
         if (null != stateObj) {
             if (stateObj instanceof Object[]) {
@@ -218,7 +247,9 @@ public abstract class StateManager {
     }
 
     /**
-     * <p>Return an opaque <code>Object</code> containing sufficient
+     * <p><span class="changed_deleted_2_2">The functionality of this method
+     * is now handled by {@link javax.faces.view.StateManagementStrategy#saveView}.
+     * </span> Return an opaque <code>Object</code> containing sufficient
      * information for this same instance to restore the state of the
      * current {@link UIViewRoot} on a subsequent request.  The returned
      * object must implement <code>java.io.Serializable</code>. If there
@@ -250,10 +281,17 @@ public abstract class StateManager {
      *                               the same non-<code>null</code> component id
      * @since 1.2
      */
+    @Deprecated
     public Object saveView(FacesContext context) {
-        SerializedView view = saveSerializedView(context);
-        Object stateArray[] = {view.getStructure(),
-                               view.getState()};
+        Object stateArray[] = null;
+
+        if (!context.getAttributes().containsKey(IS_CALLED_FROM_API_CLASS)) {
+            SerializedView view = saveSerializedView(context);
+            if (null != view) {
+                stateArray = new Object[]{view.getStructure(),
+                            view.getState()};
+            }
+        }
         return stateArray;
     }
 
@@ -395,7 +433,9 @@ public abstract class StateManager {
 
 
     /**
-     * <p>Restore the tree structure and the component state of the view
+     * <p><span class="changed_deleted_2_2">The functionality of this method
+     * is now handled by {@link javax.faces.view.StateManagementStrategy#restoreView}.
+     * </span> Restore the tree structure and the component state of the view
      * for the specified <code>viewId</code>, in an implementation dependent
      * manner, and return the restored {@link UIViewRoot}.  If there is no
      * saved state information available for this <code>viewId</code>,
@@ -422,6 +462,7 @@ public abstract class StateManager {
      * @throws IllegalArgumentException if <code>renderKitId</code>
      *                                  is <code>null</code>.
      */
+    @Deprecated
     public abstract UIViewRoot restoreView(FacesContext context, String viewId,
                                            String renderKitId);
 

@@ -41,7 +41,6 @@
 package javax.faces.event;
 
 import javax.el.ELContext;
-import javax.el.ELException;
 import javax.el.MethodExpression;
 import javax.el.MethodNotFoundException;
 import javax.faces.context.FacesContext;
@@ -49,7 +48,8 @@ import javax.faces.component.StateHolder;
 
 /**
  * <p><strong><span class="changed_modified_2_0
- * changed_modified_2_0_rev_a">MethodExpressionValueChangeListener</span></strong>
+ * changed_modified_2_0_rev_a
+ * changed_modified_2_2">MethodExpressionValueChangeListener</span></strong>
  * is a {@link ValueChangeListener} that wraps a {@link
  * MethodExpression}. When it receives a {@link ValueChangeEvent}, it
  * executes a method on an object identified by the {@link
@@ -115,19 +115,21 @@ public class MethodExpressionValueChangeListener implements ValueChangeListener,
     // ------------------------------------------------------- Event Method
 
     /**
-     * <p><span class="changed_modified_2_0">Call</span> through to the
-     * {@link MethodExpression} passed in our constructor.  <span
-     * class="changed_added_2_0">First, try to invoke the
+     * <p><span
+     * class="changed_modified_2_0 changed_modified_2_2">Call</span>
+     * through to the {@link MethodExpression} passed in our
+     * constructor.  <span class="changed_added_2_0">First, try to
+     * invoke the <code>MethodExpression</code> passed to the
+     * constructor of this instance, passing the argument {@link
+     * ValueChangeEvent} as the argument.  If a {@link
+     * MethodNotFoundException} is thrown, call to the zero argument
+     * <code>MethodExpression</code> derived from the
      * <code>MethodExpression</code> passed to the constructor of this
-     * instance, passing the argument {@link ValueChangeEvent} as the
-     * argument.  If a {@link MethodNotFoundException} is thrown, call
-     * to the zero argument <code>MethodExpression</code> derived from
-     * the <code>MethodExpression</code> passed to the constructor of
-     * this instance.  If that fails for any reason, throw an {@link
-     * AbortProcessingException}, including the cause of the
-     * failure.</span></p>
+     * instance.  <span class="changed_deleted_2_2"><del>If that fails
+     * for any reason, throw an {@link AbortProcessingException},
+     * including the cause of the failure.</del></span></span></p>
      * 
-     * @throws NullPointerException {@inheritDoc}     
+     * @throws NullPointerException if the argument valueChangeEvent is null.
      * @throws AbortProcessingException {@inheritDoc}     
      */ 
     public void processValueChange(ValueChangeEvent valueChangeEvent) throws AbortProcessingException {
@@ -145,17 +147,10 @@ public class MethodExpressionValueChangeListener implements ValueChangeListener,
         } catch (MethodNotFoundException mnf) {
             if (null != methodExpressionZeroArg) {
 
-                try {
-                    // try to invoke a no-arg version
-                    methodExpressionZeroArg.invoke(elContext, new Object[]{});
-                }
-                catch (ELException ee) {
-                    throw new AbortProcessingException(ee.getMessage(), ee.getCause());
-                }
+                // try to invoke a no-arg version
+                methodExpressionZeroArg.invoke(elContext, new Object[]{});
             }
-        } catch (ELException ee) {
-            throw new AbortProcessingException(ee.getMessage(), ee.getCause());
-        }
+        } 
     }
 
 

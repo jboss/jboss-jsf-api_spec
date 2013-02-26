@@ -65,15 +65,17 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.UnavailableException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
 /**
  * <p><strong class="changed_modified_2_0 changed_modified_2_0_rev_a
- * changed_modified_2_1">FacesServlet</strong> is a servlet that manages
- * the request processing lifecycle for web applications that are
- * utilizing JavaServer Faces to construct the user interface.</p>
+ * changed_modified_2_1 changed_modified_2_2">FacesServlet</strong> is a
+ * servlet that manages the request processing lifecycle for web
+ * applications that are utilizing JavaServer Faces to construct the
+ * user interface.</p>
  *
  * <div class="changed_added_2_1">
  *
@@ -155,8 +157,54 @@ import javax.servlet.http.HttpServletResponse;
  *	</ul>
 
  * </div>
- */
 
+ * <div class="changed_added_2_2">
+ * 
+ * <p>This class must be annotated with {@code javax.servlet.annotation.MultipartConfig}.
+ * This causes the Servlet container in which the JSF implementation is running
+ * to correctly handle multipart form data.</p>
+
+ * <p><strong>Some security considerations relating to this class</strong></p>
+
+ * <p>The topic of web application security is a cross-cutting concern
+ * and every aspect of the specification address it.  However, as with
+ * any framework, the application developer needs to pay careful
+ * attention to security.  Please consider these topics among the rest
+ * of the security concerns for the application.  This is by no means a
+ * complete list of security concerns, and is no substitute for a
+ * thorough application level security review.</p>
+ *
+ * <ul>
+
+ * <p><strong>Prefix mappings and the <code>FacesServlet</code></strong></p>
+
+ * <p>If the <code>FacesServlet</code> is mapped using a prefix
+ * <code>&lt;url-pattern&gt;</code>, such as
+ * <code>&lt;url-pattern&gt;/faces/*&lt;/url-pattern&gt;</code>,
+ * something must be done to prevent access to the view source without
+ * its first being processed by the <code>FacesServlet</code>.  One
+ * common approach is to apply a &lt;security-constraint&gt; to all
+ * facelet files and flow definition files.  Please see the
+ * <strong>Deployment Descriptor</strong> chapter of the Java Servlet
+ * Specification for more information the use of
+ * &lt;security-constraint&gt;.</p>
+
+ * <p><strong>Allowable HTTP Methods</strong></p>
+
+ * <p>The JSF specification only requires the use of the GET and POST
+ * http methods.  If your web application does not require any other
+ * http methods, such as PUT and DELETE, please consider restricting the
+ * allowable http methods using the &lt;http-method&gt; and
+ * &lt;http-method-omission&gt; elements.  Please see the
+ * <strong>Security</strong> of the Java Servlet Specification for more
+ * information the use of these elements.</p>
+
+
+ * </ul>
+ *
+ * </div>
+ */
+@MultipartConfig
 public final class FacesServlet implements Servlet {
 
     /*
@@ -463,8 +511,9 @@ public final class FacesServlet implements Servlet {
 
 
     /**
-     * <p class="changed_modified_2_0">Process an incoming request, and create the
-     * corresponding response according to the following
+     * <p class="changed_modified_2_0"><span
+     * class="changed_modified_2_2">Process</span> an incoming request,
+     * and create the corresponding response according to the following
      * specification.</p>
      * 
      * <div class="changed_modified_2_0">
@@ -475,12 +524,12 @@ public final class FacesServlet implements Servlet {
      * <code>HttpServletResponse</code>, respectively, the results of
      * invoking this method are undefined.</p>
      *
-     * <p>This method must respond to requests that start with the
-     * following strings by invoking the <code>sendError</code> method
-     * on the response argument (cast to
-     * <code>HttpServletResponse</code>), passing the code
-     * <code>HttpServletResponse.SC_NOT_FOUND</code> as the
-     * argument. </p>
+     * <p>This method must respond to requests that <span
+     * class="changed_modified_2_2">contain</span> the following
+     * strings by invoking the <code>sendError</code> method on the
+     * response argument (cast to <code>HttpServletResponse</code>),
+     * passing the code <code>HttpServletResponse.SC_NOT_FOUND</code> as
+     * the argument. </p>
      *
      * <ul>
      *
@@ -507,9 +556,11 @@ public final class FacesServlet implements Servlet {
      * javax.faces.application.ResourceHandler#isResourceRequest}.  If
      * this returns <code>true</code> call {@link
      * javax.faces.application.ResourceHandler#handleResourceRequest}.
-     * If this returns <code>false</code>, call {@link
-     * javax.faces.lifecycle.Lifecycle#execute} followed by {@link
-     * javax.faces.lifecycle.Lifecycle#render}.  If a {@link
+     * If this returns <code>false</code>, <span
+     * class="changed_added_2_2">call {@link
+     * javax.faces.lifecycle.Lifecycle#attachWindow} followed by </span>
+     * {@link javax.faces.lifecycle.Lifecycle#execute} followed by
+     * {@link javax.faces.lifecycle.Lifecycle#render}.  If a {@link
      * javax.faces.FacesException} is thrown in either case, extract the
      * cause from the <code>FacesException</code>.  If the cause is
      * <code>null</code> extract the message from the
@@ -531,8 +582,8 @@ public final class FacesServlet implements Servlet {
 
      * </div>
      *
-     * @param request The servlet request we are processing
-     * @param response The servlet response we are creating
+     * @param req The servlet request we are processing
+     * @param resp The servlet response we are creating
      *
      * @throws IOException if an input/output error occurs during processing
      * @throws ServletException if a servlet error occurs during processing
@@ -590,6 +641,7 @@ public final class FacesServlet implements Servlet {
             if (handler.isResourceRequest(context)) {
                 handler.handleResourceRequest(context);
             } else {
+                lifecycle.attachWindow(context);
                 lifecycle.execute(context);
                 lifecycle.render(context);
             }

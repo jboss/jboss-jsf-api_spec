@@ -44,13 +44,21 @@ import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 
 /**
- * <p class="changed_added_2_0">Encapsulate the saving and restoring of
- * the view to enable the VDL to take over the responsibility for
- * handling this feature. Because {@link
+ * <p class="changed_added_2_0"><span
+ * class="changed_modified_2_2">Encapsulate</span> the saving and
+ * restoring of the view to enable the VDL to take over the
+ * responsibility for handling this feature. Because {@link
  * ViewDeclarationLanguage#getStateManagementStrategy} is required to
  * return <code>null</code> for JSP views and non-<code>null</code> for
  * views authored in Facelets for JSF 2, this specification only applys
  * to Facelets for JSF 2.</p>
+ * 
+ * <p class="changed_added_2_2">Implementations must call
+ * {@link javax.faces.component.UIComponent#visitTree} on the 
+ * {@link javax.faces.component.UIViewRoot} to perform the saving and restoring
+ * of the view in the {@link #saveView} and {@link #restoreView} methods,
+ * respectively.
+ * </p>
  *
  * @since 2.0
  */
@@ -58,10 +66,17 @@ public abstract class StateManagementStrategy {
 
     
     /**
-     * <p class="changed_added_2_0">Return the state of the current view
-     * in an <code>Object</code> that implements
-     * <code>Serializable</code>.  The default implementation must
-     * perform the following algorithm or its semantic equivalent.</p>
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_2">Return</span> the state of the
+     * current view in an <code>Object</code> that implements
+     * <code>Serializable</code> <span class="changed_modified_2_2">and
+     * can be passed to
+     * <code>java.io.ObjectOutputStream.writeObject()</code> without
+     * causing a <code>java.io.NotSerializableException</code> to be
+     * thrown.</span> The default implementation must perform the
+     * following algorithm or its semantic equivalent, <span
+     * class="changed_modified_2_2">explicitly performing all the steps
+     * listed here.</span></p>
      *
      * <div class="changed_added_2_0">
 
@@ -105,22 +120,40 @@ public abstract class StateManagementStrategy {
     public abstract Object saveView(FacesContext context);
     
     /**
-     * <p class="changed_added_2_0">Restore the state of the view with
-     * information in the request.  The default implementation must
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_2">Restore</span> the state of the view
+     * with information in the request.  The default implementation must
      * perform the following algorithm or its semantic equivalent.</p>
      *
      * <div class="changed_added_2_0">
 
      * 	<ol>
 
-	  <li><p>Build the view from the markup.  For all components in
+	  <li>
+
+          <p class="changed_added_2_2">As in the case of restore view on
+          an initial request, the view metadata must be restored and
+          properly handled as well.  Obtain the {@link ViewMetadata} for
+          the current <code>viewId</code>, and from that call {@link
+          ViewMetadata#createMetadataView}.  Store the resultant {@link
+          UIViewRoot} in the {@link FacesContext}. Obtain the state of
+          the <code>UIViewRoot</code> from the state <code>Object</code>
+          returned from {@link
+          javax.faces.render.ResponseStateManager#getState} and pass
+          that to {@link UIViewRoot#restoreViewScopeState}.</p>
+
+
+          <p>Build the view from the markup.  For all components in
 	  the view that do not have an explicitly assigned id in the
 	  markup, the values of those ids must be the same as on an
 	  initial request for this view.  This view will not contain
 	  any components programmatically added during the previous
 	  lifecycle run, and it <b>will</b> contain components that were
 	  programmatically deleted on the previous lifecycle run.  Both
-	  of these cases must be handled.</p></li>
+	  of these cases must be handled.</p>
+
+
+          </li>
 
 	  <li><p>Call {@link
 	  javax.faces.render.ResponseStateManager#getState} to obtain

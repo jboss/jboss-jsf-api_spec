@@ -42,6 +42,7 @@ package javax.faces.context;
 
 import java.io.IOException;
 import java.util.Map;
+import javax.faces.render.ResponseStateManager;
 
 /**
  * <p class="changed_added_2_0"><strong>PartialResponseWriter</strong>
@@ -82,7 +83,7 @@ public class PartialResponseWriter extends ResponseWriterWrapper {
      *
      * @since 2.0
      */
-    public static final String VIEW_STATE_MARKER = "javax.faces.ViewState";
+    public static final String VIEW_STATE_MARKER = ResponseStateManager.VIEW_STATE_PARAM;
 
     /**
      * <p class="changed_added_2_0">Create a <code>PartialResponseWriter</code>.</p>
@@ -113,12 +114,10 @@ public class PartialResponseWriter extends ResponseWriterWrapper {
      */
     public void startDocument() throws IOException {
         ResponseWriter writer = getWrapped();
-        String encoding = writer.getCharacterEncoding( );
-        if( encoding == null ) {
-            encoding = "utf-8";
-        }
-        writer.write("<?xml version='1.0' encoding='" + encoding + "'?>\n");
         writer.startElement("partial-response", null);
+        FacesContext ctx = FacesContext.getCurrentInstance();
+        String id = ctx.getViewRoot().getContainerClientId(ctx);
+        writer.writeAttribute("id", id, "id");
     }
 
     /**

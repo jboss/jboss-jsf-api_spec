@@ -53,7 +53,8 @@ import java.util.logging.Logger;
 
 
 /**
- * <p><strong class="changed_modified_2_0">ResponseStateManager</strong>
+ * <p><strong class="changed_modified_2_0 changed_modified_2_2">
+ * ResponseStateManager</strong>
  * is the helper class to {@link javax.faces.application.StateManager}
  * that knows the specific rendering technology being used to generate
  * the response.  It is a singleton abstract class, vended by the {@link
@@ -75,9 +76,20 @@ public abstract class ResponseStateManager {
             "javax.faces.RenderKitId";
             
     /**
-     * <p><span class="changed_modified_2_0">Implementations</span> must
-     * use this value as the name and id of the client parameter in
-     * which to save the state between requests.</p>
+     * <p><span class="changed_modified_2_0
+     * changed_modified_2_2">Implementations</span> must use this
+     * constant field value as the name of the client parameter in which
+     * to save the state between requests. <span
+     * class="changed_added_2_2">The <code>id</code> attribute must be a
+     * concatenation of the return from {@link
+     * javax.faces.component.UIViewRoot#getContainerClientId}, the
+     * return from {@link
+     * javax.faces.component.UINamingContainer#getSeparatorChar}, this
+     * constant field value, the separator char, and a number that is 
+     * guaranteed to be unique with respect to all the other instances of
+     * this kind of client parameter in the view.</span>
+     * 
+     * </span></p>
 
      * <p class="changed_added_2_0">It is strongly recommend that
      * implementations guard against cross site scripting attacks by at
@@ -88,9 +100,57 @@ public abstract class ResponseStateManager {
      */
 
     public static final String VIEW_STATE_PARAM = "javax.faces.ViewState";
-
-    /*       
-     * <p>Take the argument <code>state</code> and write it into the
+    
+    /**
+     * <p class="changed_added_2_2">The name of the hidden field that
+     * refers to the encoded ClientWindow.  This field is only used if 
+     * {@link javax.faces.lifecycle.ClientWindow#CLIENT_WINDOW_MODE_PARAM_NAME}
+     * is not "none". The <code>id</code> attribute must be a
+     * concatenation of the return from {@link
+     * javax.faces.component.UIViewRoot#getContainerClientId}, the
+     * return from {@link
+     * javax.faces.component.UINamingContainer#getSeparatorChar}, this
+     * constant field value, the separator char, and a number that is 
+     * guaranteed to be unique with respect to all the other instances of
+     * this kind of client parameter in the view.  The value of this parameter 
+     * is the return from {@link javax.faces.lifecycle.ClientWindow#getId}.</p>
+     * 
+     * @since 2.2
+     * 
+     */
+    
+    public static final String CLIENT_WINDOW_PARAM = "javax.faces.ClientWindow";
+    
+    /**
+     * <p class="changed_added_2_2">The name of the URL query parameter for transmitting
+     * the client window id.  This parameter is only used if 
+     * {@link javax.faces.lifecycle.ClientWindow#CLIENT_WINDOW_MODE_PARAM_NAME}
+     * is not "none".  The name of the parameter is given by the constant value 
+     * of this field.  The value of this parameter 
+     * is the return from {@link javax.faces.lifecycle.ClientWindow#getId}.
+     * </p>
+     * 
+     * @since 2.2
+     */
+    
+    public static final String CLIENT_WINDOW_URL_PARAM = "jfwid";
+    
+    /**
+     * <p class="changed_added_2_2">The value of this constant is taken
+     * to be the name of a request parameter whose value is inspected
+     * to verify the safety of an incoming non-postback request with respect
+     * to the currently configured <code>Set</code> of protected views
+     * for this application.</p>
+     * 
+     * @since 2.2
+     */
+    
+    public static final String NON_POSTBACK_VIEW_TOKEN_PARAM = 
+            "javax.faces.Token";
+    
+    /**       
+     * <p><span class="changed_modified_2_2"">Take</span> the argument 
+     * <code>state</code> and write it into the
      * output using the current {@link ResponseWriter}, which must be
      * correctly positioned already.</p>
      *
@@ -101,15 +161,15 @@ public abstract class ResponseStateManager {
      *
      * <p>If the state saving method for this application is {@link
      * javax.faces.application.StateManager#STATE_SAVING_METHOD_CLIENT},
-     * the implementation may encrypt the state to be saved to the
-     * client.  We recommend that the state be unreadable by the client,
-     * and also be tamper evident.  The reference implementation follows
-     * these recommendations.  </p>
+     * the implementation <span class="changed_modified_2_2">must</span> 
+     * encrypt the state to be saved to the
+     * client <span class="changed_modified_2_2">in a tamper evident 
+     * manner</span>.</p>
      *
      * <p>If the state saving method for this application is {@link
      * javax.faces.application.StateManager#STATE_SAVING_METHOD_SERVER},
      * and the current request is an <code>Ajax</code> request
-     * {@link javax.faces.context.PartialViewContext.isAjaxRequest} returns
+     * {@link javax.faces.context.PartialViewContext#isAjaxRequest} returns
      * <code>true</code>), use the current view state identifier if it is
      * available (do not generate a new identifier).</p>
      * 
@@ -120,10 +180,10 @@ public abstract class ResponseStateManager {
      * render kit identifier must not be written if:</p>
      * <ul>
      * <li>it is the default render kit identifier as returned by 
-     * {@link Application#getDefaultRenderKitId()} or</li>
+     * {@link javax.faces.application.Application#getDefaultRenderKitId()} or</li>
      * <li>the render kit identfier is the value of 
-     * <code>RenderKitFactory.HTML_BASIC_RENDER_KIT</code> and 
-     * {@link Application.getDefaultRenderKitId()} returns <code>null</code>.
+     * <code>javax.faces.render.RenderKitFactory.HTML_BASIC_RENDER_KIT</code> and 
+     * {@link javax.faces.application.Application#getDefaultRenderKitId()} returns <code>null</code>.
      * </li>
      * </ul> 
      *
@@ -132,11 +192,29 @@ public abstract class ResponseStateManager {
      * implementation of this method checks if the argument is an
      * instance of <code>SerializedView</code>.  If so, it calls through
      * to {@link
-     * #writeState(javax.faces.context.FacesContext,javax.faces.application.StateManager.SerializedView}.
+     * #writeState(javax.faces.context.FacesContext,javax.faces.application.StateManager.SerializedView)}.
      * If not, it expects the state to be a two element Object array.  It creates 
      * an instance of <code>SerializedView</code> and
      * stores the state as the treeStructure, and passes it to {@link
-     * #writeState(javax.faces.context.FacesContext,javax.faces.application.StateManager.SerializedView}.</p>
+     * #writeState(javax.faces.context.FacesContext,javax.faces.application.StateManager.SerializedView)}.</p>
+     * 
+     * <p class="changed_added_2_2">The {@link
+     * javax.faces.lifecycle.ClientWindow} must be written using these
+     * steps.  Call {@link
+     * javax.faces.context.ExternalContext#getClientWindow}.  If the
+     * result is <code>null</code>, take no further action regarding the
+     * <code>ClientWindow</code>.  If the result is
+     * non-<code>null</code>, write a hidden field whose name is {@link
+     * #CLIENT_WINDOW_PARAM} and whose id is
+     * <code>&lt;VIEW_ROOT_CONTAINER_CLIENT_ID&gt;&lt;SEP&gt;javax.faces.ClientWindow&lt;SEP&gt;&lt;UNIQUE_PER_VIEW_NUMBER&gt;</code>
+     * where &lt;SEP&gt; is the currently configured
+     * <code>UINamingContainer.getSeparatorChar()</code>.
+     * &lt;VIEW_ROOT_CONTAINER_CLIENT_ID&gt; is the return from
+     * <code>UIViewRoot.getContainerClientId()</code> on the view from
+     * whence this state originated.  &lt;UNIQUE_PER_VIEW_NUMBER&gt; is
+     * a number that must be unique within this view, but must not be
+     * included in the view state.  The value of the field is implementation
+     * dependent but must uniquely identify this window within the user's session.</p>
      *
      *
      * @since 1.2
@@ -220,10 +298,19 @@ public abstract class ResponseStateManager {
     }
 
     /**
-     * <p>The implementation must inspect the current request and return
+     * <p><span class="changed_modified_2_2">The</span> implementation must 
+     * inspect the current request and return
      * an Object representing the tree structure and component state
      * passed in to a previous invocation of {@link
      * #writeState(javax.faces.context.FacesContext,java.lang.Object)}.</p>
+     * 
+     * <p class="changed_added_2_2">If the state saving method for this 
+     * application is {@link
+     * javax.faces.application.StateManager#STATE_SAVING_METHOD_CLIENT},
+     * <code>writeState()</code> will have encrypted the state in a tamper
+     * evident manner.  If the state fails to decrypt, or decrypts but 
+     * indicates evidence of tampering, a 
+     * {@link javax.faces.application.ProtectedViewException} must be thrown.</p>
      *
      * <p>For backwards compatability with existing
      * <code>ResponseStateManager</code> implementations, the default
@@ -315,7 +402,6 @@ public abstract class ResponseStateManager {
         return (!context.getExternalContext().getRequestParameterMap().isEmpty());
     }
 
-
     /**
      * <p>
      * Return the specified state as a <code>String</code> without any markup
@@ -332,6 +418,22 @@ public abstract class ResponseStateManager {
     public String getViewState(FacesContext context, Object state) {
         return null;
     }
-
-
+    
+    /**
+     * <p class="changed_added_2_2">Compliant implementations must return a 
+     * cryptographically strong token for use to protect views in this 
+     * application. For backwards compatability with earlier revisions, a
+     * default implementation is provided that simply returns <code>null</code>.
+     * </p>
+     * 
+     * @param context the {@link FacesContext} for the current request
+     * 
+     * @return a cryptographically strong value
+     *
+     * @since 2.2
+     */
+    public String getCryptographicallyStrongTokenFromSession(FacesContext context) {
+        return null;
+    }
+    
 }

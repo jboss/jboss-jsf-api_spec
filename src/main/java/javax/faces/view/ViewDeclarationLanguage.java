@@ -42,18 +42,18 @@ package javax.faces.view;
 
 import java.beans.BeanInfo;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.faces.application.Resource;
+import javax.faces.application.ResourceHandler;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 
 /**
  * <p class="changed_added_2_0"><span class="changed_modified_2_0_rev_a
- * changed_modified_2_1">The</span> contract that a view declaration
+ * changed_modified_2_1 changed_modified_2_2">The</span> contract that a view declaration
  * language must implement to interact with the JSF runtime.  An
  * implementation of this class must be thread-safe.</p>
  *
@@ -91,7 +91,7 @@ public abstract class ViewDeclarationLanguage {
      * <p class="changed_added_2_0">Return a reference to the component
      * metadata for the composite component represented by the argument
      * <code>componentResource</code>, or <code>null</code> if the
-     * metadata cannot be found.  See section JSF.7.6.2 for the
+     * metadata cannot be found.  See section JSF.7.7.2 for the
      * specification of the default implementation. JSP implementations
      * must throw <code>UnsupportedOperationException</code>.</p>
      *
@@ -115,7 +115,7 @@ public abstract class ViewDeclarationLanguage {
      * <p class="changed_added_2_0">Return a reference to the view
      * metadata for the view represented by the argument
      * <code>viewId</code>, or <code>null</code> if the metadata cannot
-     * be found.  See section JSF.7.6.2 for the specification of the
+     * be found.  See section JSF.7.7.2 for the specification of the
      * default implementation.  Facelets for JSF 2 implementation must
      * return non-<code>null</code>. JSP implementations must return
      * <code>null</code>.</p>
@@ -136,7 +136,7 @@ public abstract class ViewDeclarationLanguage {
     /**
      * <p class="changed_added_2_0">Take implementation specific action
      * to discover a <code>Resource</code> given the argument
-     * <code>componentResource</code>.  See section JSF.7.6.2 for the
+     * <code>componentResource</code>.  See section JSF.7.7.2 for the
      * specification of the default implementation.  JSP implementations
      * must throw <code>UnsupportedOperationException</code>.</p>
      *
@@ -157,10 +157,10 @@ public abstract class ViewDeclarationLanguage {
     
     
     /**
-     * <p class="changed_added_2_0">Create a <code>UIViewRoot</code>
-     * from the VDL contained in the artifact referenced by the argument
-     * <code>viewId</code>.  See section JSF.7.6.2 for the specification of
-     * the default implementation.</p>
+     * <p class="changed_added_2_0"><span class="changed_modified_2_2">Create</span>
+     * a <code>UIViewRoot</code> from the VDL contained in the artifact referenced by the argument
+     * <code>viewId</code>.  <span class="changed_modified_2_2">See section JSF.7.7.2 for the specification of
+     * the default implementation.</span></p>
      *
      * @param context the <code>FacesContext</code> for this request.
      * @param viewId the identifier of an artifact that contains the VDL
@@ -176,8 +176,42 @@ public abstract class ViewDeclarationLanguage {
                                  String viewId);
     
     /**
+     * <p class="changed_added_2_2">Create a component given a 
+     * {@link ViewDeclarationLanguage} specific
+     * tag library URI and tag name.  The runtime must support this method operating
+     * for the Facelets VDL.
+     * Other kinds of {@code ViewDeclarationLanguage} may be supported but are not
+     * required to be supported. For backward compatibility
+     * with decorated {@code ViewDeclrationLanguage} implementations that do
+     * not override this method, a default implementation is provided that returns
+     * {@code null}.  However, any implementation that is compliant with the
+     * version of the specification in which this method was introduced must
+     * implement this method.
+     * </p>
+     * 
+     * @param context the {@link FacesContext} for this request
+     * @param taglibURI the fully qualified tag library URI that contains the component
+     * @param tagName the name of the tag within that library that exposes the component
+     * @param attributes any name=value pairs that would otherwise have been 
+     * given on the markup that would cause the creation of this component or
+     * {@code null} if no attributes need be given.  
+     * 
+     * @throws NullPointerException if {@code context}, {@code taglibURI}, or 
+     * {@code tagName} are {@code null}
+     * 
+     * @since 2.2
+     */
+    
+    public UIComponent createComponent(FacesContext context, 
+            String taglibURI, String tagName, 
+            Map<String, Object> attributes) {
+        return null;
+    }
+    
+    
+    /**
      * <p class="changed_added_2_0">Restore a <code>UIViewRoot</code>
-     * from a previously created view.  See section JSF.7.6.2 for the
+     * from a previously created view.  See section JSF.7.7.2 for the
      * specification of the default implementation.</p>
      *
      * @param context the <code>FacesContext</code> for this request.
@@ -455,6 +489,31 @@ public abstract class ViewDeclarationLanguage {
         // no-op
         
     }
+    
+    /**
+     * <p class="changed_added_2_2">Return the list of resource library
+     * contracts that will be made available for use in the view
+     * specified by the argument {@code viewId}.  If no match is found,
+     * return an empty list.  See section JSF.7.7.2 for the
+     * specification of the default implementation.  For backward
+     * compatibility with prior implementations, an implementation is
+     * provided that returns {@code null}, but any implementation
+     * compliant with the version of the specification in which this
+     * method was introduced must implement it as specified in
+     * JSF.7.7.2. </p>
+     * 
+     * @param context the {@code FacesContext} for this request
+     * @param viewId the view id for which the applicable resource library 
+     * contracts should be calculated.
+     * 
+     * @since 2.2
+     */
+    
+    public List<String> calculateResourceLibraryContracts(FacesContext context,
+            String viewId) {
+        return null;
+    }
+    
 
     /**
      * <p class="changed_added_2_0"><span
@@ -509,7 +568,7 @@ public abstract class ViewDeclarationLanguage {
     
     /**
      * <p class="changed_added_2_0">Render a view rooted at
-     * argument<code>view</code>. See section JSF.7.6.2 for the
+     * argument<code>view</code>. See section JSF.7.7.2 for the
      * specification of the default implementation.</p>
      *
      * @param context the <code>FacesContext</code> for this request.
@@ -541,12 +600,13 @@ public abstract class ViewDeclarationLanguage {
 
 
     /**
-     * <p class="changed_added_2_1">Tests whether a physical resource
+     * <p class="changed_added_2_1"><span class="changed_modified_2_2">Tests</span>
+     * whether a physical resource
      * corresponding to the specified viewId exists.</p>
      *
-     * <p>The default implementation uses 
-     * <code>ExternalContext.getResource()</code> to locate the physical
-     * resource.</p>
+     * <p class="changed_modified_2_2">The default implementation uses 
+     * {@link javax.faces.application.ResourceHandler#createViewResource}
+     * to locate the physical resource.</p>
      *
      * @param context The <code>FacesContext</code> for this request.
      * @param viewId the view id to test
@@ -555,17 +615,11 @@ public abstract class ViewDeclarationLanguage {
      */    
     public boolean viewExists(FacesContext context, 
                               String viewId) {
-       try {
-           return context.getExternalContext().getResource(viewId) != null;
-       } catch (MalformedURLException e) {
-           if (LOGGER.isLoggable(Level.SEVERE)) {
-               LOGGER.log(Level.SEVERE,
-                          e.toString(),
-                          e);
-           }
-       }
+        boolean result = false;
+        ResourceHandler rh = context.getApplication().getResourceHandler();
+        result = null != rh.createViewResource(context, viewId);
 
-       return false;
+        return result;
     }
 
     /**

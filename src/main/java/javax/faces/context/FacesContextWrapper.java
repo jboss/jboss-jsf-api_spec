@@ -52,9 +52,10 @@ import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.ProjectStage;
 import javax.el.ELContext;
+import javax.faces.component.visit.ComponentModificationManager;
 
 /**
- * <p><span class="changed_modified_2_1">Provides</span> a simple
+ * <p><span class="changed_modified_2_1 changed_modified_2_2">Provides</span> a simple
  * implementation of {@link FacesContext} that can be subclassed by
  * developers wishing to provide specialized behavior to an existing
  * {@link FacesContext} instance.  The default implementation of all
@@ -76,6 +77,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      * @return the wrapped {@link FacesContext} instance
      * @see javax.faces.FacesWrapper#getWrapped()
      */
+    @Override
     public abstract FacesContext getWrapped();
 
 
@@ -89,6 +91,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#getApplication()
      */
+    @Override
     public Application getApplication() {
         return getWrapped().getApplication();
     }
@@ -100,6 +103,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see FacesContext#getClientIdsWithMessages()
      */
+    @Override
     public Iterator<String> getClientIdsWithMessages() {
         return getWrapped().getClientIdsWithMessages();
     }
@@ -111,6 +115,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#getExternalContext()
      */
+    @Override
     public ExternalContext getExternalContext() {
         return getWrapped().getExternalContext();
     }
@@ -122,6 +127,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#getMaximumSeverity()
      */
+    @Override
     public FacesMessage.Severity getMaximumSeverity() {
         return getWrapped().getMaximumSeverity();
     }
@@ -133,6 +139,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#getMessages()
      */
+    @Override
     public Iterator<FacesMessage> getMessages() {
         return getWrapped().getMessages();
     }
@@ -144,6 +151,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#getMessages(String)
      */
+    @Override
     public Iterator<FacesMessage> getMessages(String clientId) {
         return getWrapped().getMessages(clientId);
     }
@@ -155,6 +163,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#getRenderKit()
      */
+    @Override
     public RenderKit getRenderKit() {
         return getWrapped().getRenderKit();
     }
@@ -166,10 +175,35 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#getRenderResponse()
      */
+    @Override
     public boolean getRenderResponse() {
         return getWrapped().getRenderResponse();
     }
 
+    /**
+     * <p>The default behavior of this method is to
+     * call {@link FacesContext#getResourceLibraryContracts}
+     * on the wrapped {@link FacesContext} object.</p>
+     *
+     * @see javax.faces.context.FacesContext#getResourceLibraryContracts
+     */
+    @Override
+    public List<String> getResourceLibraryContracts() {
+        return getWrapped().getResourceLibraryContracts();
+    }
+
+    /**
+     * <p>The default behavior of this method is to
+     * call {@link FacesContext#setResourceLibraryContracts}
+     * on the wrapped {@link FacesContext} object.</p>
+     *
+     * @see javax.faces.context.FacesContext#setResourceLibraryContracts
+     */
+    @Override
+    public void setResourceLibraryContracts(List<String> contracts) {
+        getWrapped().setResourceLibraryContracts(contracts);
+    }
+    
     /**
      * <p>The default behavior of this method is to
      * call {@link FacesContext#getResponseComplete()}
@@ -177,6 +211,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#getResponseComplete()
      */
+    @Override
     public boolean getResponseComplete() {
         return getWrapped().getResponseComplete();
     }
@@ -188,6 +223,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#getResponseStream()
      */
+    @Override
     public ResponseStream getResponseStream() {
         return getWrapped().getResponseStream();
     }
@@ -199,6 +235,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#setResponseStream(ResponseStream)
      */
+    @Override
     public void setResponseStream(ResponseStream responseStream) {
         getWrapped().setResponseStream(responseStream);
     }
@@ -210,6 +247,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#getResponseWriter()
      */
+    @Override
     public ResponseWriter getResponseWriter() {
         return getWrapped().getResponseWriter();
     }
@@ -221,6 +259,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#setResponseWriter(ResponseWriter)
      */
+    @Override
     public void setResponseWriter(ResponseWriter responseWriter) {
         getWrapped().setResponseWriter(responseWriter);
     }
@@ -232,6 +271,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#getViewRoot()
      */
+    @Override
     public UIViewRoot getViewRoot() {
         return getWrapped().getViewRoot();
     }
@@ -243,6 +283,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#setViewRoot(UIViewRoot)
      */
+    @Override
     public void setViewRoot(UIViewRoot root) {
         getWrapped().setViewRoot(root);
     }
@@ -254,6 +295,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#addMessage(String, FacesMessage)
      */
+    @Override
     public void addMessage(String clientId, FacesMessage message) {
         getWrapped().addMessage(clientId, message);
     }
@@ -267,6 +309,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
 
      * @since 2.1
      */
+    @Override
     public boolean isReleased() {
 	return getWrapped().isReleased();
     }
@@ -279,6 +322,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#release()
      */
+    @Override
     public void release() {
         getWrapped().release();
     }
@@ -290,6 +334,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#renderResponse()
      */
+    @Override
     public void renderResponse() {
         getWrapped().renderResponse();
     }
@@ -301,6 +346,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      *
      * @see javax.faces.context.FacesContext#responseComplete()
      */
+    @Override
     public void responseComplete() {
         getWrapped().responseComplete();
     }
@@ -316,6 +362,20 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
     public Map<Object, Object> getAttributes() {
         return getWrapped().getAttributes();
     }
+
+    /**
+     * <p class="changed_added_2_2">The default behavior of this method
+     * is to call {@link FacesContext#getNamingContainerSeparatorChar()}
+     * on the wrapped {@link FacesContext} object.</p>
+     *
+     * @see javax.faces.context.FacesContext#getNamingContainerSeparatorChar()
+     */
+    @Override
+    public char getNamingContainerSeparatorChar() {
+        return getWrapped().getNamingContainerSeparatorChar();
+    }
+    
+    
 
     /**
      * <p>The default behavior of this method is to
@@ -413,7 +473,21 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
     public PhaseId getCurrentPhaseId() {
         return getWrapped().getCurrentPhaseId();
     }
+    
+    /**
+     * <p class="changed_modified_2_2">The default behavior of this method is to
+     * call {@link FacesContext#getComponentModificationManager}
+     * on the wrapped {@link FacesContext} object.</p>
+     *
+     * @see javax.faces.context.FacesContext#getComponentModificationManager
+     */
 
+    @Override
+    public ComponentModificationManager getComponentModificationManager() {
+        return getWrapped().getComponentModificationManager();
+
+    }
+    
     /**
      * <p>The default behavior of this method is to
      * call {@link FacesContext#setCurrentPhaseId(PhaseId)}

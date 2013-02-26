@@ -67,13 +67,14 @@ import javax.el.ELException;
 import javax.el.ELResolver;
 import javax.faces.event.SystemEvent;
 import javax.faces.event.SystemEventListener;
+import javax.faces.flow.FlowHandler;
 import javax.faces.validator.Validator;
 import javax.faces.view.ViewDeclarationLanguage;
 
 
 /**
- * <p><strong class="changed_modified_2_0
- * changed_modified_2_0_rev_a">Application</strong> represents a
+ * <p><strong class="changed_modified_2_0 changed_modified_2_0_rev_a
+ * changed_modified_2_2">Application</strong> represents a
  * per-web-application singleton object where applications based on
  * JavaServer Faces (or implementations wishing to provide extended
  * functionality) can register application-wide singletons that provide
@@ -377,9 +378,6 @@ public abstract class Application {
      * for the sole purpose of not breaking existing applications that extend
      * this class.</p>
      *
-     * @return <code>ResourceBundle</code> for the current UIViewRoot,
-     * otherwise null
-     *
      * @throws FacesException if a bundle was defined, but not resolvable
      *
      * @throws NullPointerException if ctx == null || name == null
@@ -587,6 +585,61 @@ public abstract class Application {
 
         if (defaultApplication != null) {
             return defaultApplication.getELResolver();
+        }
+        throw new UnsupportedOperationException();
+
+    }
+
+    /**
+     * <p class="changed_added_2_2">Return the thread-safe singleton 
+     * {@link FlowHandler} for this application.  For implementations declaring 
+     * compliance with version 2.2 of the specification, this method must never return 
+     * {@code null}, even if the application has no flows.  This is necessary to enable
+     * dynamic flow creation during the application's lifetime.</p>
+     *
+     * <div class="changed_added_2_2">
+     *
+     * <p>All implementations that declare compliance with version 2.2
+     * of the specification must implement this method.  For the purpose
+     * of backward compatibility with environments that extend {@code
+     * Application} but do not override this method, an implementation is 
+     * provided that returns {@code null}.  Due to the decoratable nature
+     * of {@code Application}, code calling this method should always check
+     * for a {@code null} return.</p>
+
+     * </div>
+
+     * @since 2.2
+     *
+     */ 
+
+    public FlowHandler getFlowHandler() {
+
+        if (defaultApplication != null) {
+            return defaultApplication.getFlowHandler();
+        }
+        return null;
+
+    }
+
+    /**
+     * <p class="changed_added_2_2">Set the {@link FlowHandler} instance used by
+     * the {@link NavigationHandler} to satisfy the requirements of the faces
+     * flows feature.</p>
+
+     * @since 2.2
+     * 
+     * @throws NullPounterException if {code newHandler} is {@code null}
+     * 
+     * @throws IllegalStateException if this method is called after at least one 
+     * request has been processed by the {@code Lifecycle} instance for this application. 
+     *
+     */ 
+
+    public void setFlowHandler(FlowHandler newHandler) {
+
+        if (defaultApplication != null) {
+            defaultApplication.setFlowHandler(newHandler);
         }
         throw new UnsupportedOperationException();
 
@@ -1102,8 +1155,7 @@ public abstract class Application {
         throw new UnsupportedOperationException();
 
     }
-
-
+    
     /**
      * <p>Return an <code>Iterator</code> over the set of currently defined
      * component types for this <code>Application</code>.</p>
@@ -1719,11 +1771,11 @@ public abstract class Application {
 
 
     /**
-     * <p class="changed_added_2_0">Install the listener instance
-     * referenced by argument <code>listener</code> into the
-     * application as a listener for events of type
-     * <code>systemEventClass</code> that originate from objects of type
-     * <code>sourceClass</code>.</p>
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_2">Install</span> the listener instance
+     * referenced by argument <code>listener</code> into the application
+     * as a listener for events of type <code>systemEventClass</code>
+     * that originate from objects of type <code>sourceClass</code>.</p>
      *
      * <div class="changed_added_2_0">
      *
@@ -1740,6 +1792,15 @@ public abstract class Application {
      * </p>
      *
      * </div>
+
+     * <div class="changed_added_2_2">
+
+     * <p>It is valid to call this method <strong>during</strong> the
+     * processing of an event which was subscribed to by a previous call
+     * to this method.</p>
+
+     * </div>
+
      *
      * @param systemEventClass the <code>Class</code> of event for which
      * <code>listener</code> must be fired.
@@ -1775,7 +1836,8 @@ public abstract class Application {
 
 
     /**
-     * <p class="changed_added_2_0">Install the listener instance
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_2">Install</span> the listener instance
      * referenced by argument <code>listener</code> into application as
      * a listener for events of type <code>systemEventClass</code>.  The
      * default implementation simply calls through to {@link
@@ -1797,6 +1859,15 @@ public abstract class Application {
      * be called when events of type <code>systemEventClass</code> are
      * fired.
 
+     * <div class="changed_added_2_2">
+
+     * <p>See {@link
+     * #subscribeToEvent(java.lang.Class,java.lang.Class,javax.faces.event.SystemEventListener)}
+     * for an additional requirement regarding when it is valid to call
+     * this method.</p>
+
+     * </div>
+
      * @throws <code>NullPointerException</code> if any combination of
      * <code>systemEventClass</code>, or <code>listener</code> are
      * <code>null</code>.
@@ -1816,7 +1887,8 @@ public abstract class Application {
 
 
     /**
-     * <p class="changed_added_2_0">Remove the listener instance
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_2">Remove</span> the listener instance
      * referenced by argument <code>listener</code> from the application
      * as a listener for events of type
      * <code>systemEventClass</code> that originate from objects of type
@@ -1825,7 +1897,16 @@ public abstract class Application {
      * javax.faces.event.SystemEventListener)} for the specification
      * of how the listener is stored, and therefore, how it must be
      * removed.</p>
-     *
+
+     * <div class="changed_added_2_2">
+
+     * <p>See {@link
+     * #subscribeToEvent(java.lang.Class,java.lang.Class,javax.faces.event.SystemEventListener)}
+     * for an additional requirement regarding when it is valid to call
+     * this method.</p>
+
+     * </div>
+
      * @param systemEventClass the <code>Class</code> of event for which
      * <code>listener</code> must be fired.
      *
@@ -1860,12 +1941,22 @@ public abstract class Application {
 
 
     /**
-     * <p class="changed_added_2_0">Remove the listener instance
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_2">Remove</span> the listener instance
      * referenced by argument <code>listener</code> from the application
      * as a listener for events of type <code>systemEventClass</code>.  The
      * default implementation simply calls through to {@link #unsubscribeFromEvent(Class, javax.faces.event.SystemEventListener)}
      * passing <code>null</code> as the <code>sourceClass</code> argument</p>
      *
+     * <div class="changed_added_2_2">
+
+     * <p>See {@link
+     * #subscribeToEvent(java.lang.Class,java.lang.Class,javax.faces.event.SystemEventListener)}
+     * for an additional requirement regarding when it is valid to call
+     * this method.</p>
+
+     * </div>
+
      * @param systemEventClass the <code>Class</code> of event for which
      * <code>listener</code> must be fired.
      *

@@ -49,7 +49,8 @@ import javax.faces.FacesWrapper;
 import javax.faces.context.FacesContext;
 
 /**
- * <p class="changed_added_2_0">Provides a simple implementation of
+ * <p class="changed_added_2_0"><span class="changed_modified_2_2">Provides</span> 
+ * a simple implementation of
  * {@link Resource} that can be subclassed by developers wishing to
  * provide specialized behavior to an existing {@link Resource}
  * instance.  The default implementation of all methods is to call
@@ -70,17 +71,18 @@ public abstract class ResourceWrapper extends Resource implements FacesWrapper<R
     /**
      * @return the instance that we are wrapping.
      */ 
+    @Override
     public abstract Resource getWrapped();
 
 
     // --------------------------------------------------- Methods from Resource
-
 
     /**
      * <p class="changed_added_2_0">The default behavior of this method
      * is to call {@link Resource#getInputStream} on the wrapped {@link
      * ResourceHandler} object.</p>
      */
+    @Override
     public InputStream getInputStream() throws IOException {
 
         return getWrapped().getInputStream();
@@ -93,6 +95,7 @@ public abstract class ResourceWrapper extends Resource implements FacesWrapper<R
      * is to call {@link Resource#getURL} on the wrapped {@link
      * ResourceHandler} object.</p>
      */
+    @Override
     public URL getURL() {
 
         return getWrapped().getURL();
@@ -105,6 +108,7 @@ public abstract class ResourceWrapper extends Resource implements FacesWrapper<R
      * is to call {@link Resource#getResponseHeaders} on the wrapped {@link
      * ResourceHandler} object.</p>
      */
+    @Override
     public Map<String, String> getResponseHeaders() {
 
         return getWrapped().getResponseHeaders();
@@ -117,6 +121,7 @@ public abstract class ResourceWrapper extends Resource implements FacesWrapper<R
      * is to call {@link Resource#getRequestPath} on the wrapped {@link
      * ResourceHandler} object.</p>
      */
+    @Override
     public String getRequestPath() {
 
         return getWrapped().getRequestPath();
@@ -129,10 +134,83 @@ public abstract class ResourceWrapper extends Resource implements FacesWrapper<R
      * is to call {@link Resource#userAgentNeedsUpdate} on the wrapped {@link
      * ResourceHandler} object.</p>
      */
+    @Override
     public boolean userAgentNeedsUpdate(FacesContext context) {
 
         return getWrapped().userAgentNeedsUpdate(context);
         
     }
 
+
+    /**
+     * <p class="changed_added_2_2"> The default behavior of this method is to call
+     * {@link Resource#getContentType()} on the wrapped {@link ResourceHandler} object. </p>
+     */
+    @Override
+    public String getContentType() {
+
+        return getWrapped().getContentType();
+        
+    }
+
+    
+    /**
+     * <p class="changed_added_2_2"> The default behavior of this method is to call
+     * {@link Resource#setContentType(String)} on the wrapped {@link ResourceHandler} object. </p>
+     */
+    @Override
+    public void setContentType(String contentType) {
+
+        getWrapped().setContentType(contentType);
+
+    }
+
+
+    /**
+     * <p class="changed_added_2_2"> The default behavior of this method is to call
+     * {@link Resource#getLibraryName()} on the wrapped {@link ResourceHandler} object. </p>
+     */
+    @Override
+    public String getLibraryName() {
+
+        return getWrapped().getLibraryName();
+
+    }
+    
+    
+    /**
+     * <p class="changed_added_2_2"> The default behavior of this method is to call
+     * {@link Resource#setLibraryName(String)} on the wrapped {@link ResourceHandler} object. </p>
+     */
+    @Override
+    public void setLibraryName(String libraryName) {
+        
+        getWrapped().setLibraryName(libraryName);
+        
+    }
+
+    
+    /**
+     * <p class="changed_added_2_2"> The default behavior of this method is to call
+     * {@link Resource#getResourceName()} on the wrapped {@link ResourceHandler} object. </p>
+     */
+    @Override
+    public String getResourceName() {
+        
+        return getWrapped().getResourceName();
+        
+    }
+    
+    
+    /**
+     * <p class="changed_added_2_2"> The default behavior of this method is to call
+     * {@link Resource#setResourceName(String)} on the wrapped {@link ResourceHandler} object. </p>
+     */
+    @Override
+    public void setResourceName(String resourceName) {
+        
+        getWrapped().setResourceName(resourceName);
+        
+    }
+        
 }

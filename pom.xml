@@ -10,12 +10,12 @@
   </parent>
 
   <groupId>org.jboss.spec.javax.faces</groupId>
-  <artifactId>jboss-jsf-api_2.1_spec</artifactId>
-  <version>2.1.18.Final</version>
+  <artifactId>jboss-jsf-api_2.2_spec</artifactId>
+  <version>2.2.0-m09</version>
   <packaging>jar</packaging>
 
-  <name>JavaServer(TM) Faces 2.1 API</name>
-  <description>JSR-000314: JavaServer(TM) Faces 2.1 API</description>
+  <name>JavaServer(TM) Faces 2.2 API</name>
+  <description>JSR-000344: JavaServer(TM) Faces 2.2 API</description>
 
   <licenses>
     <license>
@@ -45,7 +45,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <resources>          
+              <resources>
                 <resource>
                   <directory>${basedir}</directory>
                   <includes>
@@ -53,9 +53,9 @@
                     <include>README</include>
                   </includes>
                 </resource>
-              </resources>              
+              </resources>
               <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
-            </configuration>            
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -80,12 +80,12 @@
             </manifest>
           </archive>
           <instructions>
-            <Specification-Title>JSR-000314: JavaServer(TM) Faces 2.1 API</Specification-Title>
+            <Specification-Title>JSR-000344: JavaServer(TM) Faces 2.2 API</Specification-Title>
             <Specification-Vendor>Oracle</Specification-Vendor>
-            <Specification-Version>2.1</Specification-Version>
+            <Specification-Version>2.2</Specification-Version>
             <!-- Set the package version to match the spec version -->
             <Export-Package>
-              javax.faces*;version=2.1
+              javax.faces*;version=2.2
             </Export-Package>
           </instructions>
         </configuration>
@@ -107,9 +107,9 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <Specification-Title>JSR-000314: JavaServer(TM) Faces 2.1 API</Specification-Title>
+              <Specification-Title>JSR-000314: JavaServer(TM) Faces 2.2 API</Specification-Title>
               <Specification-Vendor>Oracle</Specification-Vendor>
-              <Specification-Version>2.1</Specification-Version>
+              <Specification-Version>2.2</Specification-Version>
             </manifestEntries>
           </archive>
         </configuration>
@@ -118,6 +118,18 @@
   </build>
 
   <dependencies>
+    <dependency>
+      <groupId>org.jboss.spec</groupId>
+      <artifactId>jboss-javaee-all-6.0</artifactId>
+      <version>3.0.2.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.faces</groupId>
+      <artifactId>jsf-impl</artifactId>
+      <version>2.2.0-m09</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.jboss.spec.javax.el</groupId>
       <artifactId>jboss-el-api_2.2_spec</artifactId>
@@ -143,5 +155,5 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  
+
 </project>

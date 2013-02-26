@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,9 +42,11 @@ package javax.faces.application;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,7 +61,8 @@ import javax.faces.view.ViewDeclarationLanguage;
 
 /**
  * <p><strong><span
- * class="changed_modified_2_0 changed_modified_2_1">ViewHandler</span></strong> is the
+ * class="changed_modified_2_0 changed_modified_2_1 changed_modified_2_2">
+ * ViewHandler</span></strong> is the
  * pluggablity mechanism for allowing implementations of or applications
  * using the JavaServer Faces specification to provide their own
  * handling of the activities in the <em>Render Response</em> and
@@ -126,6 +129,22 @@ public abstract class ViewHandler {
     public static final String DEFAULT_SUFFIX = ".xhtml .view.xml .jsp";
     
     /**
+     * <p class="changed_added_2_2">
+     * If this param is set, and calling toLowerCase().equals("true") on a
+     * String representation of its value returns true, the runtime must
+     * ensure that any XML comments in the Facelets source page are not
+     * delivered to the client. The runtime must also consider the
+     * facelets.SKIP_COMMENTS param name as an alias to this param name for
+     * backwards compatibility with existing facelets tag libraries.
+     * </p>
+     * 
+     * @since 2.0
+     */
+    
+    public static final String FACELETS_SKIP_COMMENTS_PARAM_NAME = 
+            "javax.faces.FACELETS_SKIP_COMMENTS";
+    
+    /**
      * <p class="changed_added_2_0">Allow the web application to define an
      * alternate suffix for Facelet based XHTML pages containing JSF content.
      * If this init parameter is not specified, the default value is
@@ -166,6 +185,90 @@ public abstract class ViewHandler {
     
     public static final String FACELETS_VIEW_MAPPINGS_PARAM_NAME = 
             "javax.faces.FACELETS_VIEW_MAPPINGS";
+    
+    /**
+     * <p class="changed_added_2_2">
+     * The buffer size to set on the response when the ResponseWriter is
+     * generated. By default the value is 1024. A value of -1 will not assign
+     * a buffer size on the response. This should be increased if you are
+     * using development mode in order to guarantee that the response isn't
+     * partially rendered when an error is generated. The runtime must also
+     * consider the facelets.BUFFER_SIZE param name as an alias to this param
+     * name for backwards compatibility with existing facelets tag libraries.</p>
+     * 
+     * @since 2.0
+     */
+    
+    public static final String FACELETS_BUFFER_SIZE_PARAM_NAME = 
+            "javax.faces.FACELETS_BUFFER_SIZE";
+    
+    /**
+     * <p class="changed_added_2_2">When a page is requested, what interval in seconds should the compiler
+     * check for changes. If you don't want the compiler to check for changes
+     * once the page is compiled, then use a value of -1. Setting a low
+     * refresh period helps during development to be able to edit pages in a
+     * running application.The runtime must also consider the
+     * facelets.REFRESH_PERIOD param name as an alias to this param name for
+     * backwards compatibility with existing facelets tag libraries.
+     * </p>
+     * 
+     * @since 2.0
+     */
+    public static final String FACELETS_REFRESH_PERIOD_PARAM_NAME = 
+            "javax.faces.FACELETS_REFRESH_PERIOD";
+    
+    /**
+     * <p class="changed_added_2_2">
+     * If this param is set, the runtime must interpret it as a semicolon (;)
+     * separated list of paths, starting with "/" (without the quotes). The
+     * runtime must interpret each entry in the list as a path relative to
+     * the web application root and interpret the file found at that path as
+     * a facelet tag library, conforming to the facelet taglibrary schema and
+     * expose the tags therein according to Section "Facelet Tag Library
+     * mechanism". The runtime must also consider the facelets.LIBRARIES
+     * param name as an alias to this param name for backwards compatibility
+     * with existing facelets tag libraries.     
+     * </p>
+     * 
+     * 
+     * @since 2.0
+     */
+    
+    public static final String FACELETS_LIBRARIES_PARAM_NAME = 
+            "javax.faces.FACELETS_LIBRARIES";
+    
+    /**
+     * <p class="changed_added_2_2">A semicolon (;) delimitted list of class names of type
+     * javax.faces.view.facelets.TagDecorator, with a no-argument
+     * constructor. These decorators will be loaded when the first request
+     * for a Facelets VDL view hits the ViewHandler for page compilation.The
+     * runtime must also consider the facelets.DECORATORS param name as an
+     * alias to this param name for backwards compatibility with existing
+     * facelets tag libraries.
+     * </p>
+     * 
+     * @since 2.0
+     */
+    
+    public static final String FACELETS_DECORATORS_PARAM_NAME = 
+            "javax.faces.FACELETS_DECORATORS";
+    
+    /**
+     * <p class="changed_added_2_2">
+     * If this param is set, and calling toLowerCase().equals("true") on a
+     * String representation of its value returns true, the default
+     * ViewHandler must behave as specified in the latest 1.2 version of this
+     * specification. Any behavior specified in Section "Default
+     * ViewDeclarationLanguage Implementation" of the spec prose document and
+     * implemented in the default ViewHandler that pertains to handling
+     * requests for pages authored in the JavaServer Faces View Declaration
+     * Language must not be executed by the runtime.
+     * </p>
+     * 
+     * @since 2.0
+     */
+    public static final String DISABLE_FACELET_JSF_VIEWHANDLER_PARAM_NAME = 
+            "DISABLE_FACELET_JSF_VIEWHANDLER";
 
     // ---------------------------------------------------------- Public Methods
 
@@ -276,7 +379,7 @@ public abstract class ViewHandler {
     /**
      * <p class="changed_added_2_0">Derive and return the viewId from
      * the current request, or the argument input by following the
-     * algorithm defined in specification section JSF.7.5.2.</p>
+     * algorithm defined in specification section JSF.7.6.2.</p>
      *
      * <p>The default implementation of this method simply returns
      * rawViewId unchanged.</p>
@@ -296,7 +399,7 @@ public abstract class ViewHandler {
     /**
      * <p class="changed_added_2_1">Derive and return the viewId from
      * the current request, or the argument input by following the
-     * algorithm defined in specification section JSF.7.5.2.  Note that
+     * algorithm defined in specification section JSF.7.6.2.  Note that
      * unlike <code>deriveViewId()</code>, this method does not require that
      * a physical view be present.</p>
      *
@@ -324,7 +427,7 @@ public abstract class ViewHandler {
      * a client making a request to the <code>toExternalForm()</code> of
      * that <code>URL</code> will select the argument
      * <code>viewId</code> for traversing the JSF lifecycle.  Please see
-     * section JSF.7.5.2 for the complete specification.</p>
+     * section JSF.7.6.2 for the complete specification.</p>
      *
      * @param context {@link FacesContext} for this request
      * @param viewId View identifier of the desired view
@@ -358,14 +461,71 @@ public abstract class ViewHandler {
      *  <code>path</code> is <code>null</code>.
      */
     public abstract String getResourceURL(FacesContext context, String path);
-
-
+    
+    /**
+     * <p class="changed_added_2_2">Return an unmodifiable
+     * <code>Set</code> of the protected views currently known to this
+     * <code>ViewHandler</code> instance. Compliant implementations must
+     * return a <code>Set</code> that is the concatenation of the
+     * contents of all the <code>&lt;url-pattern&gt;</code> elements
+     * within all the <code>&lt;protected-views&gt;</code> in all of the
+     * application configuration resources in the current application.
+     * The runtime must support calling this method at any time after
+     * application startup.  The default implementation returns an
+     * unmodifiable empty <code>Set</code>.</p>
+     * 
+     * @since 2.2 
+     */
+    public Set<String> getProtectedViewsUnmodifiable() {
+        return Collections.unmodifiableSet(Collections.EMPTY_SET);
+    }
+    
+    /**
+     * <p class="changed_added_2_2">Add the argument
+     * <code>urlPattern</code> to the thread safe <code>Set</code> of
+     * protected views for this application.  Compliant implementations
+     * make it so a subsequent call to {@link
+     * #getProtectedViewsUnmodifiable} contains the argument. The
+     * runtime must support calling this method at any time after
+     * application startup.  The default implementation takes no
+     * action.</p>
+     * 
+     * @param urlPattern the url-pattern to add.
+     * 
+     * @since 2.2 
+     */
+    public void addProtectedView(String urlPattern) {
+        
+    }
+    
+    /**
+     * <p class="changed_added_2_2">Remove the argument
+     * <code>urlPattern</code> from the thread safe <code>Set</code> of
+     * protected views for this application, if present in the
+     * <code>Set</code>. If the argument <code>urlPattern</code> is not
+     * present in the <code>Set</code>, this method has no effect.
+     * Compliant implementations must make it so a subsequent call to
+     * {@link #getProtectedViewsUnmodifiable} does not contain the
+     * argument. The runtime must support calling this method at any
+     * time after application startup.  Returns <code>true</code> if
+     * this <code>Set</code> contained the argument.  The default
+     * implementation takes no action and returns
+     * <code>false</code>.</p>
+     * 
+     * @param urlPattern the url-pattern to remove.
+     * 
+     * @since 2.2 
+     */
+    public boolean removeProtectedView(String urlPattern) {
+        return false;
+    }
+    
     /**
      * <p class="changed_added_2_0"> Return a JSF action URL derived
      * from the <code>viewId</code> argument that is suitable to be used
      * by the {@link NavigationHandler} to issue a redirect request to
-     * the URL using a NonFaces request.  Compiliant implementations
-     * must implement this method as specified in section JSF.7.5.2.
+     * the URL using a NonFaces request.  Compliant implementations
+     * must implement this method as specified in section JSF.7.6.2.
      * The default implementation simply calls through to {@link
      * #getActionURL}, passing the arguments <code>context</code> and
      * <code>viewId</code>.</p>
@@ -391,7 +551,7 @@ public abstract class ViewHandler {
      * <p class="changed_added_2_0"> Return a JSF action URL derived
      * from the viewId argument that is suitable to be used as the
      * target of a link in a JSF response. Compiliant implementations
-     * must implement this method as specified in section JSF.7.5.2.
+     * must implement this method as specified in section JSF.7.6.2.
      * The default implementation simply calls through to {@link
      * #getActionURL}, passing the arguments <code>context</code> and
      * <code>viewId</code>.</p>

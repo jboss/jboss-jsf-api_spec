@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,10 +41,12 @@
 package javax.faces.event;
 
 import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 
 /**
  *
- * <p><strong class="changed_added_2_0">ComponentSystemEvent</strong> is
+ * <p><strong class="changed_added_2_0 changed_modified_2_2">
+ * ComponentSystemEvent</strong> is
  * the base class for {@link SystemEvent}s that are specific to a {@link
  * UIComponent} instance.</p>
  *
@@ -73,6 +75,59 @@ public abstract class ComponentSystemEvent extends SystemEvent {
         super(component);
     }
 
+    /**
+     * <p class="changed_added_2_2">Return <code>true</code> if the argument
+     * {@link FacesListener} is an instance of the appropriate listener class that this event
+     * supports.  The default implementation returns true if the listener
+     * is a {@link ComponentSystemEventListener} or if <code>super.isAppropriateListener()</code>
+     * returns true.</p>
+     *
+     * @param listener {@link FacesListener} to evaluate
+     * @since 2.2
+     */
+    @Override
+    public boolean isAppropriateListener(FacesListener listener) {
+        boolean result = (listener instanceof ComponentSystemEventListener);
+        if (!result) {
+            result = super.isAppropriateListener(listener);
+        }
+        return result;
+    }
+
+    /**
+     * <p class="changed_added_2_2">Before calling the corresponding method
+     * on the superclass, verify that there is a current component so
+     * that EL expressions that start with #{component} or #{cc} operate
+     * as expected.</p>
+     *
+     * @param listener {@link FacesListener} to evaluate
+     * @since 2.2
+     */
+    @Override
+    public void processListener(FacesListener listener) {
+        UIComponent c = getComponent();
+        UIComponent cFromStack;
+        boolean didPush = false;
+        FacesContext context = FacesContext.getCurrentInstance();
+        cFromStack = UIComponent.getCurrentComponent(context);
+        if (null == cFromStack) {
+            didPush = true;
+            c.pushComponentToEL(context, null);
+        }
+        try {
+            if (listener instanceof SystemEventListener) {
+                super.processListener(listener);
+            } else if (listener instanceof ComponentSystemEventListener) {
+                ((ComponentSystemEventListener)listener).processEvent(this);
+            }
+        } finally {
+            if (didPush) {
+                c.popComponentFromEL(context);
+            }
+        }
+    }
+    
+    
 
     // -------------------------------------------------------------- Properties
 

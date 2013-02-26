@@ -47,11 +47,13 @@ import java.io.Writer;
 
 
 /**
- * <p><strong>ResponseWriter</strong> is an abstract class describing an
- * adapter to an underlying output mechanism for character-based output.
- * In addition to the low-level <code>write()</code> methods inherited from
- * <code>java.io.Writer</code>, this class provides utility methods
- * that are useful in producing elements and attributes for markup languages
+ * <p><span
+ * class="changed_modified_2_2"><strong>ResponseWriter</strong></span>
+ * is an abstract class describing an adapter to an underlying output
+ * mechanism for character-based output.  In addition to the low-level
+ * <code>write()</code> methods inherited from
+ * <code>java.io.Writer</code>, this class provides utility methods that
+ * are useful in producing elements and attributes for markup languages
  * like HTML and XML.</p>
  */
 
@@ -103,7 +105,8 @@ public abstract class ResponseWriter extends Writer {
 
 
     /**
-     * <p>Write the start of an element, up to and including the
+     * <p><span class="changed_modified_2_2">Write</span> the start of an element, 
+       up to and including the
      * element name.  Once this method has been called, clients can
      * call the <code>writeAttribute()</code> or
      * <code>writeURIAttribute()</code> methods to add attributes and
@@ -114,10 +117,28 @@ public abstract class ResponseWriter extends Writer {
      * <code>writeText()</code>, <code>endElement()</code>,
      * <code>endDocument()</code>, <code>close()</code>,
      * <code>flush()</code>, or <code>write()</code>.</p>
+     * 
+     * <div class="changed_added_2_2">
+     * 
+     * <p>If the argument component's pass through attributes 
+     * includes an attribute of the name given by the value of the symbolic
+     * constant {@link javax.faces.render.Renderer#PASSTHROUGH_RENDERER_LOCALNAME_KEY},
+     * use that as the element name, instead of the value passed as the first 
+     * parameter to this method.  Care must be taken so that this value
+     * is not also rendered when any other pass through attributes on this component
+     * are rendered.</p>
+     * 
+     * </div>
      *
      * @param name      Name of the element to be started
-     * @param component The {@link UIComponent} (if any) to which
-     *                  this element corresponds
+
+     * @param component The {@link UIComponent} (if any) to which this
+     *                  element corresponds.  <span
+     *                  class="changed_added_2_2"> This component is
+     *                  inspected for its pass through attributes as
+     *                  described in the standard HTML_BASIC {@code
+     *                  RenderKit} specification.</span>
+
      * @throws IOException          if an input/output error occurs
      * @throws NullPointerException if <code>name</code>
      *                              is <code>null</code>
@@ -127,10 +148,21 @@ public abstract class ResponseWriter extends Writer {
 
 
     /**
-     * <p>Write the end of an element, after closing any open element
+     * <p><span class="changed_modified_2_2">Write</span> the end of an element, 
+     * after closing any open element
      * created by a call to <code>startElement()</code>.  Elements must be
      * closed in the inverse order from which they were opened; it is an
      * error to do otherwise.</p>
+     *
+     * <div class="changed_added_2_2">
+     * 
+     * <p>If the argument component's pass through attributes 
+     * includes an attribute of the name given by the value of the symbolic
+     * constant {@link javax.faces.render.Renderer#PASSTHROUGH_RENDERER_LOCALNAME_KEY},
+     * use that as the element name, instead of the value passed as the first 
+     * parameter to this method.</p>
+     * 
+     * </div>
      *
      * @param name Name of the element to be ended
      * @throws IOException          if an input/output error occurs
@@ -165,12 +197,19 @@ public abstract class ResponseWriter extends Writer {
 
 
     /**
-     * <p>Write a URI attribute name and corresponding value, after converting
-     * that text to a String (if necessary), and after performing any encoding
-     * appropriate to the markup language being rendered.
-     * This method may only be called after a call to
-     * <code>startElement()</code>, and before the opened element has been
-     * closed.</p>
+     * <p><span class="changed_modified_2_2">Write</span> a URI
+     * attribute name and corresponding value, after converting that
+     * text to a String (if necessary), and after performing any
+     * encoding <span class="changed_modified_2_2">or escaping</span>
+     * appropriate to the markup language being rendered.  <span
+     * class="changed_modified_2_2">When rendering in a WWW environment,
+     * the escaping conventions established in the W3C URI spec document
+     * &lt;<a
+     * href="http://www.w3.org/Addressing/URL/uri-spec.html">http://www.w3.org/Addressing/URL/uri-spec.html</a>&gt;
+     * must be followed.  In particular, spaces ' ' must be encoded as
+     * %20 and not the plus character '+'.</span> This method may only
+     * be called after a call to <code>startElement()</code>, and before
+     * the opened element has been closed.</p>
      *
      * @param name     Attribute name to be added
      * @param value    Attribute value to be added
@@ -226,6 +265,51 @@ public abstract class ResponseWriter extends Writer {
      *                              is <code>null</code>
      */
     public abstract void writeComment(Object comment) throws IOException;
+    
+    
+    /**
+     * <p class="changed_added_2_2">Write a string containing the markup specific
+     * preamble.
+     * No escaping is performed. The default 
+     * implementation simply calls through to {@link #write(java.lang.String)} .</p>
+     * 
+     * <div class="changed_added_2_2">
+     * 
+     * <p>The implementation makes no checks if this is the correct place
+     * in the response to have a preamble, nor does it prevent the preamble
+     * from being written more than once.</p>
+     * 
+     * </div>
+     * 
+     * @since 2.2
+     * @param preamble Text content of the preamble
+     * @throws IOException if an input/output error occurs
+     */
+    public void writePreamble(String preamble) throws IOException {
+        write(preamble);
+    }
+
+    /**
+     * <p class="changed_added_2_2">Write a string containing the markup specific
+     * doctype.
+     * No escaping is performed. The default 
+     * implementation simply calls through to {@link #write(java.lang.String)} .</p>
+     * 
+     * <div class="changed_added_2_2">
+     * 
+     * <p>The implementation makes no checks if this is the correct place
+     * in the response to have a doctype, nor does it prevent the doctype
+     * from being written more than once.</p>
+     * 
+     * </div>
+     * 
+     * @since 2.2
+     * @param doctype Text content of the doctype
+     * @throws IOException if an input/output error occurs
+     */
+    public void writeDoctype(String doctype) throws IOException {
+        write(doctype);
+    }
 
 
     /**

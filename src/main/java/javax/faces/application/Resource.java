@@ -49,7 +49,7 @@ import javax.faces.context.FacesContext;
 
 /**
  * <p class="changed_added_2_0"><span
- * class="changed_modified_2_1">An</span> instance of
+ * class="changed_modified_2_1 changed_modified_2_2">An</span> instance of
  * <code>Resource</code> is a Java object representation of the artifact
  * that is served up in response to a <i>resource request</i> from the
  * client.  Instances of <code>Resource</code> are normally created and
@@ -215,11 +215,12 @@ public abstract class Resource {
 
 
     /**
-     * <p class="changed_added_2_0">Return a path to this resource such
-     * that, when the browser resolves it against the base URI for the
-     * view that includes the resource, and issues a GET request to the
-     * resultant fully qualified URL, the bytes of the resource are
-     * returned in response.</p>
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_2">Return</span> a path to this
+     * resource such that, when the browser resolves it against the base
+     * URI for the view that includes the resource, and issues a GET
+     * request to the resultant fully qualified URL, the bytes of the
+     * resource are returned in response.</p>
      *
      * <div class="changed_added_2_0">
      *
@@ -230,7 +231,7 @@ public abstract class Resource {
      * <ul>
      *
      * <li><p>Get the context-root for this web application, not ending
-     * in slash.  For discussion this will be caled
+     * in slash.  For discussion this will be called
      * <em>contextRoot</em>.</p></li>
      *
      * <li><p>Discover if the <code>FacesServlet</code> is prefix or
@@ -253,18 +254,30 @@ public abstract class Resource {
      *
      * </li>
      *
-     * <li><p>If {@link #getLibraryName} returns non-<code>null</code>,
-     * build up a string, called <em>resourceMetaData</em> for
-     * discussion, as follows:</p>
+     * <li class="changed_modified_2_2"><p>Build up a string, called
+     * <em>resourceMetaData</em> which is an &amp; separated string of
+     * name=value pairs suitable for inclusion in a URL query
+     * string.</p>
      *
      * <ul>
      *
-     * <p><code>resourceMetaData = "?ln=" + {@link
-     * #getLibraryName}</code></p>
+     * <p>If {@link #getLibraryName} returns non-<code>null</code>,
+     * <code>resourceMetaData</code> must include "ln=" + the return
+     * from {@link #getLibraryName}</p>
+
+     * <p class="changed_added_2_2">If there is a
+     * <code>localePrefix</code> for this application, as defined in
+     * {@link ResourceHandler#LOCALE_PREFIX}, <code>resourceMetaData</code> must
+     * include "loc=" + the <code>localePrefix</code>.</p>
+
+
+     * <p class="changed_added_2_2">If this resource is contained in a
+     * resource library contract, <code>resourceMetaData</code> must
+     * include "con=" + the name of the resource library contract.</p>
      *
      * </ul>
      *
-     * <p>Append <em>resourceMetaData</em> to <em>result</em>.</p>
+     * <p>Append "?" + <em>resourceMetaData</em> to <em>result</em>.</p>
      *
      * </li>
      *
@@ -272,7 +285,7 @@ public abstract class Resource {
      * ViewHandler#getResourceURL}.</p></li>
      *
      * </ul>
-     *
+
      * </div>
      *
      * @return the path to this resource, intended to be included in the
@@ -305,9 +318,14 @@ public abstract class Resource {
 
 
     /**
-     * <p class="changed_added_2_0">Return <code>true</code> if the
-     * user-agent requesting this resource needs an update.  Returns
-     * <code>false</code> otherwise.  
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_2_2">Return</span> <code>true</code> if
+     * the user-agent requesting this resource needs an update.  <span
+     * class="changed_added_2_2">If the {@code If-Modified-Since} HTTP
+     * header is available for this request, its value must be
+     * consulted, as specified in Section 14.25 of IETF RFC 2616, to
+     * determine the result.</span> Returns <code>false</code> if the
+     * user-agent does not need an update for this resource.</p>
      *
      * @return <code>true</code> or <code>false</code> depending on
      * whether or not the user-agent needs an update of this resource.
