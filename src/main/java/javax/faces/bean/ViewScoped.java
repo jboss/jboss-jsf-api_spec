@@ -55,6 +55,17 @@ import java.lang.annotation.Inherited;
 
  * <div class="changed_added_2_2">
 
+ * <p>If <code>ProjectStage</code> is not
+ * <code>ProjectStage.Production</code>, verify that the current {@code
+ * UIViewRoot} does not have its {@code transient}
+ * property set to {@code true}.  If so, add a <code>FacesMessage</code>
+ * for the current {@code viewId} to the <code>FacesContext</code>
+ * stating {@code @ViewScoped} beans cannot work if the view is marked
+ * as transient.  Also log a <code>Level.WARNING</code> message to the 
+ * log.  If <code>ProjectStage</code> <strong>is</strong>
+ * <code>ProjectStage.Production</code>, do not do this
+ * verification.</p>
+
  * <p>The bean must be stored in the map returned from 
  * {@code javax.faces.component.UIViewRoot.getViewMap(boolean)}.</p>
 
@@ -93,7 +104,7 @@ import java.lang.annotation.Inherited;
  * JavaEE.  When possible, the corresponding annotations from the
  * appropriate Java EE specification should be used in preference to
  * these annotations.  In this case, the corresponding annotation is
- * {@code javax.faces.flow.ViewScoped}.  The functionality of this
+ * {@code javax.faces.view.ViewScoped}.  The functionality of this
  * corresponding annotation is identical to this one, but it is
  * implemented as a CDI custom scope.</p>
 

@@ -184,6 +184,8 @@ public class HtmlInputFile extends javax.faces.component.UIInput implements Clie
      * <p>Return the value of the <code>dir</code> property.</p>
      * <p>Contents: Direction indication for text that does not inherit directionality.
      * Valid values are "LTR" (left-to-right) and "RTL" (right-to-left).
+     * These attributes are case sensitive when rendering to XHTML, so
+     * care must be taken to have the correct case.
      */
     public java.lang.String getDir() {
         return (java.lang.String) getStateHelper().eval(PropertyKeys.dir);

@@ -589,6 +589,7 @@ public final class FacesServlet implements Servlet {
      * @throws ServletException if a servlet error occurs during processing
 
      */
+    @Override
     public void service(ServletRequest req,
                         ServletResponse resp)
         throws IOException, ServletException {

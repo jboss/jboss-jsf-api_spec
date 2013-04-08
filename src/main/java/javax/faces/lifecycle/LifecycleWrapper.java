@@ -68,11 +68,6 @@ public abstract class LifecycleWrapper extends Lifecycle implements FacesWrapper
     public abstract Lifecycle getWrapped();
 
     @Override
-    public void attachWindow(FacesContext context) {
-        getWrapped().attachWindow(context);
-    }
-    
-    @Override
     public void addPhaseListener(PhaseListener listener) {
         getWrapped().addPhaseListener(listener);
     }
@@ -97,5 +92,8 @@ public abstract class LifecycleWrapper extends Lifecycle implements FacesWrapper
         getWrapped().render(context);
     }
 
-    
+    @Override
+    public void attachWindow(FacesContext context) {
+        getWrapped().attachWindow(context);
+    }
 }

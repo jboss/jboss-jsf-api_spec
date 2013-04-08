@@ -38,49 +38,30 @@
  * holder.
 
  */
-package javax.faces.flow.builder;
+package javax.faces.application;
 
-import javax.el.ValueExpression;
+import java.net.URL;
 
 /**
- * <p class="changed_added_2_2">Create a flow call node in the current {@link javax.faces.flow.Flow}.</p>
+ * <p class="changed_added_2_2">Superclass of {@link Resource} that is only
+ * for use with views.</p>
+ * 
  * @since 2.2
+ * 
  */
-public abstract class FlowCallBuilder implements NodeBuilder {
-    
-    /**
-     * <p class="changed_added_2_2">Define the flow reference of the called flow.</p>
-     * 
-     * @param flowDocumentId the document id of the called flow.  May not be {@code null}, 
-     * but may be the empty string.
-     * @param flowId the id of the called flow.  May not be {@code null}
-     * @throws NullPointerException if any of the parameters are {@code null}
-     * @since 2.2
-     */
-    public abstract FlowCallBuilder flowReference(String flowDocumentId, 
-                                                  String flowId);
-    
-    /**
-     * <p class="changed_added_2_2">Define an outbound parameter for the flow call.</p>
-     * 
-     * @param name the name of the parameter
-     * @param value the value of the parameter
-     * @throws NullPointerException if any of the parameters are {@code null}
-     * @since 2.2
-     */
-    public abstract FlowCallBuilder outboundParameter(String name, ValueExpression value);
-        
-    /**
-     * <p class="changed_added_2_2">Define an outbound parameter for the flow call.</p>
-     * 
-     * @param name the name of the parameter
-     * @param value the value of the parameter
-     * @throws NullPointerException if any of the parameters are {@code null}
-     * @since 2.2
-     */
-    public abstract FlowCallBuilder outboundParameter(String name, String value);
 
-    @Override
-    public abstract FlowCallBuilder markAsStartNode();
+public abstract class ViewResource {
+    
+    /**
+     * <p class="changed_added_2_2">Return an actual <code>URL</code>
+     * instance that refers to this resource instance.</p>
+     *
+     * @return Return an actual <code>URL</code> instance that refers to
+     * this resource instance.
+     * 
+     * @since 2.2
+     */
+    public abstract URL getURL();
+
     
 }

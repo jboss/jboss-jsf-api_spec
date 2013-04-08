@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -153,6 +153,12 @@ public abstract class ResponseStateManager {
      * <code>state</code> and write it into the
      * output using the current {@link ResponseWriter}, which must be
      * correctly positioned already.</p>
+     * 
+     * <p class="changed_added_2_2">Call {@link FacesContext#getViewRoot()}.
+     * If {@link javax.faces.component.UIComponent#isTransient()}
+     * returns {@code true}, take implementation specific action so that the 
+     * following call to {@link #isStateless} returns {@code true} and return.
+     * Otherwise, proceed as follows.</p>
      *
      * <p>If the state is to be written out to hidden fields, the
      * implementation must take care to make all necessary character
@@ -296,7 +302,38 @@ public abstract class ResponseStateManager {
         }
         
     }
-
+    
+    /**
+     * <p class="changed_added_2_2">If the preceding call to {@link #writeState(javax.faces.context.FacesContext, java.lang.Object)}
+     * was stateless, return {@code true}.  If the preceding call to {@code writeState()} was
+     * stateful, return {@code false}.  Otherwise throw {@code IllegalStateException}.</p>
+     * 
+     * <div class="changed_added_2_2">
+     * 
+     * <p>To preserve backward compatibility
+     * with custom implementations that may have extended from an earlier
+     * version of this class, an implementation is provided that returns 
+     * <code>false</code>.  A compliant implementation must override this 
+     * method to take the specified action.</p>
+     * 
+     * </div>
+     * 
+     * @param context The {@link FacesContext} instance for the current request
+     * @param viewId View identifier of the view to be restored
+     * @throws NullPointerException if the argument {@code context} is {@code null}.
+     * @throws IllegalStateException if this method is invoked and the statefulness
+     * of the preceding call to {@link #writeState(javax.faces.context.FacesContext, java.lang.Object)}
+     * cannot be determined.
+     * 
+     * @since 2.2
+     * 
+     *  
+     */
+    
+    public boolean isStateless(FacesContext context, String viewId) {
+        return false;
+    }
+    
     /**
      * <p><span class="changed_modified_2_2">The</span> implementation must 
      * inspect the current request and return
@@ -382,7 +419,7 @@ public abstract class ResponseStateManager {
      * previous request to which this request is a postback,
      * <code>false</code> otherwise.</p>
      *
-     * <p>The implementation if this method for the Standard HTML
+     * <p>The implementation of this method for the Standard HTML
      * RenderKit must consult the {@link
      * javax.faces.context.ExternalContext}'s
      * <code>requestParameterMap</code> and return <code>true</code> if
@@ -435,5 +472,4 @@ public abstract class ResponseStateManager {
     public String getCryptographicallyStrongTokenFromSession(FacesContext context) {
         return null;
     }
-    
 }

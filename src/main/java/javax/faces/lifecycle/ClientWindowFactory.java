@@ -38,49 +38,51 @@
  * holder.
 
  */
-package javax.faces.flow.builder;
+package javax.faces.lifecycle;
 
-import javax.el.ValueExpression;
+import javax.faces.FacesWrapper;
+import javax.faces.context.FacesContext;
 
 /**
- * <p class="changed_added_2_2">Create a flow call node in the current {@link javax.faces.flow.Flow}.</p>
+ * <p class="changed_added_2_2">Create {@link ClientWindow} instances based on 
+ * the incoming request.</p>
+ * 
+ * 
  * @since 2.2
  */
-public abstract class FlowCallBuilder implements NodeBuilder {
-    
-    /**
-     * <p class="changed_added_2_2">Define the flow reference of the called flow.</p>
-     * 
-     * @param flowDocumentId the document id of the called flow.  May not be {@code null}, 
-     * but may be the empty string.
-     * @param flowId the id of the called flow.  May not be {@code null}
-     * @throws NullPointerException if any of the parameters are {@code null}
-     * @since 2.2
-     */
-    public abstract FlowCallBuilder flowReference(String flowDocumentId, 
-                                                  String flowId);
-    
-    /**
-     * <p class="changed_added_2_2">Define an outbound parameter for the flow call.</p>
-     * 
-     * @param name the name of the parameter
-     * @param value the value of the parameter
-     * @throws NullPointerException if any of the parameters are {@code null}
-     * @since 2.2
-     */
-    public abstract FlowCallBuilder outboundParameter(String name, ValueExpression value);
-        
-    /**
-     * <p class="changed_added_2_2">Define an outbound parameter for the flow call.</p>
-     * 
-     * @param name the name of the parameter
-     * @param value the value of the parameter
-     * @throws NullPointerException if any of the parameters are {@code null}
-     * @since 2.2
-     */
-    public abstract FlowCallBuilder outboundParameter(String name, String value);
+public abstract class ClientWindowFactory implements FacesWrapper<ClientWindowFactory> {
 
+    
+    /**
+     * <p class="changed_added_2_2">If this factory has been decorated, the 
+     * implementation doing the decorating may override this method to provide
+     * access to the implementation being wrapped.  A default implementation
+     * is provided that returns <code>null</code>.</p>
+     * 
+     * @since 2.2
+     */
+    
     @Override
-    public abstract FlowCallBuilder markAsStartNode();
+    public ClientWindowFactory getWrapped() {
+        return null;
+    }
+    
+    /**
+     * <p class="changed_added_2_2">The implementation is responsible
+     * for creating the {@link ClientWindow} instance for this request.
+     * If {@link ClientWindow#CLIENT_WINDOW_MODE_PARAM_NAME}
+     * is "none" or unspecified, this method must return {@code null}.  
+     * If {@link ClientWindow#CLIENT_WINDOW_MODE_PARAM_NAME}
+     * is "url" the implementation must return a <code>ClientWindow</code>
+     * instance that implements the url-mode semantics described in
+     * {@link ClientWindow}.
+     * 
+     * @param context the {@link FacesContext} for this request.
+     * @return the {@link ClientWindow} for this request, or {@code null} 
+     * 
+     * @since 2.2
+     */
+    
+    public abstract ClientWindow getClientWindow(FacesContext context);
     
 }

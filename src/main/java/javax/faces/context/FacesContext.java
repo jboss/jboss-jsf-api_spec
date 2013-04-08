@@ -41,6 +41,7 @@
 package javax.faces.context;
 
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -57,7 +58,6 @@ import javax.faces.render.RenderKit;
 import javax.el.ELContext;
 import javax.faces.FactoryFinder;
 import javax.faces.component.UINamingContainer;
-import javax.faces.component.visit.ComponentModificationManager;
 import javax.faces.event.PhaseId;
 
 
@@ -478,11 +478,11 @@ public abstract class FacesContext {
     /**
      * <p class="changed_added_2_2">Return the list of resource library 
      * contracts that have been calculated
-     * to be appropriate for use with this view, or {@code null} if there are 
+     * to be appropriate for use with this view, or an empty list if there are 
      * no such resource library contracts.  The list returned by this method
      * must be immutable.  For backward compatibility with implementations
      * of the specification prior to when this method was introduced, an
-     * implementation is provided that returns {@code null}.  Implementations
+     * implementation is provided that returns an empty list.  Implementations
      * compliant with the version in which this method was introduced must
      * implement this method as specified.</p>
      * 
@@ -492,7 +492,7 @@ public abstract class FacesContext {
      * @since 2.2 
      */
     public List<String> getResourceLibraryContracts() {
-        return null;
+        return Collections.emptyList();
     }
     
     /**
@@ -793,30 +793,6 @@ public abstract class FacesContext {
         if (!isCreatedFromValidFactory) {
             return this.currentPhaseIdForInvalidFactoryConstruction;
         }
-        throw new UnsupportedOperationException();
-
-    }
-
-    /**
-     * <p class="changed_added_2_2"> Return the {@link
-     * javax.faces.component.visit.ComponentModificationManager} for
-     * this single run through the JSF request processing lifecycle.</p>
-     *
-     * <p class="changed_added_2_2">The default implementation throws
-     * <code>UnsupportedOperationException</code> and is provided
-     * for the sole purpose of not breaking existing applications that extend
-     * this class.</p>
-     * 
-     * @throws IllegalStateException if this method is called after
-     *  this instance has been released
-     *
-     * @since 2.2
-     */
-    public ComponentModificationManager getComponentModificationManager() {
-        if (defaultFacesContext != null) {
-            return defaultFacesContext.getComponentModificationManager();
-        }
-
         throw new UnsupportedOperationException();
 
     }

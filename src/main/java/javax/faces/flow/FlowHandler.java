@@ -47,12 +47,10 @@ import javax.faces.context.FacesContext;
  * <p class="changed_added_2_2"><strong>FlowHandler</strong> is the main
  * entry point that enables the runtime to interact with the faces flows
  * feature.  {@link
- * javax.faces.application.ConfigurableNavigationHandler} uses this
+ * javax.faces.application.NavigationHandler} uses this
  * class when it needs to make navigational decisions related to flows.
  * The faces flow feature entirely depends on the {@link
- * javax.faces.lifecycle.ClientWindow} feature, which itself requires
- * explicit enabling.  Please see the specification for {@code
- * ClientWindow} for the requirements for enabling this feature.</p>
+ * javax.faces.lifecycle.ClientWindow} feature and also on CDI.</p>
  
  * <div class="changed_added_2_2">
 
@@ -156,6 +154,41 @@ import javax.faces.context.FacesContext;
  */ 
 
 public abstract class FlowHandler {
+    
+    
+    /**
+     * <p class="changed_added_2_2">Components that are rendered by <code>Renderers</code>
+     * of component-family <code>javax.faces.OutcomeTarget</code> must use this
+     * constant as the parameter name for a parameter representing the flow id
+     * of the flow that this component will cause to be entered.</p>
+     * 
+     * <p class="changed_added_2_2"></p>
+     * 
+     * @since 2.2
+     */
+    public static final String FLOW_ID_REQUEST_PARAM_NAME = "jffi";
+    
+    /**
+     * <p class="changed_added_2_2">Components that are rendered by <code>Renderers</code>
+     * of component-family <code>javax.faces.OutcomeTarget</code> must use this
+     * constant as the parameter name for a parameter representing the defining document id
+     * of the flow that this component will cause to be entered.</p>
+     * 
+     * @since 2.2
+     */
+    public static final String TO_FLOW_DOCUMENT_ID_REQUEST_PARAM_NAME = "jftfdi";
+    
+    
+    /**
+     * <p class="changed_added_2_2">Components that are rendered by <code>Renderers</code>
+     * of component-family <code>javax.faces.OutcomeTarget</code> must use this
+     * constant as the value of the parameter named by {@link #TO_FLOW_DOCUMENT_ID_REQUEST_PARAM_NAME}
+     * when returning from a flow (without entering another flow) using such a component. </p>
+
+     * @since 2.2
+     */
+    
+    public static final String NULL_FLOW = "javax.faces.flow.NullFlow";
 
     /**
      * <p class="changed_added_2_2">Return the {@code Map} that backs
@@ -218,6 +251,15 @@ public abstract class FlowHandler {
      * no flow is active.  A {@code Flow} must always be associated with
      * exactly one {@link javax.faces.lifecycle.ClientWindow}, but a
      * {@code ClientWindow} may have multiple {@code Flow}s.</p>
+     * 
+     * <div class="changed_added_2_2">
+     * 
+     * <p>If {@link #pushReturnMode} had been called with {@code true} as the
+     * argument before invoking this method, return the preceding flow on 
+     * the stack instead of the actual current flow, or {@code null} if there 
+     * is no preceding flow.  Otherwise, return the current flow.</p>
+     * 
+     * </div>
      *
      * @param context the {@code FacesContext} for the current request.
      * 
@@ -227,10 +269,62 @@ public abstract class FlowHandler {
      */
     public abstract Flow getCurrentFlow(FacesContext context);
     
+    /**
+     * <p class="changed_added_2_2">Convenience overload that calls {@link FacesContext#getCurrentInstance()}
+     * and then calls through to {@link #getCurrentFlow(javax.faces.context.FacesContext)}. </p>
+     * 
+     * @since 2.2
+     */
     public Flow getCurrentFlow() {
         return getCurrentFlow(FacesContext.getCurrentInstance());
     }
+    
+    /**
+     * <p class="changed_added_2_2">Return the last displayed viewId for the 
+     * current flow, as returned by {@link #getCurrentFlow(javax.faces.context.FacesContext)}, 
+     * or {@code null} if there is no current flow.</p>
+     * 
+     * @param context the {@code FacesContext} for the current request.
+     * 
+     * @throws NullPointerException if {@code context} is {@code null}
+     * 
+     * @since 2.2
+     */
+    
+    public abstract String getLastDisplayedViewId(FacesContext context);
+    
+    /**
+     * <p class="changed_added_2_2">Enable the correct handling of navigation
+     * when processing a return node.  The default {@link javax.faces.application.NavigationHandler}
+     * specification requires calling this method before processing
+     * the navigation rules for the flow return, and calling {@link #popReturnMode}, 
+     * from a {@code finally} block, immediately afterward.</p>
+     * 
+     * @param context the {@code FacesContext} for the current request.
 
+     * @throws NullPointerException if {@code context} is {@code null}.
+     * 
+     * @since 2.2
+     */
+    
+    public abstract void pushReturnMode(FacesContext context);
+
+    /**
+     * <p class="changed_added_2_2">Enable the correct handling of navigation
+     * when processing a return node.  The default {@link javax.faces.application.NavigationHandler}
+     * specification requires calling this method from a {@code finally} block, 
+     * immediately attempting to process the navigation rules in the context
+     * of a flow return.</p>
+     * 
+     * @param context the {@code FacesContext} for the current request.
+
+     * @throws NullPointerException if {@code context} is {@code null}.
+     * 
+     * @since 2.2
+     */
+    
+    public abstract void popReturnMode(FacesContext context);
+    
     /**
      * <p class="changed_added_2_2">Perform a transition in the flow
      * graph for the current user's {@link
@@ -289,7 +383,10 @@ public abstract class FlowHandler {
      * transition, or {@code null} if this transition is not caused by a
      * flow call.
      * 
-     * @throws NullPointerException if {@code context} is {@code null}.
+     * @param toViewId the viewId of the view being displayed as a result of 
+     * this transition.  This parameter makes it possible to implement {@link #getLastDisplayedViewId}.
+     * 
+     * @throws NullPointerException if {@code context} or {@code toViewId} is {@code null}.
      *
 
      * @since 2.2
@@ -297,7 +394,59 @@ public abstract class FlowHandler {
             
     public abstract void transition(FacesContext context, Flow sourceFlow, 
                                     Flow targetFlow, 
-                                    FlowCallNode outboundCallNode);
+                                    FlowCallNode outboundCallNode, String toViewId);
+    
+    /**
+     * <p class="changed_added_2_2">Allow for flow transitions in the
+     * case of components rendered by the renderers from
+     * component-family <code>javax.faces.OutcomeTarget</code>.  These
+     * transitions must happen at the front of the request processing
+     * lifecycle due to the HTTP GET based nature of such components.
+     * Therefore, this method is called from the restore view phase of
+     * the lifecycle.</p>
+
+     * <div class="changed_added_2_2">
+
+     * <p>Let <em>flowId</em> be the value in the request parameter map
+     * for the parameter whose name is given by the value of {@link
+     * #FLOW_ID_REQUEST_PARAM_NAME}.  Let <em>toFlowDocumentId</em> be
+     * the value in the request parameter map for the paramater whose
+     * name is given by the value of {@link
+     * #TO_FLOW_DOCUMENT_ID_REQUEST_PARAM_NAME}.  If
+     * <em>toFlowDocumentId</em> is <code>null</code>, take no action
+     * and return.  Otherwise, let <em>sourceFlow</em> be the return
+     * from {@link #getCurrentFlow(javax.faces.context.FacesContext)}. A
+     * <code>null</code> value indicates there is no current flow, which
+     * will be the case if this navigation is trying to enter a flow. If
+     * <em>flowId</em> is not <code>null</code> and
+     * <em>toFlowDocumentId</em> is <strong>not</strong> equal to the
+     * value of {@link #NULL_FLOW}, let <em>targetFlow</em> be the
+     * result of calling {@link
+     * #getFlow(javax.faces.context.FacesContext, java.lang.String,
+     * java.lang.String)}, passing <em>toFlowDocumentId</em> and
+     * <em>flowId</em> as the last two arguments, respectively.  If the
+     * result is non-<code>null</code>, let <em>flowCallNode</em> be the
+     * return from calling {@link Flow#getFlowCall} on the
+     * <em>sourceFlow</em>, passing <em>targetFlow</em> as the argument.
+     * Otherwise, <em>targetFlow</em> and <em>flowCallNode</em> must
+     * remain <code>null</code>, indicating that this is a flow
+     * return. Call {@link FacesContext#getViewRoot()} and let <em>toViewId</em>
+     * be the the return from calling {@link javax.faces.component.UIViewRoot#getViewId}
+     * on it.</p>
+
+     * <p>Call, {@link #transition}, passing the arguments gathered in
+     * the preceding algorithm.</p>
+     *
+     * </div>
+
+     * @since 2.2
+     * 
+     * @param context the {@code FacesContext} for the current request.
+
+     * @throws NullPointerException if {@code context} is {@code null}.
+     */
+    
+    public abstract void clientWindowTransition(FacesContext context);
     
 
     /**
