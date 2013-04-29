@@ -81,7 +81,7 @@ import java.util.HashMap;
  *
  * <p>In all cases, if a <code>ResourceBundle</code> hit is found for
  * the <code>{messageId}</code>, look for further hits under the key
- * <code>{messageId}_detail</code>. Use this value, if present, as 
+ * <code>{messageId}_detail</code>. Use this value, if present, as
  * the <code>detail</code> for the returned <code>FacesMessage</code>.</p>
  *
  * <p>Make sure to perform any parameter substitution required for the
@@ -118,7 +118,7 @@ public class FacesMessage implements Serializable {
      * <p>Message severity level indicating an informational message
      * rather than an error.</p>
      */
-    public static final Severity SEVERITY_INFO = 
+    public static final Severity SEVERITY_INFO =
 	new Severity(SEVERITY_INFO_NAME);
 
 
@@ -127,7 +127,7 @@ public class FacesMessage implements Serializable {
      * <p>Message severity level indicating that an error might have
      * occurred.</p>
      */
-    public static final Severity SEVERITY_WARN = 
+    public static final Severity SEVERITY_WARN =
 	new Severity(SEVERITY_WARN_NAME);
 
 
@@ -136,7 +136,7 @@ public class FacesMessage implements Serializable {
      * <p>Message severity level indicating that an error has
      * occurred.</p>
      */
-    public static final Severity SEVERITY_ERROR = 
+    public static final Severity SEVERITY_ERROR =
 	new Severity(SEVERITY_ERROR_NAME);
 
 
@@ -145,7 +145,7 @@ public class FacesMessage implements Serializable {
      * <p>Message severity level indicating that a serious error has
      * occurred.</p>
      */
-    public static final Severity SEVERITY_FATAL = 
+    public static final Severity SEVERITY_FATAL =
 	new Severity(SEVERITY_FATAL_NAME);
 
 
@@ -156,32 +156,32 @@ public class FacesMessage implements Serializable {
      */
     private static final Severity[] values =
     { SEVERITY_INFO, SEVERITY_WARN, SEVERITY_ERROR, SEVERITY_FATAL };
-    
+
 
     /**
      * <p>Immutable <code>List</code> of valid {@link javax.faces.application.FacesMessage.Severity}
      * instances, in ascending order of their ordinal value.</p>
      */
-    public static final List VALUES = 
+    public static final List VALUES =
 	Collections.unmodifiableList(Arrays.asList(values));
 
     private static Map<String,Severity> _MODIFIABLE_MAP =
          new HashMap<String,Severity>(4, 1.0f);
-    
+
     static {
 	for (int i = 0, len = values.length; i < len; i++) {
 	    _MODIFIABLE_MAP.put(values[i].severityName, values[i]);
 	}
     }
-    
+
 
     /**
      * <p>Immutable <code>Map</code> of valid {@link javax.faces.application.FacesMessage.Severity}
      * instances, keyed by name.</p>
      */
-    public final static Map VALUES_MAP = 
+    public final static Map VALUES_MAP =
 	Collections.unmodifiableMap(_MODIFIABLE_MAP);
-    
+
     private static final long serialVersionUID = -1180773928220076822L;
 
 
@@ -242,7 +242,7 @@ public class FacesMessage implements Serializable {
      * @throws IllegalArgumentException if the specified severity level
      *  is not one of the supported values
      */
-    public FacesMessage(Severity severity, String summary, 
+    public FacesMessage(Severity severity, String summary,
 			String detail) {
 
         super();
@@ -256,10 +256,10 @@ public class FacesMessage implements Serializable {
     // ------------------------------------------------------ Instance Variables
 
 
-    private Severity severity = FacesMessage.SEVERITY_INFO;
-    private String summary = null;
-    private String detail = null;
-    private boolean rendered;
+    private transient Severity severity = FacesMessage.SEVERITY_INFO;
+    private transient String summary = null;
+    private transient String detail = null;
+    private transient boolean rendered;
 
 
     // ---------------------------------------------------------- Public Methods
@@ -312,13 +312,13 @@ public class FacesMessage implements Serializable {
      *  is not one of the supported values
      */
     public void setSeverity(Severity severity) {
-	
-        if ((severity.getOrdinal() < SEVERITY_INFO.getOrdinal()) || 
+
+        if ((severity.getOrdinal() < SEVERITY_INFO.getOrdinal()) ||
 	    (severity.getOrdinal() > SEVERITY_FATAL.getOrdinal())) {
             throw new IllegalArgumentException(String.valueOf(severity));
         }
         this.severity = severity;
-	
+
     }
 
 
@@ -366,13 +366,14 @@ public class FacesMessage implements Serializable {
         this.rendered = true;
 
     }
-    
+
 
     /**
      * <p>Persist {@link javax.faces.application.FacesMessage} artifacts,
      * including the non serializable <code>Severity</code>.</p>
      */
     private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
         out.writeInt(getSeverity().getOrdinal());
         out.writeObject(getSummary());
         out.writeObject(getDetail());
@@ -385,6 +386,7 @@ public class FacesMessage implements Serializable {
      */
     private void readObject(ObjectInputStream in)
         throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
         severity = SEVERITY_INFO;
         summary = null;
         detail = null;
@@ -412,7 +414,7 @@ public class FacesMessage implements Serializable {
 
 	// -------------------------------------------------------  Constructors
 
-	
+
 	/**
 	 * <p>Private constructor to disable the creation of new
 	 * instances.</p>
@@ -420,23 +422,23 @@ public class FacesMessage implements Serializable {
 	private Severity(String newSeverityName) {
 	    severityName = newSeverityName;
 	}
-	
-	
+
+
 	// -------------------------------------------------- Instance Variables
-	
-	
+
+
 	/**
 	 * <p>The ordinal value assigned to this instance.</p>
 	 */
 	private final int ordinal = nextOrdinal++;
-	
+
 
 	/**
 	 * <p>The (optional) name for this severity.</p>
 	 */
         String severityName = null;
-	
-	
+
+
 	// -----------------------------------------------------  Public Methods
 
 
@@ -451,8 +453,8 @@ public class FacesMessage implements Serializable {
 	public int compareTo(Object other) {
 	    return this.ordinal - ((Severity) other).ordinal;
 	}
-	
-	
+
+
 	/**
 	 * <p>Return the ordinal value of this {@link
 	 * FacesMessage.Severity} instance.</p>
@@ -460,7 +462,7 @@ public class FacesMessage implements Serializable {
 	public int getOrdinal() {
 	    return (this.ordinal);
 	}
-	
+
 
 	/**
 	 * <p>Return a String representation of this {@link
@@ -472,17 +474,17 @@ public class FacesMessage implements Serializable {
 	    }
 	    return (String.valueOf(this.severityName) + ' ' + this.ordinal);
 	}
-	
-	
+
+
 	// ---------------------------------------------------  Static Variables
-	
-	
+
+
 	/**
 	 * <p>Static counter returning the ordinal value to be assigned to the
 	 * next instance that is created.</p>
 	 */
 	private static int nextOrdinal = 0;
-	
+
     }
 
 

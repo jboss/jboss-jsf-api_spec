@@ -11,7 +11,7 @@
 
   <groupId>org.jboss.spec.javax.faces</groupId>
   <artifactId>jboss-jsf-api_2.1_spec</artifactId>
-  <version>2.1.19.Final</version>
+  <version>2.1.19.1.Final</version>
   <packaging>jar</packaging>
 
   <name>JavaServer(TM) Faces 2.1 API</name>
@@ -45,7 +45,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <resources>          
+              <resources>
                 <resource>
                   <directory>${basedir}</directory>
                   <includes>
@@ -53,9 +53,9 @@
                     <include>README</include>
                   </includes>
                 </resource>
-              </resources>              
+              </resources>
               <outputDirectory>${project.build.outputDirectory}/META-INF</outputDirectory>
-            </configuration>            
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -143,5 +143,5 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
-  
+
 </project>
