@@ -77,6 +77,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -385,6 +386,21 @@ public abstract class UIComponentBase extends UIComponent {
         return (this.parent);
     }
 
+    private ConcurrentHashMap<String, UIComponent> getFaceletComponentMap() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        UIViewRoot viewRoot = facesContext.getViewRoot();
+
+        if (viewRoot != null) {
+            if (viewRoot.getTransientStateHelper().getTransient("com.sun.faces.facelets.FACELET_COMPONENT_MAP") == null) {
+                viewRoot.getTransientStateHelper(true).putTransient("com.sun.faces.facelets.FACELET_COMPONENT_MAP", 
+                        new ConcurrentHashMap<String, UIComponent>());
+            }
+            return (ConcurrentHashMap<String, UIComponent>) viewRoot.getTransientStateHelper().getTransient(
+                    "com.sun.faces.facelets.FACELET_COMPONENT_MAP");
+        }
+        
+        return null;
+    }
 
     public void setParent(UIComponent parent) {
 
@@ -395,6 +411,17 @@ public abstract class UIComponentBase extends UIComponent {
                 this.parent = parent;
             }
             compositeParent = null;
+
+            /*
+             * Make sure we remove the given component from the facelet component map if it is in there.
+             */
+            if (getAttributes().containsKey("com.sun.faces.facelets.MARK_ID")) {
+                ConcurrentHashMap<String, UIComponent> faceletComponentMap = getFaceletComponentMap();
+                if (faceletComponentMap != null) {
+                    faceletComponentMap.remove((String) getAttributes().get("com.sun.faces.facelets.MARK_ID"));
+                }
+            }
+            
         } else {
             this.parent = parent;
             if (this.getAttributes().get(ADDED) == null) {
@@ -406,13 +433,20 @@ public abstract class UIComponentBase extends UIComponent {
                 doPostAddProcessing(FacesContext.getCurrentInstance(), this);
                 // remove the attribute once we've returned from the event
                 // processing.
-                this.getAttributes().remove(ADDED);
+                this.getAttributes().remove(ADDED);                
             }
+            
+            /*
+             * Make sure we add a component created by a facelet to the facelet component map.
+             */
+            if (getAttributes().containsKey("com.sun.faces.facelets.MARK_ID")) {
+                ConcurrentHashMap<String, UIComponent> faceletComponentMap = getFaceletComponentMap();
+                if (faceletComponentMap != null) {
+                    faceletComponentMap.put(getAttributes().get("com.sun.faces.facelets.MARK_ID").toString(), this);
+                }
+            }            
         }
-
     }
-
-
 
     public boolean isRendered() {
         
@@ -1271,55 +1305,55 @@ public abstract class UIComponentBase extends UIComponent {
 
         pushComponentToEL(context, null);
 
-        // Process this component itself
-        stateStruct[MY_STATE] = saveState(context);
+        try {
+            // Process this component itself
+            stateStruct[MY_STATE] = saveState(context);
 
-        // determine if we have any children to store
-        int count = this.getChildCount() + this.getFacetCount();
-        if (count > 0) {
+            // determine if we have any children to store
+            int count = this.getChildCount() + this.getFacetCount();
+            if (count > 0) {
 
-            // this arraylist will store state
-            List<Object> stateList = new ArrayList<Object>(count);
+                // this arraylist will store state
+                List<Object> stateList = new ArrayList<Object>(count);
 
-            // if we have children, add them to the stateList
-            if (this.getChildCount() > 0) {
-                Iterator kids = getChildren().iterator();
-                UIComponent kid;
-                while (kids.hasNext()) {
-                    kid = (UIComponent) kids.next();
-                    if (!kid.isTransient()) {
-                        stateList.add(kid.processSaveState(context));
-                        popComponentFromEL(context);
+                // if we have children, add them to the stateList
+                if (this.getChildCount() > 0) {
+                    Iterator kids = getChildren().iterator();
+                    UIComponent kid;
+                    while (kids.hasNext()) {
+                        kid = (UIComponent) kids.next();
+                        if (!kid.isTransient()) {
+                            stateList.add(kid.processSaveState(context));
+                        }
                     }
                 }
-            }
 
-            pushComponentToEL(context, null);
-
-            // if we have facets, add them to the stateList
-            if (this.getFacetCount() > 0) {
-                Iterator myFacets = getFacets().entrySet().iterator();
-                UIComponent facet;
-                Object facetState;
-                Object[] facetSaveState;
-                Map.Entry entry;
-                while (myFacets.hasNext()) {
-                    entry = (Map.Entry) myFacets.next();
-                    facet = (UIComponent) entry.getValue();
-                    if (!facet.isTransient()) {
-                        facetState = facet.processSaveState(context);
-                        popComponentFromEL(context);
-                        facetSaveState = new Object[2];
-                        facetSaveState[0] = entry.getKey();
-                        facetSaveState[1] = facetState;
-                        stateList.add(facetSaveState);
+                // if we have facets, add them to the stateList
+                if (this.getFacetCount() > 0) {
+                    Iterator myFacets = getFacets().entrySet().iterator();
+                    UIComponent facet;
+                    Object facetState;
+                    Object[] facetSaveState;
+                    Map.Entry entry;
+                    while (myFacets.hasNext()) {
+                        entry = (Map.Entry) myFacets.next();
+                        facet = (UIComponent) entry.getValue();
+                        if (!facet.isTransient()) {
+                            facetState = facet.processSaveState(context);
+                            facetSaveState = new Object[2];
+                            facetSaveState[0] = entry.getKey();
+                            facetSaveState[1] = facetState;
+                            stateList.add(facetSaveState);
+                        }
                     }
                 }
-            }
 
-            // finally, capture the stateList and replace the original,
-            // EMPTY_OBJECT_ARRAY Object array
-            childState = stateList.toArray();
+                // finally, capture the stateList and replace the original,
+                // EMPTY_OBJECT_ARRAY Object array
+                childState = stateList.toArray();
+            }
+        } finally {
+            popComponentFromEL(context);
         }
 
         stateStruct[CHILD_STATE] = childState;
