@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -428,9 +428,7 @@ public abstract class UIComponentBase extends UIComponent {
         return (this.parent);
     }
 
-
     public void setParent(UIComponent parent) {
-
 
         if (parent == null) {
             if (this.parent != null) {
@@ -452,10 +450,7 @@ public abstract class UIComponentBase extends UIComponent {
                 this.getAttributes().remove(ADDED);
             }
         }
-
-    }
-
-
+    }            
 
     public boolean isRendered() {
         
@@ -922,6 +917,8 @@ public abstract class UIComponentBase extends UIComponent {
             Renderer renderer = this.getRenderer(context);
             if (renderer != null) {
                 renderer.encodeEnd(context, this);
+            } else {
+                // We've already logged for this component
             }
         }
         popComponentFromEL(context);
@@ -1312,55 +1309,55 @@ public abstract class UIComponentBase extends UIComponent {
 
         pushComponentToEL(context, null);
 
-        // Process this component itself
-        stateStruct[MY_STATE] = saveState(context);
+        try {
+            // Process this component itself
+            stateStruct[MY_STATE] = saveState(context);
 
-        // determine if we have any children to store
-        int count = this.getChildCount() + this.getFacetCount();
-        if (count > 0) {
+            // determine if we have any children to store
+            int count = this.getChildCount() + this.getFacetCount();
+            if (count > 0) {
 
-            // this arraylist will store state
-            List<Object> stateList = new ArrayList<Object>(count);
+                // this arraylist will store state
+                List<Object> stateList = new ArrayList<Object>(count);
 
-            // if we have children, add them to the stateList
-            if (this.getChildCount() > 0) {
-                Iterator kids = getChildren().iterator();
-                UIComponent kid;
-                while (kids.hasNext()) {
-                    kid = (UIComponent) kids.next();
-                    if (!kid.isTransient()) {
-                        stateList.add(kid.processSaveState(context));
-                        popComponentFromEL(context);
+                // if we have children, add them to the stateList
+                if (this.getChildCount() > 0) {
+                    Iterator kids = getChildren().iterator();
+                    UIComponent kid;
+                    while (kids.hasNext()) {
+                        kid = (UIComponent) kids.next();
+                        if (!kid.isTransient()) {
+                            stateList.add(kid.processSaveState(context));
+                        }
                     }
                 }
-            }
 
-            pushComponentToEL(context, null);
-
-            // if we have facets, add them to the stateList
-            if (this.getFacetCount() > 0) {
-                Iterator myFacets = getFacets().entrySet().iterator();
-                UIComponent facet;
-                Object facetState;
-                Object[] facetSaveState;
-                Map.Entry entry;
-                while (myFacets.hasNext()) {
-                    entry = (Map.Entry) myFacets.next();
-                    facet = (UIComponent) entry.getValue();
-                    if (!facet.isTransient()) {
-                        facetState = facet.processSaveState(context);
-                        popComponentFromEL(context);
-                        facetSaveState = new Object[2];
-                        facetSaveState[0] = entry.getKey();
-                        facetSaveState[1] = facetState;
-                        stateList.add(facetSaveState);
+                // if we have facets, add them to the stateList
+                if (this.getFacetCount() > 0) {
+                    Iterator myFacets = getFacets().entrySet().iterator();
+                    UIComponent facet;
+                    Object facetState;
+                    Object[] facetSaveState;
+                    Map.Entry entry;
+                    while (myFacets.hasNext()) {
+                        entry = (Map.Entry) myFacets.next();
+                        facet = (UIComponent) entry.getValue();
+                        if (!facet.isTransient()) {
+                            facetState = facet.processSaveState(context);
+                            facetSaveState = new Object[2];
+                            facetSaveState[0] = entry.getKey();
+                            facetSaveState[1] = facetState;
+                            stateList.add(facetSaveState);
+                        }
                     }
                 }
-            }
 
-            // finally, capture the stateList and replace the original,
-            // EMPTY_OBJECT_ARRAY Object array
-            childState = stateList.toArray();
+                // finally, capture the stateList and replace the original,
+                // EMPTY_OBJECT_ARRAY Object array
+                childState = stateList.toArray();
+            }
+        } finally {
+            popComponentFromEL(context);
         }
 
         stateStruct[CHILD_STATE] = childState;
@@ -2742,8 +2739,8 @@ public abstract class UIComponentBase extends UIComponent {
 
         public UIComponent remove(int index) {
             UIComponent child = get(index);
-            super.remove(index);
             child.setParent(null);
+            super.remove(index);
             return (child);
         }
 
@@ -2753,8 +2750,10 @@ public abstract class UIComponentBase extends UIComponent {
                 throw new NullPointerException();
             }
 
-            if (super.remove(element)) {
+            if (super.indexOf(element) != -1) {
                 element.setParent(null);
+            }            
+            if (super.remove(element)) {
                 return (true);
             } else {
                 return (false);
