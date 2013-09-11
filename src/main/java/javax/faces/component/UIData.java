@@ -2256,25 +2256,27 @@ public class UIData extends UIComponentBase
             EditableValueHolder input = (EditableValueHolder) component;
             String clientId = component.getClientId(context);
 
-            SavedState state = saved.get(clientId);
+            SavedState state = (saved == null ? null : saved.get(clientId));
             if (state == null) {
-                state = new SavedState();
+                input.resetValue();
+            } else {
+                input.setValue(state.getValue());
+                input.setValid(state.isValid());
+                input.setSubmittedValue(state.getSubmittedValue());
+                // This *must* be set after the call to setValue(), since
+                // calling setValue() always resets "localValueSet" to true.
+                input.setLocalValueSet(state.isLocalValueSet());
             }
-            input.setValue(state.getValue());
-            input.setValid(state.isValid());
-            input.setSubmittedValue(state.getSubmittedValue());
-            // This *must* be set after the call to setValue(), since
-            // calling setValue() always resets "localValueSet" to true.
-            input.setLocalValueSet(state.isLocalValueSet());
         } else if (component instanceof UIForm) {
             UIForm form = (UIForm) component;
             String clientId = component.getClientId(context);
-            SavedState state = saved.get(clientId);
+            SavedState state = (saved == null ? null : saved.get(clientId));
             if (state == null) {
-                state = new SavedState();
+                // submitted is transient state
+                form.setSubmitted(false);
+            } else {
+                form.setSubmitted(state.getSubmitted());
             }
-            form.setSubmitted(state.getSubmitted());
-            state.setSubmitted(form.isSubmitted());
         }
 
         // Restore state for children of this component
@@ -2331,37 +2333,41 @@ public class UIData extends UIComponentBase
             String clientId = component.getClientId(context);
             if (saved == null) {
                 state = new SavedState();
-                getStateHelper().put(PropertyKeys.saved, clientId, state);
             }
             if (state == null) {
                 state = saved.get(clientId);
                 if (state == null) {
                     state = new SavedState();
-                    //saved.put(clientId, state);
-                    getStateHelper().put(PropertyKeys.saved, clientId, state);
                 }
             }
             state.setValue(input.getLocalValue());
             state.setValid(input.isValid());
             state.setSubmittedValue(input.getSubmittedValue());
             state.setLocalValueSet(input.isLocalValueSet());
+            if (state.hasDeltaState()) {
+            	getStateHelper().put(PropertyKeys.saved, clientId, state);
+            } else if (saved != null) {
+            	getStateHelper().remove(PropertyKeys.saved, clientId);
+            }
         } else if (component instanceof UIForm) {
             UIForm form = (UIForm) component;
             String clientId = component.getClientId(context);
             SavedState state = null;
             if (saved == null) {
                 state = new SavedState();
-                getStateHelper().put(PropertyKeys.saved, clientId, state);
             }
             if (state == null) {
                 state = saved.get(clientId);
                 if (state == null) {
                     state = new SavedState();
-                    //saved.put(clientId, state);
-                    getStateHelper().put(PropertyKeys.saved, clientId, state);
                 }
             }
             state.setSubmitted(form.isSubmitted());
+            if (state.hasDeltaState()) {
+            	getStateHelper().put(PropertyKeys.saved, clientId, state);
+            } else if (saved != null) {
+            	getStateHelper().remove(PropertyKeys.saved, clientId);
+            }
         }
 
         // Save state for children of this component
@@ -2435,6 +2441,11 @@ class SavedState implements Serializable {
         this.submitted = submitted;
     }
 
+	public boolean hasDeltaState() {
+		return submittedValue != null || value != null || localValueSet
+				|| !valid || submitted;
+	}
+    
     public String toString() {
         return ("submittedValue: " + submittedValue +
                 " value: " + value +
@@ -2442,7 +2453,6 @@ class SavedState implements Serializable {
     }
 
 }
-
 
 // Private class to wrap an event with a row index
 class WrapperEvent extends FacesEvent {
