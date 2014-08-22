@@ -1213,23 +1213,24 @@ public abstract class UIComponentBase extends UIComponent {
 
         pushComponentToEL(context, null);
 
-        // Process all facets and children of this component
-        Iterator kids = getFacetsAndChildren();
-        while (kids.hasNext()) {
-            UIComponent kid = (UIComponent) kids.next();
-            kid.processDecodes(context);
-        }
-
-        // Process this component itself
         try {
-            decode(context);
-        } catch (RuntimeException e) {
-            context.renderResponse();
-            throw e;
+            // Process all facets and children of this component
+            Iterator kids = getFacetsAndChildren();
+            while (kids.hasNext()) {
+                UIComponent kid = (UIComponent) kids.next();
+                kid.processDecodes(context);
+            }
+
+            // Process this component itself
+            try {
+                decode(context);
+            } catch (RuntimeException e) {
+                context.renderResponse();
+                throw e;
+            }
         } finally {
             popComponentFromEL(context);
         }
-
     }
 
 
@@ -1249,17 +1250,19 @@ public abstract class UIComponentBase extends UIComponent {
 
         pushComponentToEL(context, null);
 
-        Application app = context.getApplication();
-        app.publishEvent(context, PreValidateEvent.class, this);
-        // Process all the facets and children of this component
-        Iterator kids = getFacetsAndChildren();
-        while (kids.hasNext()) {
-            UIComponent kid = (UIComponent) kids.next();
-            kid.processValidators(context);
+        try {
+            Application app = context.getApplication();
+            app.publishEvent(context, PreValidateEvent.class, this);
+            // Process all the facets and children of this component
+            Iterator kids = getFacetsAndChildren();
+            while (kids.hasNext()) {
+                UIComponent kid = (UIComponent) kids.next();
+                kid.processValidators(context);
+            }
+            app.publishEvent(context, PostValidateEvent.class, this);
+        } finally {
+            popComponentFromEL(context);
         }
-        app.publishEvent(context, PostValidateEvent.class, this);
-        popComponentFromEL(context);
-
     }
 
 
@@ -1279,15 +1282,17 @@ public abstract class UIComponentBase extends UIComponent {
 
         pushComponentToEL(context, null);
 
-        // Process all facets and children of this component
-        Iterator kids = getFacetsAndChildren();
-        while (kids.hasNext()) {
-            UIComponent kid = (UIComponent) kids.next();
-            kid.processUpdates(context);
+        try {
+            // Process all facets and children of this component
+            Iterator kids = getFacetsAndChildren();
+            while (kids.hasNext()) {
+                UIComponent kid = (UIComponent) kids.next();
+                kid.processUpdates(context);
 
+            }
+        } finally {
+            popComponentFromEL(context);
         }
-        popComponentFromEL(context);
-        
     }
 
     private static final int MY_STATE = 0;
@@ -1373,49 +1378,51 @@ public abstract class UIComponentBase extends UIComponent {
             throw new NullPointerException();
         }
 
-        Object[] stateStruct = (Object[]) state;
-        Object[] childState = (Object[]) stateStruct[CHILD_STATE];
+        pushComponentToEL(context, null);
 
-        // Process this component itself
-        restoreState(context, stateStruct[MY_STATE]);
+        try {
+            Object[] stateStruct = (Object[]) state;
+            Object[] childState = (Object[]) stateStruct[CHILD_STATE];
 
-        int i = 0;
+            // Process this component itself
+            restoreState(context, stateStruct[MY_STATE]);
 
-        // Process all the children of this component
-        if (this.getChildCount() > 0) {
-            for (UIComponent kid : getChildren()) {
-                if (kid.isTransient()) {
-                    continue;
+            int i = 0;
+
+            // Process all the children of this component
+            if (this.getChildCount() > 0) {
+                for (UIComponent kid : getChildren()) {
+                    if (kid.isTransient()) {
+                        continue;
+                    }
+                    Object currentState = childState[i++];
+                    if (currentState == null) {
+                        continue;
+                    }
+                    kid.processRestoreState(context, currentState);
                 }
-                Object currentState = childState[i++];
-                if (currentState == null) {
-                    continue;
-                }
-                pushComponentToEL(context, null);
-                kid.processRestoreState(context, currentState);
-                popComponentFromEL(context);
             }
-        }
 
-        // process all of the facets of this component
-        if (this.getFacetCount() > 0) {
-            int facetsSize = getFacets().size();
-            int j = 0;
-            Object[] facetSaveState;
-            String facetName;
-            UIComponent facet;
-            Object facetState;
-            while (j < facetsSize) {
-                if (null != (facetSaveState = (Object[]) childState[i++])) {
-                    facetName = (String) facetSaveState[0];
-                    facetState = facetSaveState[1];
-                    facet = getFacets().get(facetName);
-                    pushComponentToEL(context, null);
-                    facet.processRestoreState(context, facetState);
-                    popComponentFromEL(context);
+            // process all of the facets of this component
+            if (this.getFacetCount() > 0) {
+                int facetsSize = getFacets().size();
+                int j = 0;
+                Object[] facetSaveState;
+                String facetName;
+                UIComponent facet;
+                Object facetState;
+                while (j < facetsSize) {
+                    if (null != (facetSaveState = (Object[]) childState[i++])) {
+                        facetName = (String) facetSaveState[0];
+                        facetState = facetSaveState[1];
+                        facet = getFacets().get(facetName);
+                        facet.processRestoreState(context, facetState);
+                    }
+                    ++j;
                 }
-                ++j;
             }
+        } finally {
+            popComponentFromEL(context);
         }
     }
 
