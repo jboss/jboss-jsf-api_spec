@@ -121,9 +121,9 @@ final class CurrentThreadToServletContext {
                         break;
                     }
                 }
-                // We must create a new FactoryFinderInstance if there was no match
-                // at all found in the applicationMap, or a match was found
-                // and the match is safe to use in this web app
+                // We must create a new FactoryFinderInstance if there was no matchingKey
+                // at all found in the applicationMap, or a matchingKey was found
+                // and the matchingKey is safe to use in this web app
                 createNewFactoryManagerInstance = foundNoMatchInApplicationMap || (null == result && classLoadersMatchButContextsDoNotMatch);
             } else {
                 createNewFactoryManagerInstance = true;
@@ -162,7 +162,7 @@ final class CurrentThreadToServletContext {
         return result;
     }
 
-    public void removeApplicationFactoryManager() {
+    void removeApplicationFactoryManager() {
         ClassLoader cl = getClassLoader();
         FactoryFinderInstance fm = this.getApplicationFactoryManager(cl, false);
         if (null != fm) {
@@ -178,7 +178,7 @@ final class CurrentThreadToServletContext {
         }
     }
 
-    public void resetSpecialInitializationCaseFlags() {
+    void resetSpecialInitializationCaseFlags() {
         logNullFacesContext.set(false);
         logNonNullFacesContext.set(false);
     }
@@ -220,7 +220,7 @@ final class CurrentThreadToServletContext {
         private static final String INIT_TIME_CL_KEY = MARKER_KEY + ".InitTimeCLKey";
 
         // <editor-fold defaultstate="collapsed" desc="Constructors and helpers">
-        public FactoryManagerCacheKey(FacesContext facesContext, ClassLoader cl,
+        FactoryManagerCacheKey(FacesContext facesContext, ClassLoader cl,
                 Map<FactoryManagerCacheKey,FactoryFinderInstance> factoryMap) {
             ExternalContext extContext = (null != facesContext) ? facesContext.getExternalContext()
                     : null;
@@ -240,46 +240,52 @@ final class CurrentThreadToServletContext {
             // factoryMap and see if any of them has a classloader
             // equal to our argument cl.
             Set<FactoryManagerCacheKey> keys = factoryMap.keySet();
-            FactoryManagerCacheKey match = null;
+            FactoryManagerCacheKey matchingKey = null;
             
             if (keys.isEmpty()) {
                 this.cl = cl;
                 this.marker = new Long(System.currentTimeMillis());
             } else {
             
-                boolean found = false;
                 // For each entry in the factoryMap's keySet...
                 for (FactoryManagerCacheKey currentKey : keys) {
-                    ClassLoader curCL = cl;
-                    // For each ClassLoader in the hierarchy starting 
-                    // with the argument ClassLoader...
-                    while (!found && null != curCL) {
-                        // if the ClassLoader at this level in the hierarchy
-                        // is equal to the argument ClassLoader, consider it a match.
-                        found = curCL.equals(currentKey.cl);
-                        // If it's not a match, try the parent in the ClassLoader
-                        // hierarchy.
-                        if (!found) {
-                            curCL = curCL.getParent();
-                        }
-                    }
-                    // Keep searching for another match to detect an unsupported
-                    // deployment scenario.
-                    if (found) {
-                        if (null != currentKey && null != match) {
+                    assert(null != currentKey.cl);
+                    ClassLoader matchingCL = findMatchConsideringParentClassLoader(cl, currentKey.cl);
+                    // If there is a match...
+                    if (null != matchingCL) {
+                        // If the match was found on a previous iteration...
+                        if (null != matchingKey) {
                             LOGGER.log(Level.WARNING, "Multiple JSF Applications found on same ClassLoader.  Unable to safely determine which FactoryManager instance to use. Defaulting to first match.");
                             break;
                         }
-                        match = currentKey;
-                        this.cl = curCL;
+                        matchingKey = currentKey;
+                        this.cl = matchingCL;
                     }
                 }
-                if (null != match) {
-                    this.marker = match.marker;
-                    this.context = match.context;
+                if (null != matchingKey) {
+                    this.marker = matchingKey.marker;
+                    this.context = matchingKey.context;
                 }
             }
             
+        }
+
+        private ClassLoader findMatchConsideringParentClassLoader(ClassLoader argumentCL, ClassLoader currentKeyCL) {
+            ClassLoader curCL = argumentCL;
+            // For each ClassLoader in the hierarchy starting 
+            // with the argument ClassLoader...
+            while (null != curCL) {
+                // if the ClassLoader at this level in the hierarchy
+                // is equal to the argument ClassLoader, consider it a matchingKey.
+                if (curCL.equals(currentKeyCL)) {
+                    return curCL;
+                } else {
+                    // If it's not a matchingKey, try the parent in the ClassLoader
+                    // hierarchy.
+                    curCL = curCL.getParent();
+                } 
+            }
+            return null;
         }
         
         private void initFromAppMap(ExternalContext extContext, ClassLoader cl) {
@@ -336,11 +342,11 @@ final class CurrentThreadToServletContext {
         
         // </editor-fold>
         
-        public ClassLoader getClassLoader() {
+        ClassLoader getClassLoader() {
             return cl;
         }
         
-        public Object getContext() {
+        Object getContext() {
             return context;
         }
         
