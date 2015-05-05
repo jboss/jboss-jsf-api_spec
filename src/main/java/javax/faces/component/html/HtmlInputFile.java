@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -36,33 +36,20 @@
  * and therefore, elected the GPL Version 2 license, then the option applies
  * only if the new code is made subject to such option by the copyright
  * holder.
+
  */
+
 package javax.faces.component.html;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import javax.faces.context.FacesContext;
-import javax.faces.component.behavior.ClientBehaviorHolder;
-import javax.el.MethodExpression;
 import javax.el.ValueExpression;
+import javax.faces.component.behavior.ClientBehaviorHolder;
+import javax.faces.context.FacesContext;
 
-
-/*
- * ******* GENERATED CODE - DO NOT EDIT *******
- */
-
-
-/**
- * <p>Represents an HTML <code>input</code> element
- * of type <code>file</code>.</p>
- * <p>By default, the <code>rendererType</code> property must be set to "<code>javax.faces.File</code>".
- * This value can be changed by calling the <code>setRendererType()</code> method.</p>
- */
 public class HtmlInputFile extends javax.faces.component.UIInput implements ClientBehaviorHolder {
 
 
@@ -716,5 +703,14 @@ public class HtmlInputFile extends javax.faces.component.UIInput implements Clie
             }
         }
     }
+    
+    @Override
+    public Object saveState(FacesContext context) {
+        Object result;
+        this.resetValue();
+        result = super.saveState(context);
+        
+        return result;
+    }    
 
 }
