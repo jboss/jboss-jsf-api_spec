@@ -29,10 +29,28 @@
     <connection>scm:git:git@github.com:jboss/jboss-jsf-api_spec.git</connection>
     <developerConnection>scm:git:git@github.com:jboss/jboss-jsf-api_spec.git</developerConnection>
     <url>https://github.com/jboss/jboss-jsf-api_spec</url>
+    <tag>HEAD</tag>
   </scm>
+  <distributionManagement>
+    <repository>
+      <id>jboss-releases-repository</id>
+      <name>JBoss Releases Repository</name>
+      <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+      <id>jboss-snapshots-repository</id>
+      <name>JBoss Snapshots Repository</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.5</version>
+      </plugin>
       <!-- Include LICENSE.txt in the META-INF directory -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -113,6 +131,16 @@
             </manifestEntries>
           </archive>
         </configuration>
+      </plugin>
+      <!-- Disable signing as we don't do this on jboss artifacts -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>none</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
