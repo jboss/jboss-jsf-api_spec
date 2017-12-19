@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -72,9 +72,10 @@ public enum VisitHint {
   SKIP_ITERATION,
 
   /**
-   * <p class="changed_added_2_0">Hint that indicates that the visit is
-   * being performed as part of lifecycle phase execution and as such
-   * phase-specific actions (initialization) may be taken.</p>
+   * <p class="changed_added_2_0 changed_modified_2_3">
+   * Hint that indicates that the visit is being performed as part of lifecycle
+   * phase execution.
+   * </p>
    * @since 2.0
    */
   EXECUTE_LIFECYCLE,

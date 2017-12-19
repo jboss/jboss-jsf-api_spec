@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -71,6 +71,8 @@ public interface FacetHandler {
      * of the facet name after evaluating EL.</p>
      *
      * @param ctx the <code>FaceletContext</code> for this view execution
+     * 
+     * @return the resolved literal String value of the facet name.
      */
     public String getFacetName(FaceletContext ctx);
 }

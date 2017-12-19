@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -44,10 +44,10 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 
 /**
- * <p class="changed_added_2_2"><strong>FlowHandler</strong> is the main
- * entry point that enables the runtime to interact with the faces flows
- * feature.  {@link
- * javax.faces.application.NavigationHandler} uses this
+ * <p class="changed_added_2_2"><strong
+ * class="changed_modified_2_3">FlowHandler</strong> is the main entry
+ * point that enables the runtime to interact with the faces flows
+ * feature.  {@link javax.faces.application.NavigationHandler} uses this
  * class when it needs to make navigational decisions related to flows.
  * The faces flow feature entirely depends on the {@link
  * javax.faces.lifecycle.ClientWindow} feature and also on CDI.</p>
@@ -57,17 +57,15 @@ import javax.faces.context.FacesContext;
  * <p><strong>Defining Flows</strong></p>
 
  * <p>The implementation must support defining faces flows using the
- * <code>&lt;flow-definition&gt;</code> element as specified in
- * the <a target="_"
- * href="../../../web-facesconfig.html#type_faces-config-flow-definitionType">Application
- * Configuration Resources XML Schema Definition</a>, or by using the 
- * {@link javax.faces.flow.builder.FlowBuilder} API.  Additional means
- * of defining flows may be provided by decorating the {@link
- * FlowHandlerFactory}.</p>
+ * <code>&lt;flow-definition&gt;</code> element as specified in the
+ * Application Configuration Resources XML Schema Definition, or by
+ * using the {@link javax.faces.flow.builder.FlowBuilder} API.
+ * Additional means of defining flows may be provided by decorating the
+ * {@link FlowHandlerFactory}.</p>
 
  * <p><strong>Managing Flows</strong></p>
 
- * <ul>
+ * <blockquote>
 
  * <p>The singleton instance of this class must be thread safe, and
  * therefore must not store any per-user state.  Flows are, however,
@@ -75,7 +73,20 @@ import javax.faces.context.FacesContext;
  * current {@link javax.faces.lifecycle.ClientWindow}.  Furthermore,
  * Flows may be nested.  These requirements strongly suggest managing
  * the flows with a stack-like runtime data structure, stored in a
- * per-user fashion and associated with the {@code ClientWindow}.</p>
+ * per-user fashion and associated with the {@code ClientWindow}.  <span
+ * class="changed_added_2_3">Because Flow instances are immutable,
+ * yet the flow stack is per-user, implementations must make allowance
+ * for flow scoped data (managed beans declared to be {@link FlowScoped}
+ * and data stored in the <code>Map</code> returned by {@link
+ * #getCurrentFlowScope}) to be fully re-entrant.  For example, consider
+ * an application with two flows, A and B, each with a single
+ * <code>FlowScoped</code> bean <code>MyBeanA</code> and
+ * <code>MyBeanB</code>, respectively.  Entry into flow A causes
+ * <code>MyBeanA</code> to become active.  Calling from A into B causes
+ * <code>MyBeanB</code> to become active.  Calling back into A causes a
+ * new instance of <code>MyBeanA</code> to become active, rather than
+ * reactivating the earlier instance of <code>MyBeanA</code>.
+ * </span></p>
 
  * <p><strong>The Flow Graph</strong></p>
 
@@ -133,19 +144,21 @@ import javax.faces.context.FacesContext;
 
  * <p><strong>Flows and Model Objects</strong></p>
 
- * <ul>
+ * <blockquote>
 
- * <p>Managed beans annotated with the CDI annotation
- * {@link FlowScoped} must be instantiated upon a user agent's entry
- * into the named scope, and must be made available for garbage
- * collection when the user agent leaves the flow.</p>
+ * <p>Managed beans annotated with the CDI annotation {@link FlowScoped}
+ * <span class="changed_added_2_3">are created lazily, when referenced,
+ * after</span> a user agent's entry into the named scope, and must be
+ * made available for garbage collection when the user agent leaves the
+ * flow.</p>
 
  * <p>The <code>flowScope</code> EL implicit object is also
  * available to store values in the "current" slope.  Values stored in
  * this scope must be made available for garbage collection when the
  * user agent leaves the flow.</p>
-
- * </ul>
+ * </blockquote>
+ * 
+ * </blockquote>
 
  * </div>
 
@@ -161,8 +174,6 @@ public abstract class FlowHandler {
      * of component-family <code>javax.faces.OutcomeTarget</code> must use this
      * constant as the parameter name for a parameter representing the flow id
      * of the flow that this component will cause to be entered.</p>
-     * 
-     * <p class="changed_added_2_2"></p>
      * 
      * @since 2.2
      */
@@ -194,6 +205,8 @@ public abstract class FlowHandler {
      * <p class="changed_added_2_2">Return the {@code Map} that backs
      * the {@code #{flowScope}} EL implicit object or {@code null}
      * if no flow is currently active. </p>
+     * 
+     * @return the {@code Map} for this flow scope.
      *
      * @since 2.2
      */ 
@@ -214,6 +227,8 @@ public abstract class FlowHandler {
      * scope of the {@code definingDocument}.
 
      * @throws NullPointerException if any of the parameters are {@code null}
+     * 
+     * @return the {@code Flow} for the argument identifiers.
      *
      * @since 2.2
      */ 
@@ -264,6 +279,8 @@ public abstract class FlowHandler {
      * @param context the {@code FacesContext} for the current request.
      * 
      * @throws NullPointerException if any of the parameters are {@code null}
+     * 
+     * @return the current {@code Flow} or {@code null} if no flow is active
      *
      * @since 2.2
      */
@@ -272,6 +289,8 @@ public abstract class FlowHandler {
     /**
      * <p class="changed_added_2_2">Convenience overload that calls {@link FacesContext#getCurrentInstance()}
      * and then calls through to {@link #getCurrentFlow(javax.faces.context.FacesContext)}. </p>
+     * 
+     * @return the current {@code Flow} or {@code null} if no flow is active
      * 
      * @since 2.2
      */
@@ -289,6 +308,8 @@ public abstract class FlowHandler {
      * @throws NullPointerException if {@code context} is {@code null}
      * 
      * @since 2.2
+     * 
+     * @return the last displayed viewId.
      */
     
     public abstract String getLastDisplayedViewId(FacesContext context);
@@ -344,7 +365,7 @@ public abstract class FlowHandler {
 
      * <div class="changed_added_2_2">
 
-     * <ul>
+     * <blockquote>
 
      * <p>If the {@code outboundParameters} property of {@code
      * outboundCallNode} is non-{@code null} and not empty, and the
@@ -356,7 +377,7 @@ public abstract class FlowHandler {
      * name.  Otherwise, consider <strong>evaluatedParams</strong> to be
      * empty.</p>
 
-     * </ul>
+     * </blockquote>
 
      * <p>If the {@code destination Flow} is a sub-flow of the {@code
      * origin Flow} push the {@code destination Flow} onto the flow data
@@ -463,6 +484,8 @@ public abstract class FlowHandler {
      * scope of the {@code definingDocument}.
 
      * @throws NullPointerException if any of the parameters are {@code null}
+     * 
+     * @return true if and only if the referenced flow is active
      *
      * @since 2.2
      */

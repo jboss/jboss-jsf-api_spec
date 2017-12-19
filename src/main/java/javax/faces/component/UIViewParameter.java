@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -55,7 +55,7 @@ import javax.faces.validator.RequiredValidator;
 import javax.faces.validator.Validator;
 
 /**
- * <p class="changed_added_2_0"><strong class="changed_modified_2_2">UIViewParameter</strong> represents a
+ * <p class="changed_added_2_0"><strong class="changed_modified_2_2 changed_modified_2_3">UIViewParameter</strong> represents a
  * binding between a request parameter and a model property or {@link UIViewRoot}
  * property. This is a bi-directional binding.</p>
  *
@@ -104,6 +104,8 @@ public class UIViewParameter extends UIInput {
 
     private Renderer inputTextRenderer = null;
     
+    private transient Boolean emptyStringIsNull;
+
     // ------------------------------------------------------------ Constructors
 
 
@@ -145,6 +147,8 @@ public class UIViewParameter extends UIInput {
     /**
      * <p class="changed_added_2_0">Return the request parameter name
      * from which the value is retrieved.</p>
+     * 
+     * @return the name.
      * @since 2.0
      */
     public String getName() {
@@ -171,6 +175,8 @@ public class UIViewParameter extends UIInput {
      * <p class="changed_added_2_0">Return <code>false</code>.  The
      * immediate setting is not relevant for view parameters and must be
      * assumed to be <code>false</code>.</p>
+     * 
+     * @return <code>true</code> if immediate, <code>false</code> otherwise.
      * @since 2.0
      */
     @Override
@@ -183,6 +189,8 @@ public class UIViewParameter extends UIInput {
      * that the submitted value is
      * always a string, <span class="changed_added_2_2">but the return type
      * from this method is <code>Object</code>.</span>.</p>
+     * 
+     * @return the submitted value.
      * @since 2.0
      */
     @Override
@@ -236,11 +244,18 @@ public class UIViewParameter extends UIInput {
     }
     
     /**
-     * <p class="changed_added_2_0">Specialize superclass behavior to treat
+     * <p class="changed_added_2_0"><span class="changed_modified_2_3">Specialize</span>
+     * superclass behavior to treat
      * <code>null</code> differently.  In this class, a <code>null</code> value
      * along with the "required" flag being set to <code>true</code> will
-     * cause a validation failure. </p>
-     * @param context
+     * cause a validation failure. <span class="changed_added_2_3">Otherwise, 
+     * If the {@link UIInput#EMPTY_STRING_AS_NULL_PARAM_NAME}
+     * context parameter is true and the value is {@code null}, call
+     * {@link UIInput#setSubmittedValue} passing the empty string
+     * as the argument.  This will cause the normal validation processing
+     * to happen, including bean validation.</span></p>
+     * 
+     * @param context the Faces context.
      * @since 2.0
      */
 
@@ -254,9 +269,11 @@ public class UIViewParameter extends UIInput {
         if (!isRendered()) {
             return;
         }
+        
+        Object submittedValue = getSubmittedValue();
 
         // we have to override since UIInput assumes that a null value means don't check
-        if (getSubmittedValue() == null && myIsRequired()) {
+        if (submittedValue == null && myIsRequired()) {
             String requiredMessageStr = getRequiredMessage();
             FacesMessage message;
             if (null != requiredMessageStr) {
@@ -275,9 +292,29 @@ public class UIViewParameter extends UIInput {
             context.renderResponse();
         }
         else {
+            if (myConsiderEmptyStringNull(context)) {
+                // JAVASERVERFACES_SPEC_PUBLIC-1329: If the EMPTY_STRING_SUBMITTED_VALUES_AS_NULL
+                // config is set, ensure that logic gets a chance to be executed
+                // in UIInput.processValidators().
+                if (null == submittedValue) {
+                    setSubmittedValue("");
+                }
+            }
             super.processValidators(context);
         }
     }
+    
+    private boolean myConsiderEmptyStringNull(FacesContext ctx) {
+
+        if (emptyStringIsNull == null) {
+            String val = ctx.getExternalContext().getInitParameter(EMPTY_STRING_AS_NULL_PARAM_NAME);
+            emptyStringIsNull = Boolean.valueOf(val);
+        }
+
+        return emptyStringIsNull;
+        
+    }
+    
     
     private boolean myIsRequired() {
         return super.isRequired() || isRequiredViaNestedRequiredValidator();
@@ -342,6 +379,8 @@ public class UIViewParameter extends UIInput {
      * <p class="changed_added_2_0">Called specially by {@link
      * UIViewRoot#encodeEnd}, this method simply sets the submitted
      * value to be the return from {@link #getStringValue}.</p>
+     * 
+     * @throws IOException when an I/O error occurs.
      * @since 2.0
      */
     @Override
@@ -361,6 +400,8 @@ public class UIViewParameter extends UIInput {
      * from a <code>ValueExpression</code> return the value of the
      * expression, otherwise, return the local value.</p>
      *
+     * @param context the Faces context.
+     * @return the string value.
      * @since 2.0
      */
 
@@ -378,6 +419,8 @@ public class UIViewParameter extends UIInput {
      * <p class="changed_added_2_0">Manually perform standard conversion
      * steps to get a string value from the value expression.</p>
      *
+     * @param context the Faces context.
+     * @return the string value from the model.
      * @since 2.0
      */
 
@@ -428,6 +471,8 @@ public class UIViewParameter extends UIInput {
      * and <code>renderer-type: javax.faces.Text</code> and call its
      * {@link Renderer#getConvertedValue} method.</p>
      *
+     * @param submittedValue the submitted value.
+     * @return the converted value.
      * @since 2.0
      */ 
     @Override
@@ -480,6 +525,7 @@ public class UIViewParameter extends UIInput {
 	 * argument <code>UIViewParameter</code>.</p>
 	 *
 	 * @param context the <code>FacesContext</code>for this request
+         * @param param the UIViewParameter.
 	 * @param indexInParent the index of the
 	 * <code>UIViewParameter</code> in its parent
 	 * <code>UIPanel</code>.
@@ -509,7 +555,7 @@ public class UIViewParameter extends UIInput {
 	 * saved state and return the result.</p>
 	 *
 	 * @param context the <code>FacesContext</code>for this request
-	 *
+         * @return the UIViewParameter.
 	 * @since 2.0
 	 */
         

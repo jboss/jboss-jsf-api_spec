@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -68,7 +68,6 @@ import java.io.IOException;
  * populating the passed UIComponent parent in relation to the
  * create/restore lifecycle of JSF.</p>
  * 
- * @author Jacob Hookom
  */
 public abstract class Facelet {
 
@@ -84,10 +83,16 @@ public abstract class Facelet {
      * @param parent
      *            The UIComponent to populate in a compositional fashion. In
      *            most cases a Facelet will be base a UIViewRoot.
-     * @throws IOException
-     * @throws FacesException
-     * @throws FaceletException
-     * @throws ELException
+     * 
+     * @throws IOException if unable to load a file necessary to apply this {@code Facelet}
+
+     * @throws FaceletException if unable to parse the markup loaded in applying this {@code Facelet}
+
+     * @throws javax.faces.FacesException if unable to create child <code>UIComponent</code> instances
+
+     * @throws javax.el.ELException if any of the expressions in the markup
+     * loaded during the apply fail
+
      */
     public abstract void apply(FacesContext facesContext, UIComponent parent)
     throws IOException;

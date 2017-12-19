@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -58,6 +58,7 @@
 package javax.faces.component;
 
 import java.util.Map;
+
 import javax.el.MethodExpression;
 import javax.faces.FacesException;
 import javax.faces.application.NavigationHandler;
@@ -74,8 +75,9 @@ import javax.faces.view.ViewMetadata;
 
 /**
 
- * <p class="changed_added_2_2"><strong>UIViewAction</strong> represents
- * a method invocation that occurs during the request processing
+ * <p class="changed_added_2_2"><strong
+ * class="changed_modified_2_3">UIViewAction</strong> represents a
+ * method invocation that occurs during the request processing
  * lifecycle, usually in response to an initial request, as opposed to a
  * postback.</p>
 
@@ -110,8 +112,12 @@ import javax.faces.view.ViewMetadata;
  * the new viewId to be different from the current viewId, the runtime
  * must force a redirect to that matched navigation case with different
  * viewId, regardless of whether or not the matched navigation case with
- * different viewId called for a redirect.  If the response is marked
- * complete by the action, the lifecycle advances appropriately.</p>
+ * different viewId called for a redirect.  <span
+ * class="changed_added_2_3">If the navigation will result in a flow
+ * transition, the appropriate metadata must be included in the query
+ * string for the redirect.  See section JSF.7.4.2 Default
+ * NavigationHandler Algorithm, for the discussion of how to
+ * handle {@code &lt;redirect /&gt;} cases.</span></p>
 
  * <p>It's important to note that the full component tree is not built
  * before the UIViewAction components are processed on an non-faces
@@ -188,9 +194,9 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
         Map<Object, Object> attrs = context.getAttributes();
         Integer count = (Integer) attrs.get(UIVIEWACTION_EVENT_COUNT);
         if (null == count) {
-            attrs.put(UIVIEWACTION_EVENT_COUNT, (Integer)1);
+            attrs.put(UIVIEWACTION_EVENT_COUNT, 1);
         } else {
-            attrs.put(UIVIEWACTION_EVENT_COUNT, (Integer)(count + 1));
+            attrs.put(UIVIEWACTION_EVENT_COUNT, count + 1);
         }
     }
     
@@ -199,7 +205,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
         Map<Object, Object> attrs = context.getAttributes();
         Integer count = (Integer) attrs.get(UIVIEWACTION_EVENT_COUNT);
         if (null != count) {
-            count = (Integer)(count - 1);
+            count = count - 1;
             if (count < 1) {
                 attrs.remove(UIVIEWACTION_EVENT_COUNT);
                 result = true;
@@ -218,6 +224,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
      * @since 2.2
      */
     @Deprecated
+    @Override
     public MethodBinding getAction() {
         MethodBinding result = null;
         MethodExpression me;
@@ -235,6 +242,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
      */
     @Deprecated
     @SuppressWarnings("deprecation")
+    @Override
     public void setAction(final MethodBinding action) {
     }
 
@@ -245,6 +253,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
      */
     @Deprecated
     @SuppressWarnings("deprecation")
+    @Override
     public MethodBinding getActionListener() {
         throw new UnsupportedOperationException("Not supported.");
     }
@@ -256,6 +265,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
      */
     @Deprecated
     @SuppressWarnings("deprecation")
+    @Override
     public void setActionListener(final MethodBinding actionListener) {
         throw new UnsupportedOperationException("Not supported.");
     }
@@ -272,6 +282,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
 
      * @since 2.2
      */
+    @Override
     public boolean isImmediate() {
         return (Boolean) getStateHelper().eval(PropertyKeys.immediate, false);
     }
@@ -281,6 +292,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
      *
      * @since 2.2
      */
+    @Override
     public void setImmediate(final boolean immediate) {
         getStateHelper().put(PropertyKeys.immediate, immediate);
     }
@@ -289,6 +301,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
      * <p class="changed_added_2_2">Returns the name of the lifecycle
      * phase in which the action is to be queued.</p>
      *
+     * @return the phase (as string).
      * @since 2.2
      */
     public String getPhase() {
@@ -317,7 +330,8 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
      * </ul>
 
      * <p>If set, this value takes precedence over the immediate flag.</p>
-
+     * 
+     * @param phase the phase id (as string value).
      * @since 2.2
      */
 
@@ -328,7 +342,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
             PhaseId.RENDER_RESPONSE.equals(myPhaseId)) {
             throw new FacesException("View actions cannot be executed in specified phase: [" + myPhaseId.toString() + "]");
         }
-        getStateHelper().put(PropertyKeys.phase, myPhaseId);
+        getStateHelper().put(PropertyKeys.phase, myPhaseId.getName());
     }
     
     private void setIsProcessingUIViewActionBroadcast(FacesContext context, boolean value) {
@@ -349,8 +363,9 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
      * responsible for ensuring that calls to this method accurately
      * reflect this fact.</p>
      *
-     * @since 2.2
      * @param context {@link FacesContext} for the current request
+     * @return <code>true</code> is currently processing broadcast, <code>false</code> otherwise.
+     * @since 2.2
      * 
      */
     
@@ -360,7 +375,11 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
     }
 
     private PhaseId getPhaseId() {
-        PhaseId myPhaseId = (PhaseId) getStateHelper().eval(PropertyKeys.phase);
+        PhaseId myPhaseId = null;
+        String phaseIdString  = (String) getStateHelper().eval(PropertyKeys.phase);
+        if (phaseIdString != null) {
+            myPhaseId = PhaseId.phaseIdValueOf(phaseIdString);
+        }
         return myPhaseId;
     }
 
@@ -409,6 +428,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
     /**
      * {@inheritDoc}
      *
+     * @param actionExpression the action expression.
      * @since 2.2
      */
     @Override
@@ -419,7 +439,8 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
     /**
      * <p class="changed_added_2_2">If <code>true</code> this
      * component will operate on postback.</p>
-
+     * 
+     * @return <code>true</code> if operating upon postback, <code>false</code> otherwise.
      * @since 2.2
      */
     public boolean isOnPostback() {
@@ -429,7 +450,8 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
     /**
      * <p class="changed_added_2_2">Controls whether or not this
      * component operates on postback.</p>
-
+     * 
+     * @param onPostback the onPostback flag.
      * @since 2.2
      */
     public void setOnPostback(final boolean onPostback) {
@@ -441,9 +463,11 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
      * component should take the actions specified in the {@link
      * #decode} method.</p>
      * 
+     * @return <code>true</code> if it should be rendered, <code>false</code> otherwise.
      * @since 2.2
      */
 
+    @Override
     public boolean isRendered() {
         return (Boolean) getStateHelper().eval(PropertyKeys.renderedAttr, true);
     }
@@ -456,6 +480,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
      *
      * @since 2.2
      */
+    @Override
     public void setRendered(final boolean condition) {
         getStateHelper().put(PropertyKeys.renderedAttr, condition);
     }
@@ -536,7 +561,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
 
         super.broadcast(event);
 
-        FacesContext context = getFacesContext();
+        FacesContext context = event.getFacesContext();
         if (!(event instanceof ActionEvent)) {
             throw new IllegalArgumentException();
         }
@@ -631,7 +656,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
      * <p>Queue the event with a call to {@link #queueEvent}. Keep track
      * of the number of events that are queued in this way on this run
      * through the lifecycle.  This information is necessary during
-     * processing in {@link #broadcast}</code>.</p>
+     * processing in {@link #broadcast}.</p>
 
      * </div>
      * 
@@ -648,7 +673,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
             return;
         }
 
-        ActionEvent e = new ActionEvent(this);
+        ActionEvent e = new ActionEvent(context, this);
         PhaseId phaseId = getPhaseId();
         if (phaseId != null) {
             e.setPhaseId(phaseId);
@@ -678,18 +703,12 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
      */
     private class InstrumentedFacesContext extends FacesContextWrapper {
 
-        private final FacesContext wrapped;
         private boolean viewRootCleared = false;
         private boolean renderedResponseControlDisabled = false;
         private Boolean postback = null;
 
         public InstrumentedFacesContext(final FacesContext wrapped) {
-            this.wrapped = wrapped;
-        }
-
-        @Override
-        public FacesContext getWrapped() {
-            return wrapped;
+            super(wrapped);
         }
 
         @Override
@@ -698,24 +717,24 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
                 return null;
             }
 
-            return wrapped.getViewRoot();
+            return super.getViewRoot();
         }
 
         @Override
         public void setViewRoot(final UIViewRoot viewRoot) {
             viewRootCleared = false;
-            wrapped.setViewRoot(viewRoot);
+            super.setViewRoot(viewRoot);
         }
-
+ 
         @Override
         public boolean isPostback() {
-            return postback == null ? wrapped.isPostback() : postback;
+            return postback == null ? super.isPostback() : postback;
         }
 
         @Override
         public void renderResponse() {
             if (!renderedResponseControlDisabled) {
-                wrapped.renderResponse();
+                super.renderResponse();
             }
         }
 
@@ -723,7 +742,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
          * Make it look like we have dispatched a request using the include method.
          */
         public InstrumentedFacesContext pushViewIntoRequestMap() {
-            getExternalContext().getRequestMap().put("javax.servlet.include.servlet_path", wrapped.getViewRoot().getViewId());
+            getExternalContext().getRequestMap().put("javax.servlet.include.servlet_path", super.getViewRoot().getViewId());
             return this;
         }
 
@@ -747,7 +766,7 @@ public class UIViewAction extends UIComponentBase implements ActionSource2 {
         }
 
         public void restore() {
-            setCurrentInstance(wrapped);
+            setCurrentInstance(getWrapped());
         }
     }
 }

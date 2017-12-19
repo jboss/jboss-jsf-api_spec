@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -92,6 +92,7 @@ public class HtmlHead extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>dir</code> property.</p>
+     * @return the property value
      * <p>Contents: Direction indication for text that does not inherit directionality.
      * Valid values are "LTR" (left-to-right) and "RTL" (right-to-left).
      * These attributes are case sensitive when rendering to XHTML, so
@@ -104,6 +105,7 @@ public class HtmlHead extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>dir</code> property.</p>
+     * @param dir the new property value
      */
     public void setDir(java.lang.String dir) {
         getStateHelper().put(PropertyKeys.dir, dir);
@@ -113,6 +115,7 @@ public class HtmlHead extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>lang</code> property.</p>
+     * @return the property value
      * <p>Contents: Code describing the language used in the generated markup
      * for this component.
      */
@@ -123,6 +126,7 @@ public class HtmlHead extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>lang</code> property.</p>
+     * @param lang the new property value
      */
     public void setLang(java.lang.String lang) {
         getStateHelper().put(PropertyKeys.lang, lang);
@@ -132,6 +136,7 @@ public class HtmlHead extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>xmlns</code> property.</p>
+     * @return the property value
      * <p>Contents: <div class="changed_added_2_1">
      * An XML Namespace to be passed through to the rendered element
      * </div>
@@ -143,6 +148,7 @@ public class HtmlHead extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>xmlns</code> property.</p>
+     * @param xmlns the new property value
      */
     public void setXmlns(java.lang.String xmlns) {
         getStateHelper().put(PropertyKeys.xmlns, xmlns);

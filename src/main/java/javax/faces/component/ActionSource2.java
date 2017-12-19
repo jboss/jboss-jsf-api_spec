@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -76,6 +76,8 @@ public interface ActionSource2 extends ActionSource {
      * {@link ActionSource#setAction}.  This makes it possible for the
      * default {@link ActionListener} to continue to work properly with
      * older components.</p>
+     * 
+     * @return the action expression.
      */
     public MethodExpression getActionExpression();
 

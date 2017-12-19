@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -54,6 +54,8 @@ public class ValidatorException extends FacesException {
     // ----------------------------------------------------------- Constructors
 
 
+    private static final long serialVersionUID = 6459492016772012827L;
+
     /**
      * <p>Construct a new exception with the specified message and
      * no root cause.</p>
@@ -69,7 +71,8 @@ public class ValidatorException extends FacesException {
     /**
      * <p class="changed_added_2_0">Allow this one exception to contain
      * multiple messages.</p>
-     * @param messages
+     *
+     * @param messages the list of messages for this exception
      * 
      * @since 2.0
      */
@@ -113,6 +116,8 @@ public class ValidatorException extends FacesException {
      * was created with a constructor that takes 
      * <code>Collection&lt;FacesMessage&gt;</code>, this method returns the first
      * message in the <code>Collection</code></p>
+     *
+     * @return the message
      */
     public FacesMessage getFacesMessage() {
         FacesMessage result = this.message;
@@ -130,6 +135,8 @@ public class ValidatorException extends FacesException {
      * collection, otherwise this method returns <code>null</code>.</p>
      * 
      * @since 2.0
+     *
+     * @return the messages
      */
 
     public Collection<FacesMessage> getFacesMessages() {

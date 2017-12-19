@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -67,7 +67,7 @@ public interface TransientStateHolder
      * <p class="changed_added_2_1">Return the object containing related "transient states".
      * that could be used later to restore the "transient state".<p>
      * 
-     * @param context
+     * @param context the Faces context.
      * @return object containing transient values
      * @since 2.1
      */
@@ -81,7 +81,7 @@ public interface TransientStateHolder
      * argument is <code>null</code> clear any previous transient
      * state if any and return.</p>
      * 
-     * @param context
+     * @param context the Faces context
      * @param state the object containing transient values
      * @since 2.1
      */

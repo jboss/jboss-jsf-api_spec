@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -52,7 +52,8 @@ import java.io.IOException;
 
 /**
  * <p>
- * <strong class="changed_modified_2_0 changed_modified_2_1 changed_modified_2_2">StateManager</strong>
+ * <strong class="changed_modified_2_0 changed_modified_2_1 
+ * changed_modified_2_2 changed_modified_2_3">StateManager</strong>
  * directs the process of saving and
  * restoring the view between requests.  <span class="changed_added_2_0">An
  * implementation
@@ -77,7 +78,7 @@ public abstract class StateManager {
      * saved.  Valid values are given as the values of the constants:
      * {@link #STATE_SAVING_METHOD_CLIENT} or {@link
      * #STATE_SAVING_METHOD_SERVER}.</p>
-     * <p/>
+     * 
      * <p>If this parameter is not specified, the default value is the
      * value of the constant {@link #STATE_SAVING_METHOD_CLIENT}. </p>
      */
@@ -97,7 +98,7 @@ public abstract class StateManager {
      * <ul>
 
      * <li><p>For applications versioned at 1.2 and under, the runtime
-     * must not use the partial state saving mechanism.</li><p>
+     * must not use the partial state saving mechanism.</p></li>
 
      * <li><p>For applications versioned at 2.0 and above, the runtime
      * must use the partial state saving mechanism.</p></li>
@@ -201,19 +202,19 @@ public abstract class StateManager {
      * object of type <code>StateManager.SerializedView</code>.  If there
      * is no state information to be saved, return <code>null</code>
      * instead.</p>
-     * <p/>
+     * 
      * <p>Components may opt out of being included in the serialized view
      * by setting their <code>transient</code> property to <code>true</code>.
      * This must cause the component itself, as well as all of that component's
      * children and facets, to be omitted from the saved  tree structure
      * and component state information.</p>
-     * <p/>
+     * 
      * <p>This method must also enforce the rule that, for components with
      * non-null <code>id</code>s, all components that are descendants of the
      * same nearest {@link NamingContainer} must have unique identifiers.</p>
      *
      * @param context {@link FacesContext} for the current request
-      *
+     * @return the serialized view, or <b>null</b>.
      * @throws IllegalStateException if more than one component or
      *                               facet within the same {@link NamingContainer} in this view has
      *                               the same non-<code>null</code> component id
@@ -223,6 +224,7 @@ public abstract class StateManager {
      * result to an <code>Object []</code> wrapping the first and second
      * elements in an instance of {@link SerializedView}, which it then
      * returns.  Otherwise, it returns <code>null</code>
+     * 
      */
     public SerializedView saveSerializedView(FacesContext context) {
 
@@ -255,17 +257,17 @@ public abstract class StateManager {
      * object must implement <code>java.io.Serializable</code>. If there
      * is no state information to be saved, return <code>null</code>
      * instead.</p>
-     * <p/>
+     * 
      * <p>Components may opt out of being included in the serialized view
      * by setting their <code>transient</code> property to <code>true</code>.
      * This must cause the component itself, as well as all of that component's
      * children and facets, to be omitted from the saved  tree structure
      * and component state information.</p>
-     * <p/>
+     * 
      * <p>This method must also enforce the rule that, for components with
      * non-null <code>id</code>s, all components that are descendants of the
      * same nearest {@link NamingContainer} must have unique identifiers.</p>
-     * <p/>
+     * 
      * <p>For backwards compatability with existing
      * <code>StateManager</code> implementations, the default
      * implementation of this method calls {@link #saveSerializedView}
@@ -275,7 +277,7 @@ public abstract class StateManager {
      * <code>SerializedView</code>.</p>
      *
      * @param context {@link FacesContext} for the current request
-     *
+     * @return the saved view.
      * @throws IllegalStateException if more than one component or
      *                               facet within the same {@link NamingContainer} in this view has
      *                               the same non-<code>null</code> component id
@@ -302,7 +304,7 @@ public abstract class StateManager {
      * <code>Serializable</code> object that represents the structure
      * of the entire component tree (including children and facets)
      * of this view.</p>
-     * <p/>
+     * 
      * <p>Components may opt-out of being included in the tree structure
      * by setting their <code>transient</code> property to <code>true</code>.
      * This must cause the component itself, as well as all of that component's
@@ -310,7 +312,7 @@ public abstract class StateManager {
      * information.</p>
      *
      * @param context {@link FacesContext} for the current request
-     *
+     * @return the tree structure, or <b>null</b>.
      * @deprecated the distinction between tree structure and component
      *             state is now an implementation detail.  The default
      *             implementation returns <code>null</code>.
@@ -327,7 +329,7 @@ public abstract class StateManager {
      * all component properties, attributes, and attached objects, for
      * the entire component tree (including children and facets)
      * of this view.</p>
-     * <p/>
+     * 
      * <p>Components may opt-out of being included in the component state
      * by setting their <code>transient</code> property to <code>true</code>.
      * This must cause the component itself, as well as all of that component's
@@ -335,7 +337,7 @@ public abstract class StateManager {
      * information.</p>
      *
      * @param context {@link FacesContext} for the current request
-     *
+     * @return the component state, or <b>null</b>.
      * @deprecated the distinction between tree structure and component
      *             state is now an implementation detail.  The default
      *             implementation returns <code>null</code>.
@@ -348,7 +350,7 @@ public abstract class StateManager {
      * <p>Save the state represented in the specified state
      * <code>Object</code> instance, in an implementation dependent
      * manner.</p>
-     * <p/>
+     * 
      * <p>This method will typically simply delegate the actual
      * writing to the <code>writeState()</code> method of the
      * {@link ResponseStateManager} instance provided by the
@@ -356,7 +358,7 @@ public abstract class StateManager {
      * method assumes that the caller has positioned the
      * {@link ResponseWriter} at the correct position for the
      * saved state to be written.</p>
-     * <p/>
+     * 
      * <p>For backwards compatability with existing
      * <code>StateManager</code> implementations, the default
      * implementation of this method checks if the argument is an
@@ -371,7 +373,7 @@ public abstract class StateManager {
      * @param context {@link FacesContext} for the current request
      * @param state   the Serializable state to be written,
      *                as returned by {@link #saveSerializedView}
-     *
+     * @throws IOException when an I/O error occurs.
      * @since 1.2
      */
     public void writeState(FacesContext context, Object state)
@@ -391,13 +393,13 @@ public abstract class StateManager {
      * <p>Save the state represented in the specified
      * <code>SerializedView</code> isntance, in an implementation
      * dependent manner.</p>
-     * <p/>
+     * 
      * <p>This method must consult the context initialization parameter
      * named by the symbolic constant
      * <code>StateManager.STATE_SAVING_METHOD_PARAM_NAME</code>
      * to determine whether state should be saved on the client or the
      * server.  If not present, client side state saving is assumed.</p>
-     * <p/>
+     * 
      * <p>If the init parameter indicates that client side state
      * saving should be used, this method must delegate the actual
      * writing to the <code>writeState()</code> method of the
@@ -409,7 +411,7 @@ public abstract class StateManager {
      *
      * @param context {@link FacesContext} for the current request
      * @param state   the serialized state to be written
-     *
+     * @throws IOException when an I/O error occurs.
      * @deprecated This method has been replaced by {@link
      *             #writeState(javax.faces.context.FacesContext,java.lang.Object)}.
      *             The default implementation calls the non-deprecated variant
@@ -417,7 +419,7 @@ public abstract class StateManager {
      * argument, where the first element of the array is the return from
      * <code>getStructure()</code> and the second is the return from
      * <code>getState()</code> on the argument <code>state</code>.
-     * 
+     *
      */
     public void writeState(FacesContext context,
                            SerializedView state) throws IOException {
@@ -440,13 +442,13 @@ public abstract class StateManager {
      * manner, and return the restored {@link UIViewRoot}.  If there is no
      * saved state information available for this <code>viewId</code>,
      * return <code>null</code> instead.</p>
-     * <p/>
+     * 
      * <p>This method must consult the context initialization parameter
      * named by the symbolic constant
      * <code>StateManager.STATE_SAVING_METHOD_PARAM_NAME</code>
      * to determine whether state should be saved on the client or the
      * server.  If not present, client side state saving is assumed.</p>
-     * <p/>
+     * 
      * <p>If the init parameter indicates that client side state
      * saving should be used, this method must call the
      * <code>getTreeStructureToRestore()</code> and (if the previous method
@@ -459,6 +461,7 @@ public abstract class StateManager {
      * @param renderKitId the renderKitId used to render this response.
      *                    Must not be <code>null</code>.
      *
+     * @return the view root, or <code>null</code>.
      * @throws IllegalArgumentException if <code>renderKitId</code>
      *                                  is <code>null</code>.
      */
@@ -478,7 +481,7 @@ public abstract class StateManager {
      * @param viewId      View identifier of the view to be restored
      * @param renderKitId the renderKitId used to render this response.
      *                    Must not be <code>null</code>.
-     *
+     * @return the view root, or <code>null</code>.
      * @throws IllegalArgumentException if <code>renderKitId</code>
      *                                  is <code>null</code>.
      * @deprecated the distinction between tree structure and component
@@ -519,16 +522,21 @@ public abstract class StateManager {
     private Boolean savingStateInClient = null;
 
     /**
+     * <p>
+     *  <span class="changed_modified_2_3">Method</span> to determine if the state is saved on the client. 
+     * </p>
+     * 
+     * @param context the Faces context.
      * @return <code>true</code> if and only if the value of the
      *         <code>ServletContext</code> init parameter named by the value of
-     *         the constant {@link #STATE_SAVING_METHOD_PARAM_NAME} is equal to
+     *         the constant {@link #STATE_SAVING_METHOD_PARAM_NAME} is 
+     *         equal <span class="changed_modified_2_3">(ignoring case)</span> to
      *         the value of the constant {@link #STATE_SAVING_METHOD_CLIENT}.
      *         <code>false</code> otherwise.
      *
      * @throws NullPointerException if <code>context</code> is
      *                              <code>null</code>.
      */
-
     public boolean isSavingStateInClient(FacesContext context) {
         if (null != savingStateInClient) {
             return savingStateInClient.booleanValue();
@@ -586,7 +594,7 @@ public abstract class StateManager {
      * </p>
      *
      * @param context {@link FacesContext} for the current request
-     *
+     * @return the view state.
      * @since 2.0
      */
     public String getViewState(FacesContext context) {

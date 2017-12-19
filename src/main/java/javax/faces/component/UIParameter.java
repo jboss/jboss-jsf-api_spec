@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -103,6 +103,7 @@ public class UIParameter extends UIComponentBase {
     // -------------------------------------------------------------- Properties
 
 
+    @Override
     public String getFamily() {
 
         return (COMPONENT_FAMILY);
@@ -112,6 +113,8 @@ public class UIParameter extends UIComponentBase {
 
     /**
      * <p>Return the optional parameter name for this parameter.</p>
+     * 
+     * @return the name.
      */
     public String getName() {
 
@@ -137,6 +140,8 @@ public class UIParameter extends UIComponentBase {
     /**
      * <p>Returns the <code>value</code> property of the
      * <code>UIParameter</code>.</p>
+     * 
+     * @return the value.
      */
     public Object getValue() {
 
@@ -162,6 +167,8 @@ public class UIParameter extends UIComponentBase {
      * directive for this component. This directive determines whether the
      * parameter value should be disabled by assigning it a null value.
      * If true, the <code>value</code> set on this component is ignored.</p>
+     * 
+     * @return <code>true</code> if disabled, <code>false</code> otherwise.
      * @since 2.0
      */
     public boolean isDisable() {
@@ -172,7 +179,8 @@ public class UIParameter extends UIComponentBase {
 
     /**
      * <p>Sets the <code>disable</code> property of the <code>UIParameter</code>.</p>
-     * @param disable
+     * 
+     * @param disable the value for the disable flag.
      * @since 2.0
      */
     public void setDisable(boolean disable) {

@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -41,6 +41,9 @@
 package javax.faces.application;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import javax.faces.context.FacesContext;
 
@@ -60,7 +63,7 @@ import javax.faces.context.FacesContext;
  *
  * <p class="javadocSection">Packaging Resources</p>
  *
- * <ul>
+ * <blockquote>
  *
  *  <p>ResourceHandler defines a path based packaging convention for
  *  resources.  The default implementation of
@@ -110,11 +113,11 @@ import javax.faces.context.FacesContext;
 
  * <p>Note that <em>resourceName</em> is the only required segment.</p>
  *
- * </ul>
+ * </blockquote>
  *
  * <p class="javadocSection">Encoding Resources</p>
  *
- * <ul>
+ * <blockquote>
  *
  *  <p>During the handling of view requests, the JSF run-time may be
  *  called upon to encode a resource in such a way as to instruct the
@@ -129,11 +132,11 @@ import javax.faces.context.FacesContext;
  * <p class="changed_added_2_2">This usage of resources does not apply
  * for resources that correspond to VDL resources.</p>
  *
- * </ul>
+ * </blockquote>
  *
  * <p class="javadocSection">Decoding Resources</p>
  *
- * <ul>
+ * <blockquote>
  *
  *  <p>During the handling of resource requests, the JSF run-time will
  *  be called upon to decode a resource in such a way as to serve up
@@ -145,7 +148,7 @@ import javax.faces.context.FacesContext;
  * <p class="changed_added_2_2">This usage of resources does not apply
  * for resources that correspond to VDL resources.</p>
 
- * </ul>
+ * </blockquote>
  *
  * </div>
  *
@@ -154,15 +157,33 @@ import javax.faces.context.FacesContext;
 public abstract class ResourceHandler {
 
     /**
-
      * <p class="changed_added_2_0">{@link Resource#getRequestPath} returns the
      * value of this constant as the prefix of the URI.  {@link
      * #handleResourceRequest(javax.faces.context.FacesContext)} looks for the value of this constant
      * within the request URI to determine if the request is a resource
      * request or a view request.</p>
-
      */
     public static final String RESOURCE_IDENTIFIER = "/javax.faces.resource";
+
+
+    /**
+     * <p class="changed_added_2_3">
+     * Resource name of JSF script resource.
+     * </p>
+     *
+     * @since 2.3
+     */
+    public static final String JSF_SCRIPT_RESOURCE_NAME = "jsf.js";
+
+
+    /**
+     * <p class="changed_added_2_3">
+     * Library name of JSF script resource.
+     * </p>
+     *
+     * @since 2.3
+     */
+    public static final String JSF_SCRIPT_LIBRARY_NAME = "javax.faces";
 
 
     /**
@@ -174,15 +195,12 @@ public abstract class ResourceHandler {
      * the jar file contains multiple contracts, the marker file must be
      * present in each one. See &#8220;constant field values&#8221; for
      * the name of the file that must be placed at that location.</p>
-
      * @since 2.2
      */
-
     public static final String RESOURCE_CONTRACT_XML = "javax.faces.contract.xml";
 
 
     /**
-
      * <p class="changed_added_2_2">If a
      * <code>&lt;context-param&gt;</code> with the param name equal to
      * the value of {@link #WEBAPP_RESOURCES_DIRECTORY_PARAM_NAME}
@@ -195,12 +213,10 @@ public abstract class ResourceHandler {
      *
      * @since 2.2
      */
-
-    public static final String WEBAPP_RESOURCES_DIRECTORY_PARAM_NAME = 
+    public static final String WEBAPP_RESOURCES_DIRECTORY_PARAM_NAME =
         "javax.faces.WEBAPP_RESOURCES_DIRECTORY";
 
     /**
-
      * <p class="changed_added_2_2">If a
      * <code>&lt;context-param&gt;</code> with the param name equal to
      * the value of {@link #WEBAPP_CONTRACTS_DIRECTORY_PARAM_NAME}
@@ -213,8 +229,7 @@ public abstract class ResourceHandler {
      *
      * @since 2.2
      */
-
-    public static final String WEBAPP_CONTRACTS_DIRECTORY_PARAM_NAME = 
+    public static final String WEBAPP_CONTRACTS_DIRECTORY_PARAM_NAME =
         "javax.faces.WEBAPP_CONTRACTS_DIRECTORY";
 
     /**
@@ -224,11 +239,8 @@ public abstract class ResourceHandler {
      * used to find a packaged resource to return from {@link
      * #createResource} (or one of its variants).
      */
-
     public static final String LOCALE_PREFIX = 
-	"javax.faces.resource.localePrefix";
-
-
+        "javax.faces.resource.localePrefix";
 
     /**
      * <p class="changed_added_2_0">The <code>ServletContext</code> init
@@ -243,19 +255,19 @@ public abstract class ResourceHandler {
      * does not supplement it.  </p>
      */
     public static final String RESOURCE_EXCLUDES_PARAM_NAME =
-          "javax.faces.RESOURCE_EXCLUDES";
+        "javax.faces.RESOURCE_EXCLUDES";
 
     /**
      * <p class="changed_added_2_0 changed_modified_2_1">The default value for the {@link
      * #RESOURCE_EXCLUDES_PARAM_NAME} init param.</p>
      */
     public static final String RESOURCE_EXCLUDES_DEFAULT_VALUE =
-          ".class .jsp .jspx .properties .xhtml .groovy";
+        ".class .jsp .jspx .properties .xhtml .groovy";
 
 
 
     // ---------------------------------------------------------- Public Methods
-    
+
 
     /**
      * <p class="changed_added_2_0"><span
@@ -289,15 +301,15 @@ public abstract class ResourceHandler {
      * for use in encoding or decoding the named resource.
      */
     public abstract Resource createResource(String resourceName);
-    
+
     /**
      * <p class="changed_added_2_2">Create an instance of <code>Resource</code>
-     * given the argument <code>resourceName</code>, which may contain "/" 
+     * given the argument <code>resourceName</code>, which may contain "/"
      * characters.  The {@link javax.faces.view.ViewDeclarationLanguage} calls
      * this method when it needs to load a view from a persistent store, such as
-     * a filesystem.  This method is functionality equivalent to 
+     * a filesystem.  This method is functionality equivalent to
      * {@link #createResource(java.lang.String)}, but all callsites that need
-     * to load VDL views must use this method so that classes that want to 
+     * to load VDL views must use this method so that classes that want to
      * decorate the <code>ResourceHandler</code> in order to only affect the
      * loading of views may do so without affecting the processing of other
      * kinds of resources, such as scripts and stylesheets.
@@ -305,27 +317,27 @@ public abstract class ResourceHandler {
      * before calling this method.  To preserve compatibility with prior revisions of the
      * specification, a default implementation must be provided that calls
      * {@link #createResource(java.lang.String)}. </p>
-
+     *
      * <div class="changed_added_2_2">
-
+     *
      * <p>The default implementation must look for the resource in the
      * following places, in this order.</p>
-
+     *
      * <ul>
-
+     *
      * <li><p>Considering resource library contracts (at the locations
      * specified in the spec prose document section <em>Resource Library
      * Contracts</em> in the <em>Request Processing Lifecycle</em>
      * chapter).</p></li>
-
+     *
      * <li><p>Considering the web app root.</p></li>
-
+     *
      *  <li><p>Considering faces flows (at the locations specified in
      * the spec prose document section <em>Faces Flows</em> in the
      * <em>Using JSF in Web Applications</em> chapter).</p></li>
-
+     *
      * </ul>
-     
+     *
      * <p>Call {@link FacesContext#getResourceLibraryContracts}.  If the
      * result is non-{@code null} and not empty, for each value in the
      * list, treat the value as the name of a resource library contract.
@@ -333,26 +345,80 @@ public abstract class ResourceHandler {
      * resource library contract, return it.  Otherwise, return the
      * resource (not in the resource library contract), if found.
      * Otherwise, return {@code null}.</p>
-
      * </div>
-
+     *
      * @param context the {@link FacesContext} for this request.
-
      * @param resourceName the name of the resource to be interpreted as a view
      * by the {@link javax.faces.view.ViewDeclarationLanguage}.
-
+     *
      * @throws NullPointerException if <code>resourceName</code> is
      *  {@code null}.
-
+     *
      * @return a newly created {@link ViewResource} instance, suitable
      * for use by the {@link javax.faces.view.ViewDeclarationLanguage}.
-     * 
+     *
      * @since 2.2
-
      */
-    
     public ViewResource createViewResource(FacesContext context, String resourceName) {
         return context.getApplication().getResourceHandler().createResource(resourceName);
+    }
+    
+    /**
+     * <p class="changed_added_2_3">
+     * Return a {@code Stream} possibly lazily populated by walking the resource tree 
+     * rooted at a given initial path. The resource tree is traversed <em>breadth-first</em>, 
+     * the elements in the stream are view resource names that would yield a {@code ViewResource} when
+     * passed into {@link ResourceHandler#createViewResource} as the {@code resourceName} parameter.
+     * </p>
+     * 
+     * <p>
+     * The {@code maxDepth} parameter is the maximum depth of directory levels to visit 
+     * <em>beyond the initial path</em>, which is always visited. The value is relative to the root
+     * ({@code /}), not to the given initial path. E.g. given {@code maxDepth} = {@code 3} and initial
+     * path {@code /foo/}, visiting will proceed up to {@code /foo/bar/}, where {@code /} counts as depth
+     * {@code 1}, {@code /foo/} as depth {@code 2} and {@code /foo/bar/} as depth {@code 3}.
+     * A value lower or equal to the depth of the initial path means that only the initial path
+     * is visited. A value of {@link Integer#MAX_VALUE MAX_VALUE} may be used to indicate that all
+     * levels should be visited.
+     * 
+     * @param facesContext The {@link FacesContext} for this request.
+     * @param path The initial path from which to start looking for view resources
+     * @param maxDepth The absolute maximum depth of nested directories to visit counted from the root ({@code /}).
+     * @param options The options to influence the traversal. See {@link ResourceVisitOption} for details on those.
+     *
+     * @return the {@link Stream} of view resource names
+     * 
+     * @since 2.3
+     */
+    public Stream<String> getViewResources(FacesContext facesContext, String path, int maxDepth, ResourceVisitOption... options) {
+        return Stream.empty();
+    }
+    
+    /**
+     * <p class="changed_added_2_3">
+     * Return a {@code Stream} possibly lazily populated by walking the resource tree 
+     * rooted at a given initial path. The resource tree is traversed <em>breadth-first</em>, 
+     * the elements in the stream are view resource names that would yield a {@code ViewResource} when
+     * passed into {@link ResourceHandler#createViewResource} as the {@code resourceName} parameter.
+     * </p>
+     * 
+     * <p> 
+     * This method works as if invoking it were equivalent to evaluating the expression:
+     * <blockquote><pre>
+     * getViewResources(facesContext, start, Integer.MAX_VALUE, options)
+     * </pre></blockquote>
+     * Put differently, it visits all levels of the resource tree.
+     * 
+     * @param facesContext The {@link FacesContext} for this request.
+     * @param path The initial path from which to start looking for view resources
+     * @param options The options to influence the traversal. See {@link ResourceVisitOption} for details on those.
+     *
+     * @return the {@link Stream} of view resource names
+     * 
+     * @since 2.3
+     */
+    public Stream<String> getViewResources(FacesContext facesContext, String path, ResourceVisitOption... options) {
+        return Stream.empty();
     }
 
     /**
@@ -361,17 +427,17 @@ public abstract class ResourceHandler {
      * <code>resourceId</code>.  The content-type of the resource is
      * derived by passing the <em>resourceName</em> to {@link
      * javax.faces.context.ExternalContext#getMimeType}</p>
-
+     *
      * <div class="changed_added_2_2">
-
+     *
      * <p>The resource must be identified according to the specification
      * in JSF.2.6.1.3 of the spec prose document <a
      * href="../../../overview-summary.html#prose_document">linked in
      * the overview summary</a>.  New requirements were introduced in
      * version 2.2 of the specification.</p>
-
+     *
      * </div>
-
+     *
      * @param resourceId the resource identifier of the resource.
      *
      * @throws NullPointerException if <code>resourceId</code> is
@@ -379,10 +445,9 @@ public abstract class ResourceHandler {
      *
      * @return a newly created <code>Resource</code> instance, suitable
      * for use in encoding or decoding the named resource.
-     * 
+     *
      * @since 2.2
      */
-
     public Resource createResourceFromId(String resourceId) {
         return null;
     }
@@ -398,7 +463,7 @@ public abstract class ResourceHandler {
      * javax.faces.context.ExternalContext#getMimeType}.</p>
      *
      * <div class="changed_added_2_0">
-
+     *
      * <p>The algorithm specified in section JSF.2.6.1.4 of the spec
      * prose document <a
      * href="../../../overview-summary.html#prose_document">linked in
@@ -406,9 +471,9 @@ public abstract class ResourceHandler {
      * <code>Resource</code>. <span class="changed_added_2_2">New
      * requirements were introduced in version 2.2 of the
      * specification.</span></p>
-
+     *
      * </div>
-
+     *
      * @param resourceName the name of the resource.
      *
      * @param libraryOrContractName <span class="changed_modified_2_2">the
@@ -419,15 +484,13 @@ public abstract class ResourceHandler {
      * class="changed_modified_2_0_rev_a">May not include relative
      * paths, such as "../".</span></span>
      *
-     * @throws <code>NullPointerException</code> if
+     * @throws NullPointerException if
      * <code>resourceName</code> is <code>null</code>
      *
      * @return a newly created <code>Resource</code> instance, suitable
      * for use in encoding or decoding the named resource.
      */
-    public abstract Resource createResource(String resourceName,
-                                            String libraryOrContractName);
-
+    public abstract Resource createResource(String resourceName, String libraryOrContractName);
 
     /**
      * <p class="changed_added_2_0"><span
@@ -439,7 +502,7 @@ public abstract class ResourceHandler {
      * <code>content-type</code>.</p>
      *
      * <div class="changed_added_2_0">
-
+     *
      * <p>The algorithm specified in section JSF.2.6.1.4 of the spec
      * prose document <a
      * href="../../../overview-summary.html#prose_document">linked in
@@ -447,9 +510,9 @@ public abstract class ResourceHandler {
      * <code>Resource</code>. <span class="changed_added_2_2">New
      * requirements were introduced in version 2.2 of the
      * specification.</span></p>
-
+     *
      * </div>
-
+     *
      * @param resourceName the name of the resource.
      *
      * @param libraryName the name of the library in which this resource
@@ -462,18 +525,16 @@ public abstract class ResourceHandler {
      * Resource#getContentType}.  If the value is <code>null</code>, The
      * content-type of the resource is derived by passing the
      * <em>resourceName</em> to {@link
-     * javax.faces.context.ExternalContext#getMimeType}</p>
+     * javax.faces.context.ExternalContext#getMimeType}
      *
-     * @throws <code>NullPointerException</code> if
+     * @throws NullPointerException if
      * <code>resourceName</code> is <code>null</code>.
      *
      * @return a newly created <code>Resource</code> instance, suitable
      * for use in encoding or decoding the named resource.
      */
-    public abstract Resource createResource(String resourceName,
-                                            String libraryName,
-                                            String contentType);
-    
+    public abstract Resource createResource(String resourceName, String libraryName, String contentType);
+
     /**
      * <p class="changed_added_2_0"><span
      * class="changed_modified_2_2">Return</span> <code>true</code> if
@@ -490,12 +551,12 @@ public abstract class ResourceHandler {
      * library, along with other spec changes in section 2.6.1.4, this
      * scenario is enabled.</span></p>
      *
+     * @param libraryName the library name.
+     * @return <code>true</code> if the library exists, <code>false</code> otherwise.
      * @since 2.0
-     * 
+     *
      */
-    
     public abstract boolean libraryExists(String libraryName);
-
 
     /**
      * <p class="changed_added_2_0">This method specifies the contract
@@ -585,10 +646,9 @@ public abstract class ResourceHandler {
      *
      * @param context the {@link javax.faces.context.FacesContext} for this
      * request
+     * @throws IOException when an I/O error occurs.
      */
-    public abstract void handleResourceRequest(FacesContext context)
-    throws IOException;
-
+    public abstract void handleResourceRequest(FacesContext context) throws IOException;
 
     /**
      * <p class="changed_added_2_0">Return <code>true</code> if the
@@ -603,65 +663,102 @@ public abstract class ResourceHandler {
      * request, <code>false</code> otherwise.
      */
     public abstract boolean isResourceRequest(FacesContext context);
-    
+
     /**
      * <p class="changed_added_2_2">Return {@code true} if the argument {@code url}
      * contains the string given by the value of the constant
      * {@link ResourceHandler#RESOURCE_IDENTIFIER}, false otherwise.</p>
-     * 
+     *
      * @param url the url to inspect for the presence of {@link ResourceHandler#RESOURCE_IDENTIFIER}.
-
+     * @return <code>true</code> if this is a resource URL, <code>false</code> otherwise.
      * @throws NullPointerException if the argument url is {@code null}.
      */
-    
     public boolean isResourceURL(String url) {
         boolean result = false;
         if (null == url) {
             throw new NullPointerException("null url");
         }
-        result = url.contains(ResourceHandler.RESOURCE_IDENTIFIER);
-        
+        result = url.contains(RESOURCE_IDENTIFIER);
+
         return result;
-        
     }
-    
+
     /**
-     * <p class="changed_added_2_0">Return the <code>renderer-type</code> for a 
-     * {@link javax.faces.render.Renderer} that is capable of rendering this 
+     * <p class="changed_added_2_0">Return the <code>renderer-type</code> for a
+     * {@link javax.faces.render.Renderer} that is capable of rendering this
      * resource. The default implementation must return values according to the
      * following table.  If no <code>renderer-type</code> can be determined,
-     * <code>null</code> must be returned.</p> 
-     * 
+     * <code>null</code> must be returned.</p>
+     *
      * <table border="1">
-     * 
+     *  <caption>resource name to renderer-type mapping</caption>
+     *
      * <tr>
-     * 
+     *
      * <th>example resource name</th>
-     * 
+     *
      * <th>renderer-type</th>
-     * 
+     *
      * </tr>
-     * 
+     *
      * <tr>
-     * 
+     *
      * <td>mycomponent.js</td>
-     * 
+     *
      * <td><code>javax.faces.resource.Script</code></td>
-     * 
+     *
      * </tr>
-     * 
+     *
      * <tr>
-     * 
+     *
      * <td>mystyle.css</td>
-     * 
+     *
      * <td><code>javax.faces.resource.Stylesheet</code></td>
-     * 
+     *
      * </tr>
-     * 
+     *
      * </table>
+     *
+     * @param resourceName the resource name.
+     * @return the renderer type.
      */
-    
     public abstract String getRendererTypeForResourceName(String resourceName);
-    
+
+    /**
+     * <p class="changed_added_2_3">
+     * Mark the resource as identified by given resource and library name as rendered. The default implementation must
+     * ensure that {@link #isResourceRendered(FacesContext, String, String)} will return <code>true</code> when the
+     * resource has already been rendered during the render response phase of the current view.
+     * </p>
+     * @param context The {@link FacesContext} for this request.
+     * @param resourceName The name of the resource.
+     * @param libraryName The name of the library in which the resource resides, may be <code>null</code>.
+     * @since 2.3
+     */
+    @SuppressWarnings("unchecked")
+    public void markResourceRendered(FacesContext context, String resourceName, String libraryName) {
+        String resourceIdentifier = libraryName + ":" + resourceName;
+        Set<String> resourceIdentifiers = (Set<String>) context.getAttributes().computeIfAbsent(RESOURCE_IDENTIFIER, k -> new HashSet<>());
+        resourceIdentifiers.add(resourceIdentifier);
+    }
+
+    /**
+     * <p class="changed_added_2_3">
+     * Returns whether the resource as identified by given resource and library name has been rendered. The default
+     * implementation must during the render response phase of the current view return <code>true</code> when the
+     * resource has been marked as rendered via {@link #markResourceRendered(FacesContext, String, String)}.
+     * </p>
+     * @param context The {@link FacesContext} for this request.
+     * @param resourceName The name of the resource.
+     * @param libraryName The name of the library in which this resource resides, may be <code>null</code>.
+     * @return Whether the resource as identified by given resource and library name has been rendered.
+     * @since 2.3
+     */
+    @SuppressWarnings("unchecked")
+    public boolean isResourceRendered(FacesContext context, String resourceName, String libraryName) {
+        String resourceIdentifier = libraryName + ":" + resourceName;
+        Set<String> resourceIdentifiers = (Set<String>) context.getAttributes().get(RESOURCE_IDENTIFIER);
+        return resourceIdentifiers != null && resourceIdentifiers.contains(resourceIdentifier);
+    }
 
 }

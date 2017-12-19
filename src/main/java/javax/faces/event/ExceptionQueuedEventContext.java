@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -166,7 +166,8 @@ public class ExceptionQueuedEventContext implements SystemEventListenerHolder {
 
 
     /**
-     * <p class="changed_added_2_0"></p>
+     * <p class="changed_added_2_0">The {@link FacesContext} for this
+     * request.</p>
      * @return the {@link FacesContext} used to create this
      *  <code>ExceptionQueuedEventContext</code> instance.
      */
@@ -179,6 +180,8 @@ public class ExceptionQueuedEventContext implements SystemEventListenerHolder {
     /**
      * <p class="changed_added_2_0">Return the <code>exception</code>
      * property.</p>
+     *
+     * @return the exception
      */
     public Throwable getException() {
 
@@ -191,6 +194,8 @@ public class ExceptionQueuedEventContext implements SystemEventListenerHolder {
      * <p class="changed_added_2_0">Return the <code>UIComponent</code>
      * which was being processed when the exception was thrown. If none
      * or not available, this will be <code>null</code>.</p>
+     *
+     * @return the component
      */
     public UIComponent getComponent() {
 
@@ -203,6 +208,8 @@ public class ExceptionQueuedEventContext implements SystemEventListenerHolder {
      * <p class="changed_added_2_0">Return the <code>PhaseId</code>
      * which was being processed when the exception was thrown. If none
      * or not available, this will be <code>null</code>.</p>
+     *
+     * @return the phase id
      */
     public PhaseId getPhaseId() {
 
@@ -238,11 +245,13 @@ public class ExceptionQueuedEventContext implements SystemEventListenerHolder {
     /**
      * <p class="changed_added_2_0">A <code>Map</code> of attributes
      * relevant to the context of this <code>ExceptionQueuedEvent</code>.</p>
+     *
+     * @return attributes related to this context
      */
     public Map<Object, Object> getAttributes() {
 
         if (null == attributes) {
-            attributes = new HashMap<Object,Object>();
+            attributes = new HashMap<>();
         }
         return attributes;
 
@@ -255,10 +264,11 @@ public class ExceptionQueuedEventContext implements SystemEventListenerHolder {
      * javax.faces.context.ExceptionHandler} for the current
      * request.</p>
      */
+    @Override
     public List<SystemEventListener> getListenersForEventClass(Class<? extends SystemEvent> facesEventClass) {
 
         if (null == listener) {
-            List<SystemEventListener> list = new ArrayList<SystemEventListener>(1);
+            List<SystemEventListener> list = new ArrayList<>(1);
             list.add(context.getExceptionHandler());
             listener = Collections.unmodifiableList(list);
         }

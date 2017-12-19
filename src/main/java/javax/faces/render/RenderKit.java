@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -112,6 +112,8 @@ public abstract class RenderKit {
      *
      * @throws NullPointerException if <code>family</code> or
      *  <code>rendererType</code> is <code>null</code>
+     * 
+     * @return the {@link Renderer} instance
      */
     public abstract Renderer getRenderer(String family, String rendererType);
 
@@ -119,6 +121,8 @@ public abstract class RenderKit {
     /**
      * <p>Return an instance of {@link ResponseStateManager} to handle
      * rendering technology specific state management decisions.</p>
+     * 
+     * @return the {@link ResponseStateManager}
      */
     public abstract ResponseStateManager getResponseStateManager();
 
@@ -180,6 +184,11 @@ public abstract class RenderKit {
      * <p>Use the provided <code>OutputStream</code> to create a new
      * {@link ResponseStream} instance.</p>
      *
+     * @param out the {@code OutputStream} around which to create the
+     * {@link ResponseStream}
+     *
+     * @return the new {@link ResponseStream}
+     *
      */ 
     public abstract ResponseStream createResponseStream(OutputStream out);
 
@@ -195,6 +204,9 @@ public abstract class RenderKit {
      * </p>
      *
      * @since 2.0
+     * 
+     * @return Return an <code>Iterator</code> over
+     * the component-family entries
      *
      */
     public Iterator<String> getComponentFamilies() {
@@ -221,6 +233,9 @@ public abstract class RenderKit {
      * <code>Iterator</code> returned by {@link #getComponentFamilies}.
      *
      * @since 2.0
+     * 
+     * @return an <code>Iterator</code> over the renderer-type
+     * 
      */
     public Iterator<String> getRendererTypes(String componentFamily) {
 
@@ -260,6 +275,8 @@ public abstract class RenderKit {
      *  is <code>null</code>
      *
      * @since 2.0
+     * 
+     * @return the {@link ClientBehaviorRenderer} instance
      */
     public ClientBehaviorRenderer getClientBehaviorRenderer(String type) {
         throw new UnsupportedOperationException("The default implementation must override this method");
@@ -270,6 +287,9 @@ public abstract class RenderKit {
      * the {@link ClientBehaviorRenderer} types.</p>
      *
      * @since 2.0
+     * 
+     * @return an <code>Iterator</code> over
+     * the {@link ClientBehaviorRenderer}
      */
     public Iterator<String> getClientBehaviorRendererTypes() {
         throw new UnsupportedOperationException("The default implementation must override this method");		

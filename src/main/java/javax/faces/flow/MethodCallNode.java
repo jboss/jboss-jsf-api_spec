@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -65,6 +65,8 @@ public abstract class MethodCallNode extends FlowNode {
      * invoked to when control passes to this node.</p>
      * 
      * @since 2.2
+     * 
+     * @return the {@code MethodExpression} to be invoked to when control passes to this node
      */
     public abstract MethodExpression getMethodExpression();
 
@@ -73,6 +75,8 @@ public abstract class MethodCallNode extends FlowNode {
      * used in the event of a {@code null} return from the method.</p>
      * 
      * @since 2.2
+     * 
+     * @return the {@code outcome}
      */
     public abstract ValueExpression getOutcome();
     
@@ -81,6 +85,8 @@ public abstract class MethodCallNode extends FlowNode {
      * to the method.</p>
      * 
      * @since 2.2
+     * 
+     * @return the parameters to be passed to the method
      */
     public abstract List<Parameter> getParameters();
 

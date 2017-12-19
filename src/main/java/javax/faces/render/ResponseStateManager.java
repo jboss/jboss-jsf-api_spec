@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -88,8 +88,7 @@ public abstract class ResponseStateManager {
      * constant field value, the separator char, and a number that is 
      * guaranteed to be unique with respect to all the other instances of
      * this kind of client parameter in the view.</span>
-     * 
-     * </span></p>
+     * </p>
 
      * <p class="changed_added_2_0">It is strongly recommend that
      * implementations guard against cross site scripting attacks by at
@@ -149,7 +148,7 @@ public abstract class ResponseStateManager {
             "javax.faces.Token";
     
     /**       
-     * <p><span class="changed_modified_2_2"">Take</span> the argument 
+     * <p><span class="changed_modified_2_2">Take</span> the argument 
      * <code>state</code> and write it into the
      * output using the current {@link ResponseWriter}, which must be
      * correctly positioned already.</p>
@@ -292,6 +291,8 @@ public abstract class ResponseStateManager {
      * @param context The {@link FacesContext} instance for the current request
      * @param state The serialized state information previously saved
      *
+     * @throws IOException if the state cannot be written for any reason
+     *
      */
     public void writeState(FacesContext context,
                            SerializedView state) throws IOException {
@@ -326,7 +327,10 @@ public abstract class ResponseStateManager {
      * cannot be determined.
      * 
      * @since 2.2
+     *
      * 
+     * @return the value of the statelessness of this run through the
+     * lifecycle.
      *  
      */
     
@@ -387,6 +391,7 @@ public abstract class ResponseStateManager {
      * @param context The {@link FacesContext} instance for the current request
      * @param viewId View identifier of the view to be restored
      *
+     * @return the tree structure portion of the state
      */
     public Object getTreeStructureToRestore(FacesContext context, 
 					    String viewId) {
@@ -403,6 +408,8 @@ public abstract class ResponseStateManager {
      * The default implementation returns <code>null</code>.
      *
      * @param context The {@link FacesContext} instance for the current request
+     * 
+     * @return the component state portion of the state
      *
      */
     public Object getComponentStateToRestore(FacesContext context) {
@@ -432,6 +439,10 @@ public abstract class ResponseStateManager {
      * javax.faces.context.ExternalContext}'s <code>requestParameterMap</code> and return
      * <code>true</code> if its size is greater than 0.</p>
      *
+     * @param context the {@code FacesContext} for the current request.
+     *
+     * @return the value as specified above
+     * 
      * @since 1.2
      */
 

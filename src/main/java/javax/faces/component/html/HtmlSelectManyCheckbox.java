@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -127,6 +127,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>accesskey</code> property.</p>
+     * @return the property value
      * <p>Contents: Access key that, when pressed, transfers focus
      * to this element.
      */
@@ -137,6 +138,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>accesskey</code> property.</p>
+     * @param accesskey the new property value
      */
     public void setAccesskey(java.lang.String accesskey) {
         getStateHelper().put(PropertyKeys.accesskey, accesskey);
@@ -146,6 +148,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>border</code> property.</p>
+     * @return the property value
      * <p>Contents: Width (in pixels) of the border to be drawn
      * around the table containing the options list.
      */
@@ -156,6 +159,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>border</code> property.</p>
+     * @param border the new property value
      */
     public void setBorder(int border) {
         getStateHelper().put(PropertyKeys.border, border);
@@ -165,6 +169,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>dir</code> property.</p>
+     * @return the property value
      * <p>Contents: Direction indication for text that does not inherit directionality.
      * Valid values are "LTR" (left-to-right) and "RTL" (right-to-left).
      * These attributes are case sensitive when rendering to XHTML, so
@@ -177,6 +182,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>dir</code> property.</p>
+     * @param dir the new property value
      */
     public void setDir(java.lang.String dir) {
         getStateHelper().put(PropertyKeys.dir, dir);
@@ -186,6 +192,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>disabled</code> property.</p>
+     * @return the property value
      * <p>Contents: Flag indicating that this element must never receive focus or
      * be included in a subsequent submit.  A value of false causes
      * no attribute to be rendered, while a value of true causes the
@@ -198,6 +205,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>disabled</code> property.</p>
+     * @param disabled the new property value
      */
     public void setDisabled(boolean disabled) {
         getStateHelper().put(PropertyKeys.disabled, disabled);
@@ -206,6 +214,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>disabledClass</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style class to apply to the rendered label
      * on disabled options.
      */
@@ -216,6 +225,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>disabledClass</code> property.</p>
+     * @param disabledClass the new property value
      */
     public void setDisabledClass(java.lang.String disabledClass) {
         getStateHelper().put(PropertyKeys.disabledClass, disabledClass);
@@ -224,6 +234,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>enabledClass</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style class to apply to the rendered label
      * on enabled options.
      */
@@ -234,6 +245,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>enabledClass</code> property.</p>
+     * @param enabledClass the new property value
      */
     public void setEnabledClass(java.lang.String enabledClass) {
         getStateHelper().put(PropertyKeys.enabledClass, enabledClass);
@@ -242,6 +254,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>label</code> property.</p>
+     * @return the property value
      * <p>Contents: A localized user presentable name for this component.
      */
     public java.lang.String getLabel() {
@@ -251,6 +264,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>label</code> property.</p>
+     * @param label the new property value
      */
     public void setLabel(java.lang.String label) {
         getStateHelper().put(PropertyKeys.label, label);
@@ -259,6 +273,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>lang</code> property.</p>
+     * @return the property value
      * <p>Contents: Code describing the language used in the generated markup
      * for this component.
      */
@@ -269,6 +284,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>lang</code> property.</p>
+     * @param lang the new property value
      */
     public void setLang(java.lang.String lang) {
         getStateHelper().put(PropertyKeys.lang, lang);
@@ -278,6 +294,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>layout</code> property.</p>
+     * @return the property value
      * <p>Contents: Orientation of the options list to be created.
      * Valid values are "pageDirection" (list is laid
      * out vertically), or "lineDirection" (list is
@@ -291,6 +308,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>layout</code> property.</p>
+     * @param layout the new property value
      */
     public void setLayout(java.lang.String layout) {
         getStateHelper().put(PropertyKeys.layout, layout);
@@ -299,6 +317,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onblur</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when this element loses focus.
      */
     public java.lang.String getOnblur() {
@@ -308,6 +327,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onblur</code> property.</p>
+     * @param onblur the new property value
      */
     public void setOnblur(java.lang.String onblur) {
         getStateHelper().put(PropertyKeys.onblur, onblur);
@@ -317,6 +337,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onchange</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when this element loses focus
      * and its value has been modified since gaining focus.
      */
@@ -327,6 +348,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onchange</code> property.</p>
+     * @param onchange the new property value
      */
     public void setOnchange(java.lang.String onchange) {
         getStateHelper().put(PropertyKeys.onchange, onchange);
@@ -336,6 +358,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onclick</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * clicked over this element.
      */
@@ -346,6 +369,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onclick</code> property.</p>
+     * @param onclick the new property value
      */
     public void setOnclick(java.lang.String onclick) {
         getStateHelper().put(PropertyKeys.onclick, onclick);
@@ -354,6 +378,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>ondblclick</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * double clicked over this element.
      */
@@ -364,6 +389,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>ondblclick</code> property.</p>
+     * @param ondblclick the new property value
      */
     public void setOndblclick(java.lang.String ondblclick) {
         getStateHelper().put(PropertyKeys.ondblclick, ondblclick);
@@ -373,6 +399,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onfocus</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when this element receives focus.
      */
     public java.lang.String getOnfocus() {
@@ -382,6 +409,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onfocus</code> property.</p>
+     * @param onfocus the new property value
      */
     public void setOnfocus(java.lang.String onfocus) {
         getStateHelper().put(PropertyKeys.onfocus, onfocus);
@@ -391,6 +419,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onkeydown</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * pressed down over this element.
      */
@@ -401,6 +430,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onkeydown</code> property.</p>
+     * @param onkeydown the new property value
      */
     public void setOnkeydown(java.lang.String onkeydown) {
         getStateHelper().put(PropertyKeys.onkeydown, onkeydown);
@@ -410,6 +440,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onkeypress</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * pressed and released over this element.
      */
@@ -420,6 +451,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onkeypress</code> property.</p>
+     * @param onkeypress the new property value
      */
     public void setOnkeypress(java.lang.String onkeypress) {
         getStateHelper().put(PropertyKeys.onkeypress, onkeypress);
@@ -429,6 +461,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onkeyup</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * released over this element.
      */
@@ -439,6 +472,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onkeyup</code> property.</p>
+     * @param onkeyup the new property value
      */
     public void setOnkeyup(java.lang.String onkeyup) {
         getStateHelper().put(PropertyKeys.onkeyup, onkeyup);
@@ -448,6 +482,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onmousedown</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * pressed down over this element.
      */
@@ -458,6 +493,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onmousedown</code> property.</p>
+     * @param onmousedown the new property value
      */
     public void setOnmousedown(java.lang.String onmousedown) {
         getStateHelper().put(PropertyKeys.onmousedown, onmousedown);
@@ -467,6 +503,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onmousemove</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved within this element.
      */
@@ -477,6 +514,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onmousemove</code> property.</p>
+     * @param onmousemove the new property value
      */
     public void setOnmousemove(java.lang.String onmousemove) {
         getStateHelper().put(PropertyKeys.onmousemove, onmousemove);
@@ -486,6 +524,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onmouseout</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved away from this element.
      */
@@ -496,6 +535,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onmouseout</code> property.</p>
+     * @param onmouseout the new property value
      */
     public void setOnmouseout(java.lang.String onmouseout) {
         getStateHelper().put(PropertyKeys.onmouseout, onmouseout);
@@ -505,6 +545,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onmouseover</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved onto this element.
      */
@@ -515,6 +556,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onmouseover</code> property.</p>
+     * @param onmouseover the new property value
      */
     public void setOnmouseover(java.lang.String onmouseover) {
         getStateHelper().put(PropertyKeys.onmouseover, onmouseover);
@@ -524,6 +566,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onmouseup</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * released over this element.
      */
@@ -534,6 +577,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onmouseup</code> property.</p>
+     * @param onmouseup the new property value
      */
     public void setOnmouseup(java.lang.String onmouseup) {
         getStateHelper().put(PropertyKeys.onmouseup, onmouseup);
@@ -543,6 +587,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>onselect</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when text within this
      * element is selected by the user.
      */
@@ -553,6 +598,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>onselect</code> property.</p>
+     * @param onselect the new property value
      */
     public void setOnselect(java.lang.String onselect) {
         getStateHelper().put(PropertyKeys.onselect, onselect);
@@ -562,6 +608,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>readonly</code> property.</p>
+     * @return the property value
      * <p>Contents: Flag indicating that this component will prohibit changes by
      * the user.  The element may receive focus unless it has also
      * been disabled.  A value of false causes
@@ -575,6 +622,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>readonly</code> property.</p>
+     * @param readonly the new property value
      */
     public void setReadonly(boolean readonly) {
         getStateHelper().put(PropertyKeys.readonly, readonly);
@@ -583,6 +631,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>role</code> property.</p>
+     * @return the property value
      * <p>Contents: <p class="changed_added_2_2">Per the WAI-ARIA spec and its
      * relationship to HTML5 (Section title ARIA Role Attriubute),
      * every HTML element may have a "role" attribute whose value
@@ -605,6 +654,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>role</code> property.</p>
+     * @param role the new property value
      */
     public void setRole(java.lang.String role) {
         getStateHelper().put(PropertyKeys.role, role);
@@ -614,6 +664,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>selectedClass</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style class to apply to the rendered label
      * on selected options.
      */
@@ -624,6 +675,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>selectedClass</code> property.</p>
+     * @param selectedClass the new property value
      */
     public void setSelectedClass(java.lang.String selectedClass) {
         getStateHelper().put(PropertyKeys.selectedClass, selectedClass);
@@ -632,6 +684,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>style</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style(s) to be applied when this component is rendered.
      */
     public java.lang.String getStyle() {
@@ -641,6 +694,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>style</code> property.</p>
+     * @param style the new property value
      */
     public void setStyle(java.lang.String style) {
         getStateHelper().put(PropertyKeys.style, style);
@@ -650,6 +704,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>styleClass</code> property.</p>
+     * @return the property value
      * <p>Contents: Space-separated list of CSS style class(es) to be applied when
      * this element is rendered.  This value must be passed through
      * as the "class" attribute on generated markup.
@@ -661,6 +716,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>styleClass</code> property.</p>
+     * @param styleClass the new property value
      */
     public void setStyleClass(java.lang.String styleClass) {
         getStateHelper().put(PropertyKeys.styleClass, styleClass);
@@ -669,6 +725,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>tabindex</code> property.</p>
+     * @return the property value
      * <p>Contents: Position of this element in the tabbing order
      * for the current document.  This value must be
      * an integer between 0 and 32767.
@@ -680,6 +737,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>tabindex</code> property.</p>
+     * @param tabindex the new property value
      */
     public void setTabindex(java.lang.String tabindex) {
         getStateHelper().put(PropertyKeys.tabindex, tabindex);
@@ -689,6 +747,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>title</code> property.</p>
+     * @return the property value
      * <p>Contents: Advisory title information about markup elements generated
      * for this component.
      */
@@ -699,6 +758,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>title</code> property.</p>
+     * @param title the new property value
      */
     public void setTitle(java.lang.String title) {
         getStateHelper().put(PropertyKeys.title, title);
@@ -708,6 +768,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Return the value of the <code>unselectedClass</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style class to apply to the rendered label
      * on unselected options.
      */
@@ -718,6 +779,7 @@ public class HtmlSelectManyCheckbox extends javax.faces.component.UISelectMany i
 
     /**
      * <p>Set the value of the <code>unselectedClass</code> property.</p>
+     * @param unselectedClass the new property value
      */
     public void setUnselectedClass(java.lang.String unselectedClass) {
         getStateHelper().put(PropertyKeys.unselectedClass, unselectedClass);

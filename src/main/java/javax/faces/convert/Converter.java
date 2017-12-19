@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -47,18 +47,17 @@ import javax.faces.context.FacesContext;
 
 
 /**
- * <p><strong class="changed_modified_2_0 changed_modified_2_2">Converter</strong> is an
+ * <p><strong class="changed_modified_2_0 changed_modified_2_2 changed_modified_2_3">Converter</strong> is an
  * interface describing a Java class that can perform Object-to-String
  * and String-to-Object conversions between model data objects and a
  * String representation of those objects that is suitable for
  * rendering.</p>
-
- * <p/>
+ * 
  * <p>{@link Converter} implementations must have a zero-arguments public
  * constructor.  In addition, if the {@link Converter} class wishes to have
  * configuration property values saved and restored with the component tree,
  * the implementation must also implement {@link StateHolder}.</p>
- * <p/>
+ * 
  * <p>Starting with version 1.2 of the specification, an exception to the above
  * zero-arguments constructor requirement has been introduced.  If a converter has
  * a single argument constructor that takes a <code>Class</code> instance and
@@ -67,7 +66,7 @@ import javax.faces.context.FacesContext;
  * must be used to instantiate the converter instead of the zero-argument
  * version.  This enables the per-class conversion
  * of Java enumerated types.</p>
- * <p/>
+ * 
  * <p>If any <code>Converter</code> implementation requires a
  * <code>java.util.Locale</code> to perform its job, it must obtain that
  * <code>Locale</code> from the {@link javax.faces.component.UIViewRoot}
@@ -84,16 +83,18 @@ import javax.faces.context.FacesContext;
  * javax.faces.application.ResourceDependencies} annotation, the
  * action described in <code>ResourceDependencies</code> must be taken 
  * when {@link javax.faces.component.ValueHolder#setConverter} is called.</p>
+ * 
+ * @param <T> The generic type of object value to convert.
  */
 
-public interface Converter {
+public interface Converter<T> {
 
 
     /**
-     * <p>Convert the specified string value, which is associated with
+     * <p><span class="changed_modified_2_3">Convert</span> the specified string value, which is associated with
      * the specified {@link UIComponent}, into a model data object that
-     * is appropriate for being stored during the <em>Apply Request
-     * Values</em> phase of the request processing lifecycle.</p>
+     * is appropriate for being stored during the <em class="changed_modified_2_3">Process Validations</em> 
+     * phase of the request processing lifecycle.</p>
      *
      * @param context   {@link FacesContext} for the request being processed
      * @param component {@link UIComponent} with which this model object
@@ -106,7 +107,7 @@ public interface Converter {
      * @throws NullPointerException if <code>context</code> or
      *                              <code>component</code> is <code>null</code>
      */
-    public Object getAsObject(FacesContext context, UIComponent component,
+    public T getAsObject(FacesContext context, UIComponent component,
                               String value);
 
 
@@ -130,7 +131,7 @@ public interface Converter {
      *                              <code>component</code> is <code>null</code>
      */
     public String getAsString(FacesContext context, UIComponent component,
-                              Object value);
+                              T value);
 
 
     /**

@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -80,11 +80,13 @@ public abstract class FaceletContext extends ELContext {
     // The key in the FacesContext attribute map
     // for the FaceletContext instance.
     public static final String FACELET_CONTEXT_KEY = 
-            "javax.faces.FACELET_CONTEXT";
+            "javax.faces.FACELET_CONTEXT".intern();
 
     /**
      * <p class="changed_added_2_0">The current FacesContext bound to
      * this "request".  Must not be <code>null</code>.</p>
+     * 
+     * @return The current FacesContext bound to this "request".
      * 
      * @since 2.0
      */
@@ -96,6 +98,8 @@ public abstract class FaceletContext extends ELContext {
      * 
      * @param base the string from which to generate the ID.
      *
+     * @return the generated id
+     * 
      * @since 2.0
      */
     public abstract String generateUniqueId(String base);
@@ -104,6 +108,8 @@ public abstract class FaceletContext extends ELContext {
      * <p class="changed_added_2_0">The ExpressionFactory to use within
      * the Facelet this context is executing upon.  Must not be
      * <code>null</code>.</p>
+     * 
+     * @return the {@code ExpressionFactory} for this Facelet.
      * 
      * @since 2.0
      */
@@ -147,6 +153,9 @@ public abstract class FaceletContext extends ELContext {
      * backed by the current VariableMapper</p>
      * 
      * @param name the name of the attribute to return.
+     * 
+     * @return the value of the named attribute
+     * 
      * @since 2.0
      */
     public abstract Object getAttribute(String name);
@@ -165,9 +174,9 @@ public abstract class FaceletContext extends ELContext {
 
      * @throws FaceletException if unable to parse the markup loaded from <code>relativePath</code>
 
-     * @throws FacesException if unable to create child <code>UIComponent</code> instances
+     * @throws javax.faces.FacesException if unable to create child <code>UIComponent</code> instances
 
-     * @throws ELException if any of the expressions in the markup
+     * @throws javax.el.ELException if any of the expressions in the markup
      * loaded from <code>relativePath</code> fail
      *
      * @since 2.0
@@ -189,9 +198,9 @@ public abstract class FaceletContext extends ELContext {
 
      * @throws FaceletException if unable to parse the markup loaded from <code>relativePath</code>
 
-     * @throws FacesException if unable to create child <code>UIComponent</code> instances
+     * @throws javax.faces.FacesException if unable to create child <code>UIComponent</code> instances
 
-     * @throws ELException if any of the expressions in the markup
+     * @throws javax.el.ELException if any of the expressions in the markup
      * loaded from <code>relativePath</code> fail
 
      */

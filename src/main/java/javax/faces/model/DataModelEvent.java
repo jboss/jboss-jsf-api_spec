@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -55,6 +55,8 @@ public class DataModelEvent extends EventObject {
     // ------------------------------------------------------------ Constructors
 
 
+    private static final long serialVersionUID = -1822980374964965366L;
+
     /**
      * <p>Construct an event object that is associated with the specified
      * row index and associated data.</p>
@@ -88,6 +90,8 @@ public class DataModelEvent extends EventObject {
 
     /**
      * <p>Return the {@link DataModel} that fired this event.</p>
+     * 
+     * @return the {@link DataModel} that fired this event
      */
     public DataModel getDataModel() {
 
@@ -99,6 +103,9 @@ public class DataModelEvent extends EventObject {
     /**
      * <p>Return the object representing the data for the specified row index,
      * or <code>null</code> for no associated row data.</p>
+     * 
+     * @return the object representing the data for the specified row index,
+     * or <code>null</code> for no associated row data
      */
     public Object getRowData() {
 
@@ -109,6 +116,8 @@ public class DataModelEvent extends EventObject {
 
     /**
      * <p>Return the row index for this event, or -1 for no specific row.</p>
+     * 
+     * @return the row index for this event, or -1 for no specific row
      */
     public int getRowIndex() {
 

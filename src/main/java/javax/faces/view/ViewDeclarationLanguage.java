@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -40,13 +40,16 @@
 
 package javax.faces.view;
 
+import static javax.faces.application.ResourceVisitOption.TOP_LEVEL_VIEWS_ONLY;
+
 import java.beans.BeanInfo;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import java.util.stream.Stream;
+
 import javax.faces.application.Resource;
-import javax.faces.application.ResourceHandler;
+import javax.faces.application.ViewVisitOption;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
@@ -54,7 +57,7 @@ import javax.faces.context.FacesContext;
 /**
  * <p class="changed_added_2_0"><span class="changed_modified_2_0_rev_a
  * changed_modified_2_1 changed_modified_2_2">The</span> contract that a view declaration
- * language must implement to interact with the JSF runtime.  An
+ * language must implement to interact with the JSF runtime. An
  * implementation of this class must be thread-safe.</p>
  *
  * <div class="changed_added_2_0">
@@ -86,6 +89,125 @@ public abstract class ViewDeclarationLanguage {
      */
     public final static String FACELETS_VIEW_DECLARATION_LANGUAGE_ID =
         "java.faces.Facelets";
+    
+    /**
+     * <p class="changed_added_2_0">Restore a <code>UIViewRoot</code>
+     * from a previously created view.  See section JSF.7.7.2 for the
+     * specification of the default implementation.</p>
+     *
+     * @param context the <code>FacesContext</code> for this request.
+     * @param viewId the identifier for a previously rendered view.
+     *
+     * @throws NullPointerException if any of the arguments are
+     * <code>null</code>
+     *
+     * @return the restored view
+     */
+    public abstract UIViewRoot restoreView(FacesContext context, String viewId);
+    
+    /**
+     * <p class="changed_added_2_0">Return a reference to the view
+     * metadata for the view represented by the argument
+     * <code>viewId</code>, or <code>null</code> if the metadata cannot
+     * be found.  See section JSF.7.7.2 for the specification of the
+     * default implementation.  Facelets for JSF 2 implementation must
+     * return non-<code>null</code>. JSP implementations must return
+     * <code>null</code>.</p>
+     *
+     * @param context The <code>FacesContext</code> for this request.
+     * @param viewId the view id from whith to extract the metadata
+     * @since 2.0
+     *
+     * @throws NullPointerException if any of the arguments are
+     * <code>null</code>.
+     *
+     * @throws javax.faces.FacesException if there is an error in
+     * obtaining the metadata
+     *
+     * @return the view metadata
+     */
+    public abstract ViewMetadata getViewMetadata(FacesContext context, String viewId);
+    
+    /**
+     * <p class="changed_added_2_0"><span class="changed_modified_2_2">Create</span>
+     * a <code>UIViewRoot</code> from the VDL contained in the artifact referenced by the argument
+     * <code>viewId</code>.  <span class="changed_modified_2_2">See section JSF.7.7.2 for the specification of
+     * the default implementation.</span></p>
+     *
+     * @param context the <code>FacesContext</code> for this request.
+     * @param viewId the identifier of an artifact that contains the VDL
+     * syntax that describes this view.
+     *
+     * @throws NullPointerException if any of the arguments are
+     * <code>null</code>
+     *
+     * @since 2.0
+     *
+     * @return the newly created view root
+     */
+    public abstract UIViewRoot createView(FacesContext context, String viewId);
+    
+    /**
+     * <p class="changed_added_2_0"><span
+     * class="changed_modified_1">Take</span> any actions specific to
+     * this VDL implementation to cause the argument
+     * <code>UIViewRoot</code> which must have been created via a call
+     * to {@link #createView}, to be populated with children.</p>
+
+     * <div class="changed_added_2_0">
+
+     * <p>The Facelets implementation must insure that markup comprising
+     * the view must be executed, with the {@link
+     * javax.faces.component.UIComponent} instances in the view being
+     * encountered in the same depth-first order as in other lifecycle
+     * methods defined on <code>UIComponent</code>, and added to the
+     * view (but not rendered) during the traversal. The runtime must
+     * guarantee that the view must be fully populated before any of the
+     * following happen.</p>
+     * <ul>
+     *
+     * <li><p>The {@link javax.faces.event.PhaseListener#afterPhase}
+     * method of any <code>PhaseListener</code>s attached to the
+     * application is called</p></li>
+     * <li><p>The {@link javax.faces.component.UIViewRoot} phase
+     * listener installed via {@link
+     * javax.faces.component.UIViewRoot#setAfterPhaseListener} or {@link
+     * javax.faces.component.UIViewRoot#addPhaseListener} are called.</p></li>
+     *
+     * </ul>
+     * <p class="changed_modified_2_1">If the <code>root</code> is
+     * already populated with children, the view must still be re-built,
+     * but care must be taken to ensure that the existing components are
+     * correctly paired up with their VDL counterparts in the VDL page.
+     * Also, any system events that would normally be generated during
+     * the adding or removing of components from the view must be
+     * temporarily disabled during the creation of the view and then
+     * re-enabled when the view has been built.</p>
+     * </div>
+     *
+     * @param context the <code>FacesContext</code> for this request
+     * @param root the <code>UIViewRoot</code> to populate with children
+     * using techniques specific to this VDL implementation.
+     *
+     * @throws IOException if view cannot be built for any reason
+     */
+    public abstract void buildView(FacesContext context, UIViewRoot root) throws IOException;
+    
+    /**
+     * <p class="changed_added_2_0">Render a view rooted at
+     * argument<code>view</code>. See section JSF.7.7.2 for the
+     * specification of the default implementation.</p>
+     *
+     * @param context the <code>FacesContext</code> for this request.
+     * @param view the <code>UIViewRoot</code> from an early call to
+     * {@link #createView} or {@link #restoreView}.
+     *
+     * @throws NullPointerException if any of the arguments are
+     * <code>null</code>
+     *
+     * @throws IOException if the view cannot be rendered for any reason
+     */
+    public abstract void renderView(FacesContext context, UIViewRoot view) throws IOException;
 
     /**
      * <p class="changed_added_2_0">Return a reference to the component
@@ -107,31 +229,10 @@ public abstract class ViewDeclarationLanguage {
      *
      * @throws UnsupportedOperationException if this is a JSP VDL
      * implementation.
+     *
+     * @return the component metadata
      */
     public abstract BeanInfo getComponentMetadata(FacesContext context, Resource componentResource);
-
-
-    /**
-     * <p class="changed_added_2_0">Return a reference to the view
-     * metadata for the view represented by the argument
-     * <code>viewId</code>, or <code>null</code> if the metadata cannot
-     * be found.  See section JSF.7.7.2 for the specification of the
-     * default implementation.  Facelets for JSF 2 implementation must
-     * return non-<code>null</code>. JSP implementations must return
-     * <code>null</code>.</p>
-     *
-     * @param context The <code>FacesContext</code> for this request.
-     * @param viewId the view id from whith to extract the metadata
-     * @since 2.0
-     *
-     * @throws NullPointerException if any of the arguments are
-     * <code>null</code>.
-     *
-     * @throws javax.faces.FacesException if there is an error in
-     * obtaining the metadata
-     */
-    public abstract ViewMetadata getViewMetadata(FacesContext context, String viewId);
-
 
     /**
      * <p class="changed_added_2_0">Take implementation specific action
@@ -151,29 +252,11 @@ public abstract class ViewDeclarationLanguage {
      * obtaining the script component resource
      * @throws UnsupportedOperationException if this is a JSP VDL
      * implementation.
-     */
-    public abstract Resource getScriptComponentResource(FacesContext context,
-                                                        Resource componentResource);
-    
-    
-    /**
-     * <p class="changed_added_2_0"><span class="changed_modified_2_2">Create</span>
-     * a <code>UIViewRoot</code> from the VDL contained in the artifact referenced by the argument
-     * <code>viewId</code>.  <span class="changed_modified_2_2">See section JSF.7.7.2 for the specification of
-     * the default implementation.</span></p>
      *
-     * @param context the <code>FacesContext</code> for this request.
-     * @param viewId the identifier of an artifact that contains the VDL
-     * syntax that describes this view.
-     *
-     * @throws NullPointerException if any of the arguments are
-     * <code>null</code>
-
-     * @since 2.0
+     * @return the {@link Resource} corresponding to the argument {@code
+     * componentResource}
      */
-
-    public abstract UIViewRoot createView(FacesContext context,
-                                 String viewId);
+    public abstract Resource getScriptComponentResource(FacesContext context, Resource componentResource);
     
     /**
      * <p class="changed_added_2_2">Create a component given a 
@@ -200,28 +283,12 @@ public abstract class ViewDeclarationLanguage {
      * {@code tagName} are {@code null}
      * 
      * @since 2.2
+     *
+     * @return the newly created component
      */
-    
-    public UIComponent createComponent(FacesContext context, 
-            String taglibURI, String tagName, 
-            Map<String, Object> attributes) {
+    public UIComponent createComponent(FacesContext context, String taglibURI, String tagName, Map<String, Object> attributes) {
         return null;
     }
-    
-    
-    /**
-     * <p class="changed_added_2_0">Restore a <code>UIViewRoot</code>
-     * from a previously created view.  See section JSF.7.7.2 for the
-     * specification of the default implementation.</p>
-     *
-     * @param context the <code>FacesContext</code> for this request.
-     * @param viewId the identifier for a previously rendered view.
-     *
-     * @throws NullPointerException if any of the arguments are
-     * <code>null</code>
-     */
-    public abstract UIViewRoot restoreView(FacesContext context, String viewId);
-
 
     /**
      * <p class="changed_added_2_0"><span
@@ -301,12 +368,12 @@ public abstract class ViewDeclarationLanguage {
      *<em>curTarget</em> is an instance of {@link
      *ValueHolderAttachedObjectTarget}, and <em>curTarget.getName()</em>
      *is equal to <em>curTargetName</em>, consider it a match.</p></li>
-
+     *
      *<li><p>If <em>curHandler</em> is an instance of {@link
      *BehaviorHolderAttachedObjectHandler} and <em>curTarget</em> is an
      *instance of {@link BehaviorHolderAttachedObjectTarget}, and either
      *of the following conditions are true,</p>
-
+     *
      * <ul>
      *
      * <li><em>curHandler.getEventName()</em> is not <code>null</code>
@@ -316,15 +383,15 @@ public abstract class ViewDeclarationLanguage {
      * <em>curTarget.isDefaultEvent()</em> is <code>true</code>.</li>
      *
      * </ul>
-
+     *
      *<p>consider it a match.</p></li>
-
+     *
      *</ul>
      *</li>
      *</ul>
      *</li>
      *</ul>
-
+     *
      * <p class="changed_modified_2_0_rev_a">The implementation must
      * support retargeting attached objects from the top level compsite
      * component to targets that are composite and non-composite
@@ -344,20 +411,16 @@ public abstract class ViewDeclarationLanguage {
      * its component metadata already associated and available from via
      * the JavaBeans API.
      *
+     * @param handlers the tag handlers for the attached objects
+     *
      * @throws NullPointerException if any of the arguments are
      * <code>null</code>.
-
-     * @since 2.0
      *
+     * @since 2.0
      */
-    public void retargetAttachedObjects(FacesContext context,
-                                        UIComponent topLevelComponent,
-                                        List<AttachedObjectHandler> handlers)  {
-        
+    public void retargetAttachedObjects(FacesContext context, UIComponent topLevelComponent, List<AttachedObjectHandler> handlers)  {
         // no-op
-
     }
-
 
     /**
      * <p class="changed_added_2_0">Assuming the component metadata for
@@ -371,7 +434,7 @@ public abstract class ViewDeclarationLanguage {
      * "<code>method-signature</code>" attribute and the absence of a
      * "<code>type</code>" attribute), the following action must be
      * taken:</p>
-
+     *
      * <div class="changed_added_2_0">
      *
      * <ul>
@@ -457,7 +520,6 @@ public abstract class ViewDeclarationLanguage {
      * must create the <code>MethodExpression</code> instance based on
      * the value of the "<code>method-signature</code>"
      * attribute.</p></li>
-
      * </ul>
      * 
      * </li>
@@ -483,11 +545,8 @@ public abstract class ViewDeclarationLanguage {
      *
      * @since 2.0
      */
-    public void retargetMethodExpressions(FacesContext context,
-                                          UIComponent topLevelComponent) {
-
+    public void retargetMethodExpressions(FacesContext context, UIComponent topLevelComponent) {
         // no-op
-        
     }
     
     /**
@@ -507,80 +566,13 @@ public abstract class ViewDeclarationLanguage {
      * contracts should be calculated.
      * 
      * @since 2.2
+     *
+     * @return the calculated list of resource library contract names
      */
     
-    public List<String> calculateResourceLibraryContracts(FacesContext context,
-            String viewId) {
+    public List<String> calculateResourceLibraryContracts(FacesContext context, String viewId) {
         return null;
     }
-    
-
-    /**
-     * <p class="changed_added_2_0"><span
-     * class="changed_modified_1">Take</span> any actions specific to
-     * this VDL implementation to cause the argument
-     * <code>UIViewRoot</code> which must have been created via a call
-     * to {@link #createView}, to be populated with children.</p>
-
-     * <div class="changed_added_2_0">
-
-     * <p>The Facelets implementation must insure that markup comprising
-     * the view must be executed, with the {@link
-     * javax.faces.component.UIComponent} instances in the view being
-     * encountered in the same depth-first order as in other lifecycle
-     * methods defined on <code>UIComponent</code>, and added to the
-     * view (but not rendered) during the traversal. The runtime must
-     * guarantee that the view must be fully populated before any of the
-     * following happen.</p>
-
-     * <ul>
-     *
-     * <li><p>The {@link javax.faces.event.PhaseListener#afterPhase}
-     * method of any <code>PhaseListener</code>s attached to the
-     * application is called</p></li>
-
-     * <li><p>The {@link javax.faces.component.UIViewRoot} phase
-     * listener installed via {@link
-     * javax.faces.component.UIViewRoot#setAfterPhaseListener} or {@link
-     * javax.faces.component.UIViewRoot#addPhaseListener} are called.</p></li>
-     *
-     * </ul>
-
-     * <p class="changed_modified_2_1">If the <code>root</code> is
-     * already populated with children, the view must still be re-built,
-     * but care must be taken to ensure that the existing components are
-     * correctly paired up with their VDL counterparts in the VDL page.
-     * Also, any system events that would normally be generated during
-     * the adding or removing of components from the view must be
-     * temporarily disabled during the creation of the view and then
-     * re-enabled when the view has been built.</p>
-
-     * </div>
-
-     * @param context the <code>FacesContext</code> for this request
-
-     * @param root the <code>UIViewRoot</code> to populate with children
-     * using techniques specific to this VDL implementation.
-     */
-    public abstract void buildView(FacesContext context, UIViewRoot root)
-    throws IOException;
-
-    
-    /**
-     * <p class="changed_added_2_0">Render a view rooted at
-     * argument<code>view</code>. See section JSF.7.7.2 for the
-     * specification of the default implementation.</p>
-     *
-     * @param context the <code>FacesContext</code> for this request.
-     * @param view the <code>UIViewRoot</code> from an early call to
-     * {@link #createView} or {@link #restoreView}.
-     *
-     * @throws NullPointerException if any of the arguments are
-     * <code>null</code>
-     */
-    public abstract void renderView(FacesContext context,
-                                    UIViewRoot view)
-    throws IOException;
     
     /**
      * <p class="changed_added_2_0">For implementations that want to
@@ -591,13 +583,15 @@ public abstract class ViewDeclarationLanguage {
      * Implementations that provide the VDL for Facelets for JSF 2.0 and
      * later must return non-<code>null</code> from this method.</p>
      *
+     * @param context the {@code FacesContext} for the current request.
+     *
+     * @param viewId the view id.
+     *
+     * @return the strategy as specified above
      *
      * @since 2.0
      */ 
-
-    public abstract StateManagementStrategy getStateManagementStrategy(FacesContext context,
-            String viewId);
-
+    public abstract StateManagementStrategy getStateManagementStrategy(FacesContext context, String viewId);
 
     /**
      * <p class="changed_added_2_1"><span class="changed_modified_2_2">Tests</span>
@@ -611,15 +605,68 @@ public abstract class ViewDeclarationLanguage {
      * @param context The <code>FacesContext</code> for this request.
      * @param viewId the view id to test
      *
+     * @return the result as specified above
+     *
      * @since 2.1
      */    
-    public boolean viewExists(FacesContext context, 
-                              String viewId) {
-        boolean result = false;
-        ResourceHandler rh = context.getApplication().getResourceHandler();
-        result = null != rh.createViewResource(context, viewId);
-
-        return result;
+    public boolean viewExists(FacesContext context, String viewId) {
+        return context.getApplication().getResourceHandler().createViewResource(context, viewId) != null;
+    }
+    
+    /**
+     * <p class="changed_added_2_3">
+     * Return a {@code Stream} possibly lazily populated by walking the view tree 
+     * rooted at a given initial path. The view tree is traversed <em>breadth-first</em>, 
+     * the elements in the stream are <em>logical</em> view ids.
+     * </p>
+     * 
+     * <p> 
+     * This method works as if invoking it were equivalent to evaluating the expression:
+     * <blockquote><pre>
+     * getViewResources(facesContext, start, Integer.MAX_VALUE, options)
+     * </pre></blockquote>
+     * Put differently, it visits all levels of the resource tree.
+     * 
+     * @param facesContext The {@link FacesContext} for this request.
+     * @param path The initial path from which to start looking for views
+     * @param options The options to influence the traversal. See {@link ViewVisitOption} for details on those.
+     *
+     * @return the {@link Stream} of view ids
+     * 
+     * @since 2.3
+     */
+    public Stream<String> getViews(FacesContext facesContext, String path, ViewVisitOption... options) {
+        return facesContext.getApplication().getResourceHandler().getViewResources(facesContext, path, TOP_LEVEL_VIEWS_ONLY);
+    }
+    
+    /**
+     * <p class="changed_added_2_3">
+     * Return a {@code Stream} possibly lazily populated by walking the view tree 
+     * rooted at a given initial path. The view tree is traversed <em>breadth-first</em>, 
+     * the elements in the stream are <em>logical</em> view ids.
+     * </p>
+     * 
+     * <p>
+     * The {@code maxDepth} parameter is the maximum depth of directory levels to visit 
+     * <em>beyond the initial path</em>, which is always visited. The value is relative to the root
+     * ({@code /}), not to the given initial path. E.g. given {@code maxDepth} = {@code 3} and initial
+     * path {@code /foo/}, visiting will proceed up to {@code /foo/bar/}, where {@code /} counts as depth
+     * {@code 1}, {@code /foo/} as depth {@code 2} and {@code /foo/bar/} as depth {@code 3}.
+     * A value lower or equal to the depth of the initial path means that only the initial path
+     * is visited. A value of {@link Integer#MAX_VALUE MAX_VALUE} may be used to indicate that all
+     * levels should be visited.
+     * 
+     * @param facesContext The {@link FacesContext} for this request.
+     * @param path The initial path from which to start looking for views
+     * @param maxDepth The absolute maximum depth of nested directories to visit counted from the root ({@code /}).
+     * @param options The options to influence the traversal. See {@link ViewVisitOption} for details on those.
+     *
+     * @return the {@link Stream} of view ids
+     * 
+     * @since 2.3
+     */
+    public Stream<String> getViews(FacesContext facesContext, String path, int maxDepth, ViewVisitOption... options) {
+        return facesContext.getApplication().getResourceHandler().getViewResources(facesContext, path, maxDepth, TOP_LEVEL_VIEWS_ONLY);
     }
 
     /**
@@ -630,12 +677,12 @@ public abstract class ViewDeclarationLanguage {
      * of the view declaration language implementation.  Subclasses may
      * override to provide a more meaningful id.</p>
      *
+     * @return the id of this view declaration language
+     *
      * @since 2.1
      */
     public String getId() {
         return getClass().getName();
     }
 
-    private static final Logger LOGGER =
-          Logger.getLogger("javax.faces.view", "javax.faces.LogStrings");
 }

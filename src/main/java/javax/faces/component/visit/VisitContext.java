@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -121,6 +121,9 @@ abstract public class VisitContext {
     /**
      * <p class="changed_added_2_0">Returns the FacesContext for the
      * current request.</p>
+     * 
+     *  @return the FacesContext.
+     * 
      * @since 2.0
      */
     abstract public FacesContext getFacesContext();
@@ -134,6 +137,9 @@ abstract public class VisitContext {
      * partial visit is beign performed, returns a modifiable collection
      * containing the client ids of the components that should be
      * visited.  </p>
+     * 
+     *  @return the ids of the components to visit
+     * 
      */
     abstract public Collection<String> getIdsToVisit();
 

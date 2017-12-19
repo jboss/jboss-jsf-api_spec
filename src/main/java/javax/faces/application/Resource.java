@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -46,11 +46,12 @@ import java.net.URL;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletRegistration;
 
 /**
  * <p class="changed_added_2_0"><span
- * class="changed_modified_2_1 changed_modified_2_2">An</span> instance of
- * <code>Resource</code> is a Java object representation of the artifact
+ * class="changed_modified_2_1 changed_modified_2_2 changed_modified_2_3">An</span>
+ * instance of <code>Resource</code> is a Java object representation of the artifact
  * that is served up in response to a <i>resource request</i> from the
  * client.  Instances of <code>Resource</code> are normally created and
  * initialized via calls to {@link ResourceHandler#createResource}.  See
@@ -63,15 +64,15 @@ import javax.faces.context.FacesContext;
  * @since 2.0
  */
 public abstract class Resource extends ViewResource {
-    
+
     /**
-     * <p class="changed_added_2_0">This constant is used as the key in the 
-     * component attribute map of a composite component to associate 
+     * <p class="changed_added_2_0">This constant is used as the key in the
+     * component attribute map of a composite component to associate
      * the component with its <code>Resource</code> instance.  The
      * value for this key is the actual <code>Resource</code> instance.</p>
-     * 
+     *
      */
-    public static final String COMPONENT_RESOURCE_KEY = 
+    public static final String COMPONENT_RESOURCE_KEY =
             "javax.faces.application.Resource.ComponentResource";
 
 
@@ -102,7 +103,7 @@ public abstract class Resource extends ViewResource {
      * the argument.</p>
      * @param contentType the MIME content-type for this resource.  The
      * default implementation must accept <code>null</code> as a
-     * parameter.  
+     * parameter.
      */
     public void setContentType(String contentType) {
 
@@ -183,8 +184,9 @@ public abstract class Resource extends ViewResource {
      * returns <code>true</code>), return an <code>InputStream</code>
      * containing the bytes of the resource.  Otherwise, throw an
      * <code>IOException</code>.</p>
+     *
      * @return an <code>InputStream</code> containing the bytes of the
-     * resource.</p>
+     * resource.
      *
      * <p class="changed_modified_2_1">Any EL expressions present in the
      * resource must be evaluated before serving the bytes of the
@@ -216,7 +218,7 @@ public abstract class Resource extends ViewResource {
 
     /**
      * <p class="changed_added_2_0"><span
-     * class="changed_modified_2_2">Return</span> a path to this
+     * class="changed_modified_2_2 changed_modified_2_3">Return</span> a path to this
      * resource such that, when the browser resolves it against the base
      * URI for the view that includes the resource, and issues a GET
      * request to the resultant fully qualified URL, the bytes of the
@@ -234,23 +236,56 @@ public abstract class Resource extends ViewResource {
      * in slash.  For discussion this will be called
      * <em>contextRoot</em>.</p></li>
      *
-     * <li><p>Discover if the <code>FacesServlet</code> is prefix or
-     * extension mapped, and the value of the mapping (including the
+     * <li><p class="changed_modified_2_3">
+     * Discover if the <code>FacesServlet</code> is prefix (path) mapped,
+     * extension mapped, or exact mapped (as
+     * defined by Servlet.12.2.) and the value of the mapping (including the
      * leading '.'  in the case of extension mapping).  For discussion,
      * this will be <em>facesServletMapping</em>.</p>
      *
+     * <div class="changed_added_2_3">
+     * <p>If exact mapped, <em>result</em> must be the following if and only
+     * if the FacesServlet is mapped to the exact URL pattern {@link
+     * ResourceHandler#RESOURCE_IDENTIFIER} + {@link #getResourceName}
+     * </p>
+     *
+     * <blockquote>
+     * <p><code>result = <em>contextRoot</em> + {@link
+     * ResourceHandler#RESOURCE_IDENTIFIER} + {@link #getResourceName}</code></p>
+     * </blockquote>
+     *
+     * <p>If exact mapped, and the FacesServlet is <em>not</em> mapped to the exact
+     * URL pattern {@link ResourceHandler#RESOURCE_IDENTIFIER} + {@link #getResourceName}
+     * do the following:
+     * </p>
+     *
+     * <p>
+     * Retrieve the existing mappings of the FacesServlet, e.g. using
+     * {@link ServletRegistration#getMappings()}, and from those pick any
+     * prefix mapping or extension mapping. If no such mapping is found,
+     * throw an {@link IllegalStateException}. If such mapping is found remove
+     * the <code>*</code> character from that mapping, take that as the new
+     * <em>facesServletMapping</em> and continue with evaluating this mapping
+     * as specified below for <em>if prefix mapped</em> and for
+     * <em>if extension mapped</em>
+     * </div>
+     *
      * <p>If prefix mapped, <em>result</em> must be</p>
      *
-     * <ul><p><code>result = <em>contextRoot</em> + '/' +
+     * <blockquote>
+     * <p><code>result = <em>contextRoot</em> + '/' +
      * <em>facesServletMapping</em> + {@link
      * ResourceHandler#RESOURCE_IDENTIFIER} + '/' + {@link
-     * #getResourceName}</code></p></ul>
+     * #getResourceName}</code></p>
+     * </blockquote>
      *
      * <p>If extension mapped, <em>result</em> must be</p>
      *
-     * <ul><p><code>result = <em>contextRoot</em> + {@link
+     * <blockquote>
+     * <p><code>result = <em>contextRoot</em> + {@link
      * ResourceHandler#RESOURCE_IDENTIFIER} + {@link #getResourceName} +
-     * <em>facesServletMapping</em></code></p></ul>
+     * <em>facesServletMapping</em></code></p>
+     * </blockquote>
      *
      * </li>
      *
@@ -259,12 +294,12 @@ public abstract class Resource extends ViewResource {
      * name=value pairs suitable for inclusion in a URL query
      * string.</p>
      *
-     * <ul>
+     * <blockquote>
      *
      * <p>If {@link #getLibraryName} returns non-<code>null</code>,
      * <code>resourceMetaData</code> must include "ln=" + the return
      * from {@link #getLibraryName}</p>
-
+     *
      * <p class="changed_added_2_2">If there is a
      * <code>localePrefix</code> for this application, as defined in
      * {@link ResourceHandler#LOCALE_PREFIX}, <code>resourceMetaData</code> must
@@ -275,7 +310,7 @@ public abstract class Resource extends ViewResource {
      * resource library contract, <code>resourceMetaData</code> must
      * include "con=" + the name of the resource library contract.</p>
      *
-     * </ul>
+     * </blockquote>
      *
      * <p>Append "?" + <em>resourceMetaData</em> to <em>result</em>.</p>
      *
@@ -313,6 +348,7 @@ public abstract class Resource extends ViewResource {
      * @return Call through to {@link #getRequestPath} and return the
      * result.
      */
+    @Override
     public String toString() {
         return getRequestPath();
     }
@@ -328,6 +364,7 @@ public abstract class Resource extends ViewResource {
      * determine the result.</span> Returns <code>false</code> if the
      * user-agent does not need an update for this resource.</p>
      *
+     * @param context the Faces context.
      * @return <code>true</code> or <code>false</code> depending on
      * whether or not the user-agent needs an update of this resource.
      */

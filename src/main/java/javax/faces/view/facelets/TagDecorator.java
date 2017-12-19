@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -59,9 +59,10 @@
 package javax.faces.view.facelets;
 
 /**
- * <p><span class="changed_modified_2_2">Provides</span> the ability to completely 
- * change the Tag before it's processed for compiling with the associated 
- * {@link TagHandler}.</p>
+ * <p><span class="changed_modified_2_2
+ * changed_modified_2_3">Provides</span> the ability to completely
+ * change the Tag before it's processed for compiling with the
+ * associated {@link TagHandler}.</p>
  * 
  * <div class="changed_added_2_2">
  * 
@@ -100,7 +101,7 @@ package javax.faces.view.facelets;
  * value of the "target tag" column for that entry.</p>
 
  * <table border="1">
-
+ *  <caption>localName and selector attribute to tag mapping</caption>
  * <tr>
 
  * <th>localName</th>
@@ -494,12 +495,10 @@ package javax.faces.view.facelets;
  * as a proper property on the {@code UIComponent} instance represented
  * by this markup.</li>
 
- * <li><p>If the current attribute's namespace is empty or different
- * from the argument {@code tag}'s namespace, let the current attribute
- * be <strong>convertedTagAttribute</strong>.  This will have the effect
- * of setting the current attribute as an attribute on the attributes
- * map of the {@code UIComponent} instance represented by this
- * markup.</p></li>
+ * <li><p class="changed_modified_2_3">If the current attribute's
+ * namespace is non-empty and different from the argument {@code tag}'s
+ * namespace, let the current attribute be
+ * <strong>convertedTagAttribute</strong>.</p></li>
 
  * <li><p>Otherwise, assume the current attribute's namespace is {@code
  * http://xmlns.jcp.org/jsf/passthrough}.

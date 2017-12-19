@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -87,7 +87,7 @@ import java.util.Locale;
  * for the <code>setParseIntegerOnly()</code> method of the
  * <code>java.text.NumberFormat</code> class for more information.</li>
  * </ul>
- * <p/>
+ * 
  * <p>The <code>getAsString()</code> method expects a value of type
  * <code>java.lang.Number</code> (or a subclass), and creates a formatted
  * String according to the following algorithm:</p>
@@ -151,7 +151,7 @@ public class NumberConverter implements Converter, PartialStateHolder {
      * <li><code>{1}</code> replaced by an example value.</li>
      * <li><code>{2}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String CURRENCY_ID =
          "javax.faces.converter.NumberConverter.CURRENCY";
@@ -162,11 +162,11 @@ public class NumberConverter implements Converter, PartialStateHolder {
      * string for this message may optionally include the following
      * placeholders:
      * <ul>
-     * <li><code>{0}</code> replaced by the unconverted value.</li>                              HA
+     * <li><code>{0}</code> replaced by the unconverted value.</li>
      * <li><code>{1}</code> replaced by an example value.</li>
      * <li><code>{2}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String NUMBER_ID =
          "javax.faces.converter.NumberConverter.NUMBER";
@@ -181,7 +181,7 @@ public class NumberConverter implements Converter, PartialStateHolder {
      * <li><code>{1}</code> replaced by an example value.</li>
      * <li><code>{2}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String PATTERN_ID =
          "javax.faces.converter.NumberConverter.PATTERN";
@@ -196,7 +196,7 @@ public class NumberConverter implements Converter, PartialStateHolder {
      * <li><code>{1}</code> replaced by an example value.</li>
      * <li><code>{2}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String PERCENT_ID =
          "javax.faces.converter.NumberConverter.PERCENT";
@@ -210,7 +210,7 @@ public class NumberConverter implements Converter, PartialStateHolder {
      * <li><code>{0}</code> relaced by the unconverted value.</li>
      * <li><code>{1}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String STRING_ID =
          "javax.faces.converter.STRING";
@@ -240,6 +240,8 @@ public class NumberConverter implements Converter, PartialStateHolder {
      * <p>Return the ISO 4217 currency code used by <code>getAsString()</code>
      * with a <code>type</code> of <code>currency</code>.  If not set,
      * the value used will be based on the formatting <code>Locale</code>.</p>
+     *
+     * @return the currency code
      */
     public String getCurrencyCode() {
 
@@ -266,6 +268,8 @@ public class NumberConverter implements Converter, PartialStateHolder {
      * <p>Return the currency symbol used by <code>getAsString()</code>
      * with a <code>type</code> of <code>currency</code>.  If not set,
      * the value used will be based on the formatting <code>Locale</code>.</p>
+     * 
+     * @return the currency symbol
      */
     public String getCurrencySymbol() {
 
@@ -292,6 +296,8 @@ public class NumberConverter implements Converter, PartialStateHolder {
      * <p>Return <code>true</code> if <code>getAsString</code> should include
      * grouping separators if necessary.  If not modified, the default value
      * is <code>true</code>.</p>
+     *
+     * @return whether or not grouping is used
      */
     public boolean isGroupingUsed() {
 
@@ -318,6 +324,8 @@ public class NumberConverter implements Converter, PartialStateHolder {
      * <p>Return <code>true</code> if only the integer portion of the given
      * value should be returned from <code>getAsObject()</code>.  If not
      * modified, the default value is <code>false</code>.</p>
+     * 
+     * @return whether or not this is integer only
      */
     public boolean isIntegerOnly() {
 
@@ -343,6 +351,8 @@ public class NumberConverter implements Converter, PartialStateHolder {
     /**
      * <p>Return the maximum number of digits <code>getAsString()</code> should
      * render in the fraction portion of the result.</p>
+     *
+     * @return the maximum fraction digits
      */
     public int getMaxFractionDigits() {
 
@@ -369,6 +379,8 @@ public class NumberConverter implements Converter, PartialStateHolder {
     /**
      * <p>Return the maximum number of digits <code>getAsString()</code> should
      * render in the integer portion of the result.</p>
+     *
+     * @return the max integer digits
      */
     public int getMaxIntegerDigits() {
 
@@ -395,6 +407,8 @@ public class NumberConverter implements Converter, PartialStateHolder {
     /**
      * <p>Return the minimum number of digits <code>getAsString()</code> should
      * render in the fraction portion of the result.</p>
+     * 
+     * @return the min fraction digits
      */
     public int getMinFractionDigits() {
 
@@ -421,6 +435,8 @@ public class NumberConverter implements Converter, PartialStateHolder {
     /**
      * <p>Return the minimum number of digits <code>getAsString()</code> should
      * render in the integer portion of the result.</p>
+     *
+     * @return the minimum integer digits
      */
     public int getMinIntegerDigits() {
 
@@ -449,6 +465,8 @@ public class NumberConverter implements Converter, PartialStateHolder {
      * If this value is <code>null</code>, the <code>Locale</code> stored
      * in the {@link javax.faces.component.UIViewRoot} for the current request
      * will be utilized.</p>
+     *
+     * @return the {@code Locale} for this converter
      */
     public Locale getLocale() {
 
@@ -480,6 +498,8 @@ public class NumberConverter implements Converter, PartialStateHolder {
     /**
      * <p>Return the format pattern to be used when formatting and
      * parsing numbers.</p>
+     *
+     * @return the pattern
      */
     public String getPattern() {
 
@@ -508,6 +528,8 @@ public class NumberConverter implements Converter, PartialStateHolder {
     /**
      * <p>Return the number type to be used when formatting and parsing numbers.
      * If not modified, the default type is <code>number</code>.</p>
+     *
+     * @return the type
      */
     public String getType() {
 
@@ -538,6 +560,7 @@ public class NumberConverter implements Converter, PartialStateHolder {
      * @throws ConverterException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public Object getAsObject(FacesContext context, UIComponent component,
                               String value) {
 
@@ -643,6 +666,7 @@ public class NumberConverter implements Converter, PartialStateHolder {
      * @throws ConverterException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public String getAsString(FacesContext context, UIComponent component,
                               Object value) {
 
@@ -910,6 +934,7 @@ public class NumberConverter implements Converter, PartialStateHolder {
     // ----------------------------------------------------- StateHolder Methods
 
 
+    @Override
     public Object saveState(FacesContext context) {
 
         if (context == null) {
@@ -935,6 +960,7 @@ public class NumberConverter implements Converter, PartialStateHolder {
     }
 
 
+    @Override
     public void restoreState(FacesContext context, Object state) {
 
         if (context == null) {
@@ -958,14 +984,16 @@ public class NumberConverter implements Converter, PartialStateHolder {
     }
 
 
-    private boolean transientFlag = false;
+    private boolean transientFlag;
 
 
+    @Override
     public boolean isTransient() {
         return (transientFlag);
     }
 
 
+    @Override
     public void setTransient(boolean transientFlag) {
         this.transientFlag = transientFlag;
     }
@@ -973,14 +1001,17 @@ public class NumberConverter implements Converter, PartialStateHolder {
 
     private boolean initialState;
 
+    @Override
     public void markInitialState() {
         initialState = true;
     }
 
+    @Override
     public boolean initialStateMarked() {
         return initialState;
     }
 
+    @Override
     public void clearInitialState() {
         initialState = false;
     }

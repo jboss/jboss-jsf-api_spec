@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -105,6 +105,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>dir</code> property.</p>
+     * @return the property value
      * <p>Contents: Direction indication for text that does not inherit directionality.
      * Valid values are "LTR" (left-to-right) and "RTL" (right-to-left).
      * These attributes are case sensitive when rendering to XHTML, so
@@ -117,6 +118,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>dir</code> property.</p>
+     * @param dir the new property value
      */
     public void setDir(java.lang.String dir) {
         getStateHelper().put(PropertyKeys.dir, dir);
@@ -126,6 +128,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>errorClass</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style class to apply to any message
      * with a severity class of "ERROR".
      */
@@ -136,6 +139,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>errorClass</code> property.</p>
+     * @param errorClass the new property value
      */
     public void setErrorClass(java.lang.String errorClass) {
         getStateHelper().put(PropertyKeys.errorClass, errorClass);
@@ -144,6 +148,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>errorStyle</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style(s) to apply to any message
      * with a severity class of "ERROR".
      */
@@ -154,6 +159,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>errorStyle</code> property.</p>
+     * @param errorStyle the new property value
      */
     public void setErrorStyle(java.lang.String errorStyle) {
         getStateHelper().put(PropertyKeys.errorStyle, errorStyle);
@@ -162,6 +168,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>fatalClass</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style class to apply to any message
      * with a severity class of "FATAL".
      */
@@ -172,6 +179,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>fatalClass</code> property.</p>
+     * @param fatalClass the new property value
      */
     public void setFatalClass(java.lang.String fatalClass) {
         getStateHelper().put(PropertyKeys.fatalClass, fatalClass);
@@ -180,6 +188,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>fatalStyle</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style(s) to apply to any message
      * with a severity class of "FATAL".
      */
@@ -190,6 +199,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>fatalStyle</code> property.</p>
+     * @param fatalStyle the new property value
      */
     public void setFatalStyle(java.lang.String fatalStyle) {
         getStateHelper().put(PropertyKeys.fatalStyle, fatalStyle);
@@ -198,6 +208,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>infoClass</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style class to apply to any message
      * with a severity class of "INFO".
      */
@@ -208,6 +219,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>infoClass</code> property.</p>
+     * @param infoClass the new property value
      */
     public void setInfoClass(java.lang.String infoClass) {
         getStateHelper().put(PropertyKeys.infoClass, infoClass);
@@ -216,6 +228,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>infoStyle</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style(s) to apply to any message
      * with a severity class of "INFO".
      */
@@ -226,6 +239,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>infoStyle</code> property.</p>
+     * @param infoStyle the new property value
      */
     public void setInfoStyle(java.lang.String infoStyle) {
         getStateHelper().put(PropertyKeys.infoStyle, infoStyle);
@@ -234,6 +248,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>lang</code> property.</p>
+     * @return the property value
      * <p>Contents: Code describing the language used in the generated markup
      * for this component.
      */
@@ -244,6 +259,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>lang</code> property.</p>
+     * @param lang the new property value
      */
     public void setLang(java.lang.String lang) {
         getStateHelper().put(PropertyKeys.lang, lang);
@@ -253,6 +269,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>layout</code> property.</p>
+     * @return the property value
      * <p>Contents: The type of layout markup to use when rendering
      * error messages.  Valid values are "table" (an HTML
      * table) and "list" (an HTML list).  If not specified,
@@ -265,6 +282,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>layout</code> property.</p>
+     * @param layout the new property value
      */
     public void setLayout(java.lang.String layout) {
         getStateHelper().put(PropertyKeys.layout, layout);
@@ -273,6 +291,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>role</code> property.</p>
+     * @return the property value
      * <p>Contents: <p class="changed_added_2_2">Per the WAI-ARIA spec and its
      * relationship to HTML5 (Section title ARIA Role Attriubute),
      * every HTML element may have a "role" attribute whose value
@@ -295,6 +314,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>role</code> property.</p>
+     * @param role the new property value
      */
     public void setRole(java.lang.String role) {
         getStateHelper().put(PropertyKeys.role, role);
@@ -304,6 +324,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>style</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style(s) to be applied when this component is rendered.
      */
     public java.lang.String getStyle() {
@@ -313,6 +334,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>style</code> property.</p>
+     * @param style the new property value
      */
     public void setStyle(java.lang.String style) {
         getStateHelper().put(PropertyKeys.style, style);
@@ -322,6 +344,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>styleClass</code> property.</p>
+     * @return the property value
      * <p>Contents: Space-separated list of CSS style class(es) to be applied when
      * this element is rendered.  This value must be passed through
      * as the "class" attribute on generated markup.
@@ -333,6 +356,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>styleClass</code> property.</p>
+     * @param styleClass the new property value
      */
     public void setStyleClass(java.lang.String styleClass) {
         getStateHelper().put(PropertyKeys.styleClass, styleClass);
@@ -341,6 +365,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>title</code> property.</p>
+     * @return the property value
      * <p>Contents: Advisory title information about markup elements generated
      * for this component.
      */
@@ -351,6 +376,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>title</code> property.</p>
+     * @param title the new property value
      */
     public void setTitle(java.lang.String title) {
         getStateHelper().put(PropertyKeys.title, title);
@@ -360,6 +386,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>tooltip</code> property.</p>
+     * @return the property value
      * <p>Contents: Flag indicating whether the detail portion of the
      * message should be displayed as a tooltip.
      */
@@ -370,6 +397,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>tooltip</code> property.</p>
+     * @param tooltip the new property value
      */
     public void setTooltip(boolean tooltip) {
         getStateHelper().put(PropertyKeys.tooltip, tooltip);
@@ -378,6 +406,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>warnClass</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style class to apply to any message
      * with a severity class of "WARN".
      */
@@ -388,6 +417,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>warnClass</code> property.</p>
+     * @param warnClass the new property value
      */
     public void setWarnClass(java.lang.String warnClass) {
         getStateHelper().put(PropertyKeys.warnClass, warnClass);
@@ -396,6 +426,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Return the value of the <code>warnStyle</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style(s) to apply to any message
      * with a severity class of "WARN".
      */
@@ -406,6 +437,7 @@ public class HtmlMessages extends javax.faces.component.UIMessages {
 
     /**
      * <p>Set the value of the <code>warnStyle</code> property.</p>
+     * @param warnStyle the new property value
      */
     public void setWarnStyle(java.lang.String warnStyle) {
         getStateHelper().put(PropertyKeys.warnStyle, warnStyle);

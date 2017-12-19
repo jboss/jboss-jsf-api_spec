@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -70,6 +70,11 @@ public interface SystemEventListenerHolder {
      * instances that have been installed into the class implementing
      * this interface.</p>
      * </div>
+     *
+     * @param facesEventClass the class for which listeners are to be returned
+     * 
+     * @return the listeners for the argument class
+     *
      */
     public List<SystemEventListener> getListenersForEventClass(Class<? extends SystemEvent> facesEventClass);
 

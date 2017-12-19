@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -41,6 +41,7 @@
 package javax.faces.event;
 
 import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
 
 /**
  *
@@ -67,10 +68,24 @@ public class PreDestroyViewMapEvent extends ComponentSystemEvent {
      * @param root the <code>UIViewRoot</code> for which the view map has
      * just been destroyed.
      *
-     * @throws <code>IllegalArgumentException</code> if the argument is <code>null</code>.
+     * @throws IllegalArgumentException if the argument is <code>null</code>.
      */
     public PreDestroyViewMapEvent(UIViewRoot root) {
         super(root);
+    }
+    
+    /**
+     * <p class="changed_added_2_3">Instantiate a new
+     * <code>ViewMapDestroydEvent</code> that indicates the argument
+     * <code>root</code> just had its associated view map destroyed.</p>
+     * 
+     * @param facesContext the Faces context.
+     * @param root the <code>UIViewRoot</code> for which the view map has
+     * just been destroyed.
+     * @throws IllegalArgumentException if the argument is <code>null</code>.
+     */
+    public PreDestroyViewMapEvent(FacesContext facesContext, UIViewRoot root) {
+        super(facesContext, root);
     }
 
 }

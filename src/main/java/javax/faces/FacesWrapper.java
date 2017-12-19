@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -41,18 +41,25 @@
 package javax.faces;
 
 /**
- * <p class="changed_added_2_0">Any wrapper class in JSF that must provide
+ * <p class="changed_added_2_0"><span class="changed_modified_2_3">Any</span>
+ * wrapper class in JSF that must provide
  * access to the object it wraps must implement this interface.</p>
- * 
+ *
+ * <p class="changed_added_2_3">The expected usage of all subclasses is to provide
+ * a constructor that takes an instance of type <code>T</code>, which sets
+ * the instance variable that is returned from the {@link getWrapped} method.</p>
+ *
+ * @param <T> the wrapped type.
  * @since 2.0
  */
 public interface FacesWrapper<T> {
-    
+
     /**
      * <p class="changed_added_2_0">A class that implements this
      * interface uses this method to return an instance of the class
      * being wrapped.</p>
-     * 
+     *
+     * @return the wrapped instance.
      * @since 2.0
      */
     public T getWrapped();

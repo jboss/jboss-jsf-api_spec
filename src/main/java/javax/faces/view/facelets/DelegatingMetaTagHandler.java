@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -72,7 +72,21 @@ public abstract class DelegatingMetaTagHandler extends MetaTagHandler {
         delegateFactory = (TagHandlerDelegateFactory)
                 FactoryFinder.getFactory(FactoryFinder.TAG_HANDLER_DELEGATE_FACTORY);
     }
-    
+
+    /**
+     * <p class="changed_added_2_3">
+     *  Get the tag handler delegate.
+     * </p>
+     * 
+     * <p class="changed_added_2_3">
+     *  Code that extends from DelegatingMetaTagHandler (directly or indirectly,
+     *  as through extending ComponentHandler) must take care to decorate, not 
+     *  replace, the TagHandlerDelegate instance returned by this method. 
+     *  Failure to do so may produce unexpected results.
+     * </p>
+     * 
+     * @return the tag handler delegate.
+     */
     protected abstract TagHandlerDelegate getTagHandlerDelegate();
     
     // Properties ----------------------------------------
@@ -116,6 +130,7 @@ public abstract class DelegatingMetaTagHandler extends MetaTagHandler {
      * @since 2.0
      */
 
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
         getTagHandlerDelegate().apply(ctx, parent);
     }
@@ -128,6 +143,15 @@ public abstract class DelegatingMetaTagHandler extends MetaTagHandler {
      *
      * @param c the <code>UIComponent</code> of the
      * component represented by this element instance.
+     * 
+     * @throws IOException if thrown by the next {@link FaceletHandler}
+
+     * @throws FaceletException if thrown by the next {@link FaceletHandler}
+
+     * @throws javax.faces.FacesException if thrown by the next {@link FaceletHandler}
+
+     * @throws javax.el.ELException if thrown by the next {@link FaceletHandler}
+
      * @since 2.0
      */
 

@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -121,6 +121,7 @@ public class UIForm extends UIComponentBase implements NamingContainer, UniqueId
     // -------------------------------------------------------------- Properties
 
 
+    @Override
     public String getFamily() {
 
         return (COMPONENT_FAMILY);
@@ -142,6 +143,8 @@ public class UIForm extends UIComponentBase implements NamingContainer, UniqueId
      * <p class="changed_modified_2_1">This property must be kept as a
      * transient property using the {@link
      * UIComponent#getTransientStateHelper}.</p>
+     * 
+     * @return <code>true</code> if the form was submitted, <code>false</code> otherwise.
      */
     public boolean isSubmitted() {
 
@@ -161,12 +164,16 @@ public class UIForm extends UIComponentBase implements NamingContainer, UniqueId
      * <strong>not</strong> experiencing a submit, this method must be
      * called, with <code>false</code> as the argument, during the
      * {@link UIComponent#decode} for this <code>UIForm</code>
-     * instance.</p> <p/> <p>The value of a <code>UIForm</code>'s
+     * instance.</p> 
+     * 
+     * <p>The value of a <code>UIForm</code>'s
      * submitted property must not be saved as part of its state.</p>
 
      * <p class="changed_modified_2_1">This property must be kept as a
      * transient property using the {@link
      * UIComponent#getTransientStateHelper}.</p>
+     * 
+     * @param submitted the new value of the submitted flag. 
      */
     public void setSubmitted(boolean submitted) {
 
@@ -180,6 +187,11 @@ public class UIForm extends UIComponentBase implements NamingContainer, UniqueId
     //private Boolean prependId;
 
 
+    /**
+     * Is the id prepended.
+     * 
+     * @return <code>true</code> if it is, <code>false</code> otherwise. 
+     */
     public boolean isPrependId() {
 
         return (Boolean) getStateHelper().eval(PropertyKeys.prependId, true);
@@ -204,6 +216,7 @@ public class UIForm extends UIComponentBase implements NamingContainer, UniqueId
      *
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void processDecodes(FacesContext context) {
 
         if (context == null) {
@@ -229,12 +242,15 @@ public class UIForm extends UIComponentBase implements NamingContainer, UniqueId
 
 
     /**
-     * <p>Override {@link UIComponent#processValidators} to ensure that
+     * <p class="changed_modified_2_3">Override {@link UIComponent#processValidators} to ensure that
      * the children of this <code>UIForm</code> instance are only
      * processed if {@link #isSubmitted} returns <code>true</code>.</p>
      *
      * @throws NullPointerException {@inheritDoc}
+     * @see javax.faces.event.PreValidateEvent
+     * @see javax.faces.event.PostValidateEvent
      */
+    @Override
     public void processValidators(FacesContext context) {
 
         if (context == null) {
@@ -265,6 +281,7 @@ public class UIForm extends UIComponentBase implements NamingContainer, UniqueId
      *
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void processUpdates(FacesContext context) {
 
         if (context == null) {
@@ -274,13 +291,18 @@ public class UIForm extends UIComponentBase implements NamingContainer, UniqueId
             return;
         }
 
-        // Process all facets and children of this component
-        Iterator kids = getFacetsAndChildren();
-        while (kids.hasNext()) {
-            UIComponent kid = (UIComponent) kids.next();
-            kid.processUpdates(context);
-        }
+        pushComponentToEL(context, this);
 
+        try {
+            // Process all facets and children of this component
+            Iterator kids = getFacetsAndChildren();
+            while (kids.hasNext()) {
+                UIComponent kid = (UIComponent) kids.next();
+                kid.processUpdates(context);
+            } 
+        } finally {
+            popComponentFromEL(context);
+        }
     }
 
     /**<p class="changed_modified_2_2">Generate an identifier for a component. The identifier
@@ -298,6 +320,7 @@ public class UIForm extends UIComponentBase implements NamingContainer, UniqueId
      * @param seed an optional seed value - e.g. based on the position of the component in the VDL-template
      * @return a unique-id in this component-container
      */
+    @Override
     public String createUniqueId(FacesContext context, String seed) {
         if (isPrependId()) {
             Integer i = (Integer) getStateHelper().get(PropertyKeys.lastId);
@@ -323,6 +346,7 @@ public class UIForm extends UIComponentBase implements NamingContainer, UniqueId
      * its descendent's <code>clientIds</code> depending on the value of
      * this form's {@link #isPrependId} property.</p>
      */
+    @Override
     public String getContainerClientId(FacesContext context) {
         if (this.isPrependId()) {
             return super.getContainerClientId(context);

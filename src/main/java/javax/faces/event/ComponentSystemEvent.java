@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -67,7 +67,7 @@ public abstract class ComponentSystemEvent extends SystemEvent {
      * @param component the <code>UIComponent</code> reference to be
      * passed to the superclass constructor.
      *
-     * @throws <code>IllegalArgumentException</code> if the argument is <code>null</code>.
+     * @throws IllegalArgumentException if the argument is <code>null</code>.
      * 
      * @since 2.0
      */
@@ -75,6 +75,22 @@ public abstract class ComponentSystemEvent extends SystemEvent {
         super(component);
     }
 
+    /**
+     * <p class="changed_added_2_3">Pass the argument
+     * <code>component</code> to the superclass constructor.</p>
+     * 
+     * @param facesContext the Faces context.
+     * @param component the <code>UIComponent</code> reference to be
+     * passed to the superclass constructor.
+     *
+     * @throws IllegalArgumentException if the argument is <code>null</code>.
+     * 
+     * @since 2.0
+     */
+    public ComponentSystemEvent(FacesContext facesContext, UIComponent component) {
+        super(facesContext, component);
+    }
+    
     /**
      * <p class="changed_added_2_2">Return <code>true</code> if the argument
      * {@link FacesListener} is an instance of the appropriate listener class that this event
@@ -135,6 +151,8 @@ public abstract class ComponentSystemEvent extends SystemEvent {
      * <p class="changed_added_2_0">the source {@link UIComponent} that sent this event.</p>
      * 
      * @since 2.0
+     *
+     * @return the component for this event
      */
     public UIComponent getComponent() {
 

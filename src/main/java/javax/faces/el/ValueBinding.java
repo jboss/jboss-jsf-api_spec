@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -72,6 +72,8 @@ public abstract class ValueBinding {
      *  is <code>null</code>
      * @throws PropertyNotFoundException if a specified property name
      *  does not exist, or is not readable
+     *
+     * @return the value of this expression
      */
     public abstract Object getValue(FacesContext context)
         throws EvaluationException, PropertyNotFoundException;
@@ -111,6 +113,8 @@ public abstract class ValueBinding {
      *  is <code>null</code>
      * @throws PropertyNotFoundException if a specified property name
      *  does not exist
+     *
+     * @return whether or not this expression is read only
      */
     public abstract boolean isReadOnly(FacesContext context)
         throws EvaluationException, PropertyNotFoundException;
@@ -130,6 +134,8 @@ public abstract class ValueBinding {
      *  is <code>null</code>
      * @throws PropertyNotFoundException if a specified property name
      *  does not exist
+     *
+     * @return the Java type of this expression
      */
     public abstract Class getType(FacesContext context)
         throws EvaluationException, PropertyNotFoundException;
@@ -140,6 +146,7 @@ public abstract class ValueBinding {
      * including the delimiters, from which this
      * <code>ValueBinding</code> was built.</p>
      *
+     * @return the expression string
      */
     public String getExpressionString() {
 	return null;

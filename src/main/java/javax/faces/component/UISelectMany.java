@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -45,15 +45,16 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
 import javax.el.ValueExpression;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.el.ValueBinding;
 import javax.faces.convert.Converter;
+import javax.faces.el.ValueBinding;
 
 
 /**
- * <p><strong class="changed_modified_2_0">UISelectMany</strong> is a
+ * <p><strong class="changed_modified_2_0 changed_modified_2_3">UISelectMany</strong> is a
  * {@link UIComponent} that represents the user's choice of a zero or
  * more items from among a discrete set of available options.  The user
  * can modify the selected values.  Optionally, the component can be
@@ -71,13 +72,13 @@ import javax.faces.convert.Converter;
  *
  * <p>The {@link javax.faces.render.Renderer} for this component must
  * perform the following logic on <a
- * name="#getConvertedValue"><code>getConvertedValue()</code></a>:</p>
+ * name="getConvertedValue"><code>getConvertedValue()</code></a>:</p>
  *
- * <ul>
+ * <blockquote>
  *
  * <p>Obtain the {@link javax.faces.convert.Converter} using the following algorithm:</p>
  *
- * <ul> 
+ * <blockquote>
  *
  * <p>If the component has an attached {@link javax.faces.convert.Converter}, use it.</p>
  *
@@ -87,22 +88,25 @@ import javax.faces.convert.Converter;
  *
  * <ul> <li><p>An array of primitives (such as <code>int[]</code>).
  * Look up the registered by-class {@link javax.faces.convert.Converter}
- * for this primitive type.</p></li> 
+ * for this primitive type.</p></li>
 
  * <li><p>An array of objects (such as <code>Integer[]</code> or
  * <code>String[]</code>).  Look up the registered by-class {@link
  * javax.faces.convert.Converter} for the underlying element
- * type.</p></li> 
+ * type.</p></li>
 
  * <li class="changed_added_2_0"><p>A <code>java.util.Collection</code>.
- * Do not convert the values.</p></li>
-
+ * Do not convert the values. <span class="changed_modified_2_3">Instead,
+ * convert the provided set of available options to string, exactly as done
+ * during render response, and for any match with the submitted values, add
+ * the available option as object to the collection.</span></p></li>
  * </ul>
+ * </blockquote>
  *
  * <p>If for any reason a <code>Converter</code> cannot be found, assume
  * the type to be a String array.</p>
 
- * </ul>
+ * </blockquote>
 
  * <p>Use the selected {@link javax.faces.convert.Converter} (if any) to
  * convert each element in the values array from the request to the
@@ -166,11 +170,12 @@ import javax.faces.convert.Converter;
  * request.</p>
 
  * <table border="1">
+ *  <caption>modelType to targetForConvertedValues mapping</caption>
 
  * <tr>
 
  * <th>If <em>modelType</em> is an instance of</th>
- 
+
  * <th>then <em>targetForConvertedValues</em> must be an instance
  * of</th>
 
@@ -225,7 +230,6 @@ import javax.faces.convert.Converter;
  * <p>Return <em>targetForConvertedValues</em> after populating it with
  * the converted values.</p>
 
- * </ul>
  *
  */
 
@@ -274,6 +278,7 @@ public class UISelectMany extends UIInput {
     // -------------------------------------------------------------- Properties
 
 
+    @Override
     public String getFamily() {
 
         return (COMPONENT_FAMILY);
@@ -285,6 +290,8 @@ public class UISelectMany extends UIInput {
      * <p>Return the currently selected values, or <code>null</code> if there
      * are no currently selected values.  This is a typesafe alias for
      * <code>getValue()</code>.</p>
+     *
+     * @return the selected values, or <code>null</code>.
      */
     public Object[] getSelectedValues() {
 
@@ -322,12 +329,13 @@ public class UISelectMany extends UIInput {
      *
      * @param name Name of the attribute or property for which to retrieve
      *  a {@link ValueBinding}
-     *
+     * @return the value binding, or <code>null</code>
      * @throws NullPointerException if <code>name</code>
      *  is <code>null</code>
      *
      * @deprecated this has been replaced by {@link #getValueExpression(java.lang.String)}.
      */
+    @Override
     public ValueBinding getValueBinding(String name) {
 
         if ("selectedValues".equals(name)) {
@@ -358,6 +366,7 @@ public class UISelectMany extends UIInput {
      *
      * @deprecated This has been replaced by {@link #setValueExpression(java.lang.String, javax.el.ValueExpression)}.
      */
+    @Override
     public void setValueBinding(String name, ValueBinding binding) {
 
         if ("selectedValues".equals(name)) {
@@ -375,11 +384,12 @@ public class UISelectMany extends UIInput {
      *
      * @param name Name of the attribute or property for which to retrieve
      *  a {@link ValueExpression}
-     *
+     * @return the value expression, or <code>null</code>.
      * @throws NullPointerException if <code>name</code>
      *  is <code>null</code>
      * @since 1.2
      */
+    @Override
     public ValueExpression getValueExpression(String name) {
 
         if ("selectedValues".equals(name)) {
@@ -389,7 +399,7 @@ public class UISelectMany extends UIInput {
         }
 
     }
-    
+
     /**
      * <p>Store any {@link ValueExpression} specified for
      * <code>selectedValues</code> under <code>value</code> instead;
@@ -404,6 +414,7 @@ public class UISelectMany extends UIInput {
      *  is <code>null</code>
      * @since 1.2
      */
+    @Override
     public void setValueExpression(String name, ValueExpression binding) {
 
         if ("selectedValues".equals(name)) {
@@ -413,7 +424,7 @@ public class UISelectMany extends UIInput {
         }
 
     }
-    
+
     // --------------------------------------------------------- UIInput Methods
 
 
@@ -424,7 +435,10 @@ public class UISelectMany extends UIInput {
      *
      * @param previous old value of this component
      * @param value new value of this component
+     * @return <code>true</code> if the new value is different from the
+     * previous value, <code>false</code> otherwise.
      */
+    @Override
     protected boolean compareValues(Object previous, Object value) {
 
         if ((previous == null) && (value != null)) {
@@ -452,19 +466,19 @@ public class UISelectMany extends UIInput {
         // If values are still not of the type Object[], it is perhaps a
         // mistake by the renderers, so return false, so that
         // ValueChangedEvent is not queued in this case.
-        if (!(previous instanceof Object[]) || 
+        if (!(previous instanceof Object[]) ||
               !(value instanceof Object[])) {
               return false;
         }
         oldarray = (Object[]) previous;
         newarray = (Object[])value;
-       
+
         // If we got here then both the arrays cannot be null
         // if their lengths vary, return false.
         if ( oldarray.length != newarray.length) {
             return true;
         }
-        
+
         // make sure every element in the previous array occurs the same
         // number of times in the current array. This should help us
         // to find out the values changed are not. Since we cannot assume
@@ -478,13 +492,13 @@ public class UISelectMany extends UIInput {
             if ( count1 != count2 ) {
                 valueChanged = true;
                 break;
-            }     
-        }    
+            }
+        }
         return valueChanged;
 
-    }    
+    }
 
-    
+
     /**
      * <p>Return the number of occurrances of a particular element in the
      * array.</p>
@@ -502,12 +516,12 @@ public class UISelectMany extends UIInput {
                     count ++;
                 }
             }
-        }    
+        }
         return count;
 
-    }    
+    }
 
-    
+
     /**
      * Convert an array of primitives to an array of boxed objects.
      * @param primitiveArray object containing the primitive values
@@ -518,7 +532,7 @@ public class UISelectMany extends UIInput {
         if (primitiveArray == null) {
             throw new NullPointerException();
         }
-        
+
         if (primitiveArray instanceof Object[]) {
             return (Object[]) primitiveArray;
         }
@@ -526,7 +540,7 @@ public class UISelectMany extends UIInput {
         if (primitiveArray instanceof Collection) {
             return ((Collection) primitiveArray).toArray();
         }
-          
+
         Class clazz = primitiveArray.getClass();
         if (!clazz.isArray()) {
             return null;
@@ -543,7 +557,7 @@ public class UISelectMany extends UIInput {
 
     // ------------------------------------------------------ Validation Methods
 
-    
+
 
     /**
      * <p><span class="changed_modified_2_0">In</span> addition to the standard
@@ -575,6 +589,7 @@ public class UISelectMany extends UIInput {
      *  is <code>null</code>
      */
 
+    @Override
     protected void validateValue(FacesContext context, Object value) {
         super.validateValue(context, value);
 
@@ -582,7 +597,7 @@ public class UISelectMany extends UIInput {
         if (!isValid() || (value == null)) {
             return;
         }
-        
+
         boolean doAddMessage = false;
 
         // Ensure that the values match one of the available options
@@ -601,7 +616,7 @@ public class UISelectMany extends UIInput {
                 break;
             }
         }
-        
+
         // Ensure that if the value is noSelection and a
         // value is required, a message is queued
         if (isRequired()) {
@@ -618,7 +633,7 @@ public class UISelectMany extends UIInput {
                 }
             }
         }
-        
+
         if (doAddMessage) {
             // Enqueue an error message if an invalid value was specified
             FacesMessage message =
@@ -673,11 +688,13 @@ public class UISelectMany extends UIInput {
         // ------------------------------------------------------------ Iterator
 
 
+        @Override
         public boolean hasNext() {
             return (idx < length);
         }
 
 
+        @Override
         public Object next() {
 
             if (idx >= length) {
@@ -685,10 +702,11 @@ public class UISelectMany extends UIInput {
             } else {
                 return Array.get(value, idx++);
             }
-            
+
         }
 
 
+        @Override
         public void remove() {
 
             throw new UnsupportedOperationException();

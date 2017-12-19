@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -67,7 +67,7 @@ import javax.faces.convert.Converter;
  * specified minimum, throw a {@link ValidatorException} containing a
  * a MINIMUM_MESSAGE_ID message.</li>
  * </ul>
- * <p/>
+ * 
  * <p>For all of the above cases that cause a {@link ValidatorException}
  * to be thrown, if there are parameters to the message that match up
  * with validator parameters, the values of these parameters must be
@@ -96,7 +96,7 @@ public class LengthValidator implements Validator, PartialStateHolder {
      * <li><code>{0}</code> replaced by the configured maximum length.</li>
      * <li><code>{1}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String MAXIMUM_MESSAGE_ID =
          "javax.faces.validator.LengthValidator.MAXIMUM";
@@ -110,7 +110,7 @@ public class LengthValidator implements Validator, PartialStateHolder {
      * <li><code>{0}</code> replaced by the configured minimum length.</li>
      * <li><code>{1}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String MINIMUM_MESSAGE_ID =
          "javax.faces.validator.LengthValidator.MINIMUM";
@@ -167,6 +167,8 @@ public class LengthValidator implements Validator, PartialStateHolder {
      * <p>Return the maximum length to be enforced by this {@link
      * Validator}, or <code>0</code> if the maximum has not been
      * set.</p>
+     * 
+     * @return the maximum
      */
     public int getMaximum() {
 
@@ -195,6 +197,8 @@ public class LengthValidator implements Validator, PartialStateHolder {
      * <p>Return the minimum length to be enforced by this {@link
      * Validator}, or <code>0</code> if the minimum has not been
      * set.</p>
+     *
+     * @return the minimum
      */
     public int getMinimum() {
 
@@ -221,6 +225,7 @@ public class LengthValidator implements Validator, PartialStateHolder {
      * @throws NullPointerException {@inheritDoc}
      * @throws ValidatorException   {@inheritDoc}
      */
+    @Override
     public void validate(FacesContext context,
                          UIComponent component,
                          Object value) throws ValidatorException {
@@ -251,6 +256,7 @@ public class LengthValidator implements Validator, PartialStateHolder {
     }
 
 
+    @Override
     public boolean equals(Object otherObj) {
 
         if (!(otherObj instanceof LengthValidator)) {
@@ -264,6 +270,7 @@ public class LengthValidator implements Validator, PartialStateHolder {
 
     }
 
+    @Override
     public int hashCode() {
 
         int hashCode = (Integer.valueOf(getMinimum()).hashCode()
@@ -322,6 +329,7 @@ public class LengthValidator implements Validator, PartialStateHolder {
     // ----------------------------------------------------- StateHolder Methods
 
 
+    @Override
     public Object saveState(FacesContext context) {
 
         if (context == null) {
@@ -338,6 +346,7 @@ public class LengthValidator implements Validator, PartialStateHolder {
     }
 
 
+    @Override
     public void restoreState(FacesContext context, Object state) {
 
         if (context == null) {
@@ -352,9 +361,10 @@ public class LengthValidator implements Validator, PartialStateHolder {
     }
 
 
-    private boolean transientValue = false;
+    private boolean transientValue;
 
 
+    @Override
     public boolean isTransient() {
 
         return (this.transientValue);
@@ -362,6 +372,7 @@ public class LengthValidator implements Validator, PartialStateHolder {
     }
 
 
+    @Override
     public void setTransient(boolean transientValue) {
 
         this.transientValue = transientValue;
@@ -370,14 +381,17 @@ public class LengthValidator implements Validator, PartialStateHolder {
 
     private boolean initialState;
 
+    @Override
     public void markInitialState() {
         initialState = true;
     }
 
+    @Override
     public boolean initialStateMarked() {
         return initialState;
     }
 
+    @Override
     public void clearInitialState() {
         initialState = false;
     }

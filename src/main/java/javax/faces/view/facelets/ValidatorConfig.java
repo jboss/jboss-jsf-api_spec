@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -71,6 +71,9 @@ public interface ValidatorConfig extends TagConfig {
     /**
      * <p class="changed_added_2_0">Return the validator-id associated with a 
      * particular validator in your faces-config</p>
+     * 
+     * @return the validator-id
+     * 
      * @since 2.0
      */
     public String getValidatorId();

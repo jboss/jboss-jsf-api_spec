@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -42,16 +42,19 @@ package javax.faces.view;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import javax.faces.component.UIComponent;
+import javax.faces.component.UIImportConstants;
+import javax.faces.component.UIViewAction;
 import javax.faces.component.UIViewParameter;
 import javax.faces.component.UIViewRoot;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIViewAction;
 import javax.faces.context.FacesContext;
 
 /**
- * <p class="changed_added_2_0"/> <code>ViewMetadata</code> is
+ * <p class="changed_added_2_0"> <code>ViewMetadata</code> is
  * reponsible for extracting and providing view parameter metadata from
  * VDL views.  Because {@link ViewDeclarationLanguage#getViewMetadata}
  * is required to return <code>null</code> for JSP views and
@@ -64,7 +67,8 @@ public abstract class ViewMetadata {
 
 
     /**
-     * <p class="changed_added_2_0"/>
+     * <p class="changed_added_2_0">Get the view id</p>
+     * 
      * @return the view ID for which this <code>ViewMetadata</code> instance
      *  was created
      */
@@ -81,6 +85,24 @@ public abstract class ViewMetadata {
      * the method, and pass <code>true</code> to the same method at the
      * end.  The implementation must ensure that this happens regardless
      * of ant exceptions that may be thrown.</p>
+     * 
+     * <p class="changed_modified_2_3">
+     *  Take note a compliant implementation has to ensure that:
+     * </p>
+     * <ul>
+     *  <li>
+     *   the new UIViewRoot must be set as the FacesContext's viewRoot 
+     *   before applying the tag handlers, restoring the old FacesContext 
+     *   in a finally block.
+     *  </li>
+     *  <li>
+     *   The contents of the current UIViewRoot's ViewMap must be copied 
+     *   to the ViewMap of the new UIViewRoot before applying the tag handlers.
+     *  </li>
+     *  <li class="changed_added_2_3">
+     *   The {@link UIImportConstants} must be processed after applying the tag handlers.
+     *  </li>
+     * </ul>
      *
      * @param context the {@link FacesContext} for the current request
      * @return a <code>UIViewRoot</code> containing only view parameter metadata
@@ -101,28 +123,9 @@ public abstract class ViewMetadata {
      * empty.
      */
     public static Collection<UIViewParameter> getViewParameters(UIViewRoot root) {
-
-        Collection<UIViewParameter> params;
-        UIComponent metadataFacet = root.getFacet(UIViewRoot.METADATA_FACET_NAME);
-
-        if (metadataFacet == null) {
-            params = Collections.emptyList();
-        } else {
-            params = new ArrayList<UIViewParameter>();
-            List<UIComponent> children = metadataFacet.getChildren();
-            int len = children.size();
-            for (int i = 0; i < len; i++) {
-                UIComponent c = children.get(i);
-                if (c instanceof UIViewParameter) {
-                    params.add((UIViewParameter) c);
-                }
-            }
-        }
-
-        return params;
-
+        return getMetadataChildren(root, UIViewParameter.class);
     }
-    
+
     /**
      * <p class="changed_added_2_2"> Utility method to extract view
      * metadata from the provided {@link UIViewRoot}.  </p>
@@ -135,26 +138,21 @@ public abstract class ViewMetadata {
      * empty.
      */
     public static Collection<UIViewAction> getViewActions(UIViewRoot root) {
-        Collection<UIViewAction> actions;
-        UIComponent metadataFacet = root.getFacet(UIViewRoot.METADATA_FACET_NAME);
-
-        if (metadataFacet == null) {
-            actions = Collections.emptyList();
-        } else {
-            actions = new ArrayList<UIViewAction>();
-            List<UIComponent> children = metadataFacet.getChildren();
-            int len = children.size();
-            for (int i = 0; i < len; i++) {
-                UIComponent c = children.get(i);
-                if (c instanceof UIViewAction) {
-                    actions.add((UIViewAction) c);
-                }
-            }
-        }
-        
-        return actions;
+        return getMetadataChildren(root, UIViewAction.class);
     }
-    
+
+    /**
+     * <p class="changed_added_2_3">Utility method to extract view metadata from the provided {@link UIViewRoot}.</p>
+     *
+     * @param root The {@link UIViewRoot} from which the metadata will be extracted.
+     *
+     * @return A <code>Collection</code> of {@link UIImportConstants} instances.
+     * If the view has no metadata, the collection will be empty.
+     */
+    public static Collection<UIImportConstants> getImportConstants(UIViewRoot root) {
+        return getMetadataChildren(root, UIImportConstants.class);
+    }
+
     /**
      * <p class="changed_added_2_2">Utility method to determine if the 
      * the provided {@link UIViewRoot} has metadata.  The default implementation will 
@@ -167,16 +165,18 @@ public abstract class ViewMetadata {
      *
      * @return true if the view has metadata, false otherwise.
      */
-    public static boolean hasMetadata(UIViewRoot root) {
-        boolean result = false;
-        
-        UIComponent metadataFacet = root.getFacet(UIViewRoot.METADATA_FACET_NAME);
-        if (null != metadataFacet) {
-            result = 0 < metadataFacet.getChildCount();
-        }
-        
-        return result;
+    public static boolean hasMetadata(UIViewRoot root) {    
+        return getMetadataFacet(root).map(m -> m.getChildCount() > 0).orElse(false);
     }
 
+    @SuppressWarnings("unchecked")
+    private static <C extends UIComponent> List<C> getMetadataChildren(UIViewRoot root, Class<C> type) {
+        return (List<C>) getMetadataFacet(root).map(m -> m.getChildren()).orElseGet(Collections::emptyList)
+                                               .stream().filter(c -> type.isInstance(c)).collect(Collectors.toList());
+    }
+
+    private static Optional<UIComponent> getMetadataFacet(UIViewRoot root) {
+        return Optional.ofNullable(root.getFacet(UIViewRoot.METADATA_FACET_NAME));
+    }
 
 }

@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -72,6 +72,8 @@ public interface ComponentConfig extends TagConfig {
      * <p class="changed_added_2_0">ComponentType to pass to the
      * <code>Application</code>. Cannot be <code>null</code>.
      * 
+     * @return the component type to pass to the {@code Application}.
+     * 
      * @since 2.0
      */
     public String getComponentType();
@@ -80,6 +82,8 @@ public interface ComponentConfig extends TagConfig {
      * <p class="changed_added_2_0">RendererType to set on created
      * <code>UIComponent</code> instances.
      *
+     * @return the renderer type to pass to the {@code Application}.
+     * 
      * @since 2.0
      */
     public String getRendererType();

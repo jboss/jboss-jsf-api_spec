@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -45,9 +45,10 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import javax.inject.Qualifier;
 
 /**
- * <p class="changed_added_2_0">The presence of this annotation on a
+ * <p class="changed_added_2_0 changed_modified_2_3">The presence of this annotation on a
  * class automatically registers the class with the runtime as a {@link
  * Behavior}.  The value of this annotation attribute is taken to be the 
  * <em>behavior-id</em> with which instances of this class of behavior 
@@ -59,6 +60,16 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
+@Qualifier
 public @interface FacesBehavior {
     String value();
+    
+    /**
+     * <p class="changed_added_2_3">The value of this annotation attribute is
+     * taken to be an indicator that flags whether or not the given converter
+     * is a CDI managed converter. </p>
+     * 
+     * @return true if CDI managed, false otherwise.
+     */
+    boolean managed() default false;
 }

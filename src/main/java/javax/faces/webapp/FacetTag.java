@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -61,6 +61,8 @@ public class FacetTag extends TagSupport {
     // -------------------------------------------------------------- Properties
 
 
+    private static final long serialVersionUID = 5019035861261307895L;
+
     /**
      * <p>The name of this facet.  This will be used as the facet name for
      * our <code>UIComponentTag</code> child in our <code>UIComponentTag</code>
@@ -71,6 +73,8 @@ public class FacetTag extends TagSupport {
 
     /**
      * <p>Return the name to be assigned to this facet.</p>
+     *
+     * @return the name
      */
     public String getName() {
 
@@ -97,6 +101,7 @@ public class FacetTag extends TagSupport {
     /**
      * <p>Release any resources allocated by this tag instance.
      */
+    @Override
     public void release() {
 
         super.release();
@@ -109,6 +114,7 @@ public class FacetTag extends TagSupport {
      * <p>Return <code>EVAL_BODY_INCLUDE</code> to cause nested body
      * content to be evaluated.</p>
      */
+    @Override
     public int doStartTag() throws JspException {
 
         return (EVAL_BODY_INCLUDE);

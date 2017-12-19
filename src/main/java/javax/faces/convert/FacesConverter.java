@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -45,6 +45,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.annotation.Inherited;
+import javax.inject.Qualifier;
 
 /**
  * <p class="changed_added_2_0"><span
@@ -94,8 +95,9 @@ import java.lang.annotation.Inherited;
  */
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER})
 @Inherited
+@Qualifier
 public @interface FacesConverter {
 
     /**
@@ -104,6 +106,8 @@ public @interface FacesConverter {
      * instances of this class of converter can be instantiated by
      * calling {@link
      * javax.faces.application.Application#createConverter(java.lang.String)}.</p>
+     *
+     * @return the converter-id
      */ 
 
     String value() default "";
@@ -114,9 +118,20 @@ public @interface FacesConverter {
      * which instances of this class of converter can be instantiated by
      * calling {@link
      * javax.faces.application.Application#createConverter(java.lang.Class)}.</p>
+     *
+     * @return the class
      */ 
 
     Class forClass() default Object.class;
 
 
+    /**
+     * <p class="changed_added_2_3">The value of this annotation attribute is
+     * taken to be an indicator that flags whether or not the given converter
+     * is a CDI managed converter. </p>
+     *
+     * @return whether or not this converter is managed by CDI
+     */
+    
+    boolean managed() default false;
 }

@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -43,8 +43,8 @@ package javax.faces.component;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import java.util.Map;
+
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
@@ -70,7 +70,7 @@ import javax.faces.validator.ValidatorException;
 
 /**
  * <p><span class="changed_modified_2_0 changed_modified_2_0_rev_a
- * changed_modified_2_2"><strong>UIInput</strong></span> is a {@link
+ * changed_modified_2_2 changed_modified_2_3"><strong>UIInput</strong></span> is a {@link
  * UIComponent} that represents a component that both displays output to
  * the user (like {@link UIOutput} components do) and processes request
  * parameters on the subsequent request that need to be decoded.  There
@@ -93,7 +93,7 @@ import javax.faces.validator.ValidatorException;
  * value using <code>setValue()</code>.  However, if the
  * <code>immediate</code> property is set to <code>true</code>, this
  * processing will occur instead at the end of the <em>Apply Request
- * Values</em> phase.</p> 
+ * Values</em> phase.</p>
 
  * <p>During the <em>Render Response</em> phase of the request
  * processing lifecycle, conversion for output occurs as for {@link
@@ -117,10 +117,6 @@ import javax.faces.validator.ValidatorException;
  */
 
 public class UIInput extends UIOutput implements EditableValueHolder {
-
-    /* PENDING_2_1 (edburns,rogerk) this should be exposed as public constant */
-    private static final String EMPTY_STRING_AS_NULL =
-          "javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL";
 
     private static final String BEANS_VALIDATION_AVAILABLE =
           "javax.faces.private.BEANS_VALIDATION_AVAILABLE";
@@ -169,20 +165,39 @@ public class UIInput extends UIOutput implements EditableValueHolder {
 
 
     /**
-     * <p class="changed_added_2_0">The name of an application parameter
+     * <p class="changed_added_2_0">The name of a context parameter
      * that indicates how empty values should be handled with respect to
      * validation.  See {@link #validateValue} for the allowable values
      * and specification of how they should be interpreted.</p>
      */
 
-    public static final String VALIDATE_EMPTY_FIELDS_PARAM_NAME = 
+    public static final String VALIDATE_EMPTY_FIELDS_PARAM_NAME =
 	"javax.faces.VALIDATE_EMPTY_FIELDS";
-    
+
+    /**
+     * <p class="changed_modified_2_3">The name of a context parameter
+     * that indicates how empty strings need to be interpreted.</p>
+     */
+    public static final String EMPTY_STRING_AS_NULL_PARAM_NAME =
+          "javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL";
+
+    /**
+     * <p class="changed_modified_2_3">If this param is set, and calling
+     * toLowerCase().equals("true") on a
+     * String representation of its value returns true, validation
+     * must be performed, even when there is no corresponding value for this
+     * component in the incoming request. See {@link #validate}.</p>
+     */
+    public static final String ALWAYS_PERFORM_VALIDATION_WHEN_REQUIRED_IS_TRUE =
+            "javax.faces.ALWAYS_PERFORM_VALIDATION_WHEN_REQUIRED_IS_TRUE";
+
     private static final Validator[] EMPTY_VALIDATOR = new Validator[0];
 
     private transient Boolean emptyStringIsNull;
 
     private transient Boolean validateEmptyFields;
+
+    private transient Boolean isSetAlwaysValidateRequired;
 
     enum PropertyKeys {
         /**
@@ -239,6 +254,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     // -------------------------------------------------------------- Properties
 
 
+    @Override
     public String getFamily() {
 
         return (COMPONENT_FAMILY);
@@ -258,10 +274,13 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * <code>validate()</code> method of this component, or
      * its corresponding {@link Renderer}.</p>
      */
+    @Override
     public Object getSubmittedValue() {
-
-        return (this.submittedValue);
-
+        if (submittedValue == null && !isValid() && considerEmptyStringNull(FacesContext.getCurrentInstance())) { // JAVASERVERFACES_SPEC_PUBLIC-671
+            return "";
+        } else {
+            return submittedValue;
+        }
     }
 
 
@@ -273,6 +292,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      *
      * @param submittedValue The new submitted value
      */
+    @Override
     public void setSubmittedValue(Object submittedValue) {
 
         this.submittedValue = submittedValue;
@@ -282,7 +302,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     /**
      * <p class="changed_added_2_2">If there is a local value, return it,
      * otherwise return the result of calling {@code super.getVaue()}.</p>
-     * 
+     *
      * @since 2.2
      */
 
@@ -290,7 +310,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     public Object getValue() {
         return isLocalValueSet() ? getLocalValue() : super.getValue();
     }
-    
+
     @Override
     public void setValue(Object value) {
         super.setValue(value);
@@ -299,18 +319,18 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     }
 
     /**
-     * <p><span class="changed_modified_2_2">Convenience</span> method to reset 
+     * <p><span class="changed_modified_2_2">Convenience</span> method to reset
      * this component's value to the
      * un-initialized state.  This method does the following:</p>
-     * <p/>
+     *
      * <p class="changed_modified_2_2">Call {@link UIOutput#setValue}.</p>
-     * <p/>
+     *
      * <p>Call {@link #setSubmittedValue} passing <code>null</code>.</p>
-     * <p/>
+     *
      * <p>Clear state for property <code>localValueSet</code>.</p>
-     * <p/>
+     *
      * <p>Clear state for property <code>valid</code>.</p>
-     * <p/>
+     *
      * <p>Upon return from this call if the instance had a
      * <code>ValueBinding</code> associated with it for the "value"
      * property, this binding is evaluated when {@link
@@ -332,6 +352,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * Calls to <code>setValue()</code> automatically reset
      * this property to <code>true</code>.
      */
+    @Override
     public boolean isLocalValueSet() {
         return (Boolean) getStateHelper().eval(PropertyKeys.localValueSet, false);
     }
@@ -339,6 +360,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     /**
      * Sets the "local value set" state for this component.
      */
+    @Override
     public void setLocalValueSet(boolean localValueSet) {
         getStateHelper().put(PropertyKeys.localValueSet, localValueSet);
     }
@@ -347,6 +369,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     /**
      * <p>Return the "required field" state for this component.</p>
      */
+    @Override
     public boolean isRequired() {
 
         return (Boolean) getStateHelper().eval(PropertyKeys.required, false);
@@ -360,6 +383,8 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * passing the key "requiredMessage", get the result of the expression, and return it.
      * Any {@link ELException}s thrown during the call to <code>getValue()</code>
      * must be wrapped in a {@link FacesException} and rethrown.
+     *
+     * @return the required message.
      */
 
     public String getRequiredMessage() {
@@ -390,6 +415,8 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * passing the key "converterMessage", get the result of the expression, and return it.
      * Any {@link ELException}s thrown during the call to <code>getValue()</code>
      * must be wrapped in a {@link FacesException} and rethrown.
+     *
+     * @return the converter message.
      */
 
     public String getConverterMessage() {
@@ -420,6 +447,8 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * passing the key "validatorMessage", get the result of the expression, and return it.
      * Any {@link ELException}s thrown during the call to <code>getValue()</code>
      * must be wrapped in a {@link FacesException} and rethrown.
+     *
+     * @return the validator message.
      */
 
     public String getValidatorMessage() {
@@ -444,6 +473,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     }
 
 
+    @Override
     public boolean isValid() {
 
         return (Boolean) getStateHelper().eval(PropertyKeys.valid, true);
@@ -451,6 +481,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     }
 
 
+    @Override
     public void setValid(boolean valid) {
 
         getStateHelper().put(PropertyKeys.valid, valid);
@@ -463,6 +494,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      *
      * @param required The new "required field" state
      */
+    @Override
     public void setRequired(boolean required) {
 
         getStateHelper().put(PropertyKeys.required, required);
@@ -470,6 +502,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     }
 
 
+    @Override
     public boolean isImmediate() {
 
         return (Boolean) getStateHelper().eval(PropertyKeys.immediate, false);
@@ -477,6 +510,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     }
 
 
+    @Override
     public void setImmediate(boolean immediate) {
 
         getStateHelper().put(PropertyKeys.immediate, immediate);
@@ -492,6 +526,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      *
      * @deprecated {@link #getValidators} should be used instead.
      */
+    @Override
     public MethodBinding getValidator() {
         MethodBinding result = null;
 
@@ -520,7 +555,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * method that will be called during <em>Process Validations</em>
      * phase of the request processing lifecycle, to validate the current
      * value of this component.</p>
-     * <p/>
+     *
      * <p>Any method referenced by such an expression must be public, with
      * a return type of <code>void</code>, and accept parameters of type
      * {@link FacesContext}, {@link UIComponent}, and <code>Object</code>.</p>
@@ -530,6 +565,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      *             argument {@link Validator} by creating an instance of {@link
      *             javax.faces.validator.MethodExpressionValidator}.
      */
+    @Override
     public void setValidator(MethodBinding validatorBinding) {
         Validator[] curValidators = getValidators();
         // see if we need to null-out, or replace an existing validator
@@ -558,6 +594,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
 
     }
 
+    @Override
     public MethodBinding getValueChangeListener() {
         MethodBinding result = null;
 
@@ -583,10 +620,12 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     /**
      * {@inheritDoc}
      *
+     * @param valueChangeListener the value change listener.
      * @deprecated Use {@link #addValueChangeListener} instead, obtaining the
      *             argument {@link ValueChangeListener} by creating an instance of {@link
      *             javax.faces.event.MethodExpressionValueChangeListener}.
      */
+    @Override
     public void setValueChangeListener(MethodBinding valueChangeListener) {
 
         ValueChangeListener[] curListeners = getValueChangeListeners();
@@ -662,6 +701,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      *
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void processDecodes(FacesContext context) {
 
         if (context == null) {
@@ -681,11 +721,15 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     }
 
     /**
-     * <p>In addition to the standard <code>processValidators</code> behavior
+     * <p><span class="changed_modified_2_3">In</span> addition to the standard
+     * <code>processValidators</code> behavior
      * inherited from {@link UIComponentBase}, calls <code>validate()</code>
      * if the <code>immediate</code> property is false (which is the
      * default);  if the component is invalid afterwards, calls
      * {@link FacesContext#renderResponse}.
+     * <span class="changed_added_2_3">To ensure the {@code PostValidateEvent}
+     * is published at the proper time, this component must be validated first,
+     * followed by the component's children and facets.</span>
      * If a <code>RuntimeException</code> is thrown during
      * validation processing, calls {@link FacesContext#renderResponse}
      * and re-throw the exception.
@@ -693,6 +737,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      *
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void processValidators(FacesContext context) {
 
         if (context == null) {
@@ -732,6 +777,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      *
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void processUpdates(FacesContext context) {
 
         if (context == null) {
@@ -745,11 +791,15 @@ public class UIInput extends UIOutput implements EditableValueHolder {
 
         super.processUpdates(context);
 
+        pushComponentToEL(context, this);
+
         try {
             updateModel(context);
         } catch (RuntimeException e) {
             context.renderResponse();
             throw e;
+        } finally {
+            popComponentFromEL(context);
         }
 
         if (!isValid()) {
@@ -760,6 +810,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     /**
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void decode(FacesContext context) {
 
         if (context == null) {
@@ -792,24 +843,24 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * </ul></li>
      * <li>If the <code>setValue()</code> method throws an Exception:
      * <ul>
-     * <li class="changed_modified_2_0">Enqueue an error message.  Create a 
+     * <li class="changed_modified_2_0">Enqueue an error message.  Create a
      * {@link FacesMessage} with the id {@link #UPDATE_MESSAGE_ID}.  Create a
-     * {@link UpdateModelException}, passing the <code>FacesMessage</code> and 
-     * the caught exception to the constructor.  Create an 
-     * {@link ExceptionQueuedEventContext}, passing the <code>FacesContext</code>, 
+     * {@link UpdateModelException}, passing the <code>FacesMessage</code> and
+     * the caught exception to the constructor.  Create an
+     * {@link ExceptionQueuedEventContext}, passing the <code>FacesContext</code>,
      * the <code>UpdateModelException</code>, this component instance, and
-     * {@link PhaseId#UPDATE_MODEL_VALUES} to its constructor.  Call 
-     * {@link FacesContext#getExceptionHandler} and then call 
-     * {@link ExceptionHandler#processEvent}, passing the 
+     * {@link PhaseId#UPDATE_MODEL_VALUES} to its constructor.  Call
+     * {@link FacesContext#getExceptionHandler} and then call
+     * {@link ExceptionHandler#processEvent}, passing the
      * <code>ExceptionQueuedEventContext</code>.
      * </li>
      * <li>Set the <code>valid</code> property of this {@link UIInput}
      * to <code>false</code>.</li>
-     * </ul></li>
+     * </ul>
      * The exception must not be re-thrown.  This enables tree traversal
      * to continue for this lifecycle phase, as in all the other lifecycle
-     * phases. 
-     * </ul>
+     * phases.
+     * </li></ul>
      *
      * @param context {@link FacesContext} for the request we are processing
      * @throws NullPointerException if <code>context</code>
@@ -873,28 +924,32 @@ public class UIInput extends UIOutput implements EditableValueHolder {
                 context.getApplication().publishEvent(context,
                                                       ExceptionQueuedEvent.class,
                                                       eventContext);
-                
+
             }
-            
+
         }
     }
-    
+
     // ------------------------------------------------------ Validation Methods
 
 
     /**
      * <p><span class="changed_modified_2_0
-     * changed_modified_2_2">Perform</span> the following algorithm to
+     * changed_modified_2_2 changed_modified_2_3">Perform</span> the following algorithm to
      * validate the local value of this {@link UIInput}.</p>
 
      * <ul>
 
      * <li>Retrieve the submitted value with {@link #getSubmittedValue}.
-     * If this returns <code>null</code>, exit without further
-     * processing.  (This indicates that no value was submitted for this
+     * If this returns <code>null</code>, <span class="changed_modified_2_3">and
+     * the value of the {@link #ALWAYS_PERFORM_VALIDATION_WHEN_REQUIRED_IS_TRUE}
+     * context-param is true (ignoring case), examine the value of the "required"
+     * property.  If the value of "required" is true, continue as below.  If
+     * the value of "required" is false or the required attribute is not set,
+     * exit without further processing.  If the context-param is not set, or is
+     * set to false (ignoring case),</span> exit without further processing.
+     * (This indicates that no value was submitted for this
      * component.)</li>
-
-     * <p/>
 
      * <li><span class="changed_modified_2_0">If the
      * <code>javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</code>
@@ -903,29 +958,26 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * <code>String</code> call <code>{@link #setSubmittedValue}</code>,
      * passing <code>null</code> as the argument and continue processing
      * using <code>null</code> as the current submitted
-     * value.</code></span></li>
-
-     * <p/>
+     * value.</span></li>
 
      * <li> Convert the submitted value into a "local value" of the
      * appropriate data type by calling {@link #getConvertedValue}.</li>
-     * <li><span class="changed_added_2_0_rev_a">If conversion fails:
+     * <li><span class="changed_added_2_0_rev_a">If conversion fails</span>:
      * <ul>
      * <li>Enqueue an appropriate error message by calling the
      * <code>addMessage()</code> method on the
      * <code>FacesContext</code>.</li>
      * <li>Set the <code>valid</code> property
      * on this component to <code>false</code> </li>
-     * </ul></span>
+     * </ul>
      * </li>
 
-     * <p/>
      * <li>Validate the property by calling {@link #validateValue}.</li>
-     * <p/>
+     *
      * <li>If the <code>valid</code> property of this component is still
      * <code>true</code>, retrieve the previous value of the component
      * (with <code>getValue()</code>), store the new local value using
-     * <code>setValue()</code>, and reset the submitted value to null 
+     * <code>setValue()</code>, and reset the submitted value to null
      * <span class="changed_added_2_2">with a call to {@link #setSubmittedValue}
      * passing {@code null} as the argument</span>.
      * If the local value is different from the previous value of this
@@ -935,7 +987,6 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * listeners.</li>
 
      * </ul>
-     * <p/>
      * <p>Application components implementing {@link UIInput} that wish to
      * perform validation with logic embedded in the component should perform
      * their own correctness checks, and then call the
@@ -953,17 +1004,21 @@ public class UIInput extends UIOutput implements EditableValueHolder {
         }
 
         // Submitted value == null means "the component was not submitted
-        // at all".  
+        // at all".
         Object submittedValue = getSubmittedValue();
         if (submittedValue == null) {
-            return;
+            if (isRequired() && isSetAlwaysValidateRequired(context)) {
+                // continue as below
+            } else {
+                return;
+            }
         }
 
         // If non-null, an instanceof String, and we're configured to treat
         // zero-length Strings as null:
         //   call setSubmittedValue(null)
         if ((considerEmptyStringNull(context)
-             && submittedValue instanceof String 
+             && submittedValue instanceof String
              && ((String) submittedValue).length() == 0)) {
             setSubmittedValue(null);
             submittedValue = null;
@@ -988,11 +1043,35 @@ public class UIInput extends UIOutput implements EditableValueHolder {
             setValue(newValue);
             setSubmittedValue(null);
             if (compareValues(previous, newValue)) {
-                queueEvent(new ValueChangeEvent(this, previous, newValue));
+                queueEvent(new ValueChangeEvent(context, this, previous, newValue));
             }
         }
 
     }
+
+    /*
+     * Respecting the fact that someone may have decorated FacesContextFactory
+     * and thus skipped our saving of this init param, look for the init
+     * param and return its value.  The return is saved in a transient ivar
+     * to provide performance while not perturbing state saving.
+     */
+
+    private boolean isSetAlwaysValidateRequired(FacesContext context) {
+        if (null != isSetAlwaysValidateRequired) {
+            return isSetAlwaysValidateRequired;
+        }
+
+        Boolean bool = (Boolean) context.getAttributes().get(ALWAYS_PERFORM_VALIDATION_WHEN_REQUIRED_IS_TRUE);
+        if (null != bool) {
+            isSetAlwaysValidateRequired = bool;
+        } else {
+            String val = context.getExternalContext().getInitParameter(ALWAYS_PERFORM_VALIDATION_WHEN_REQUIRED_IS_TRUE);
+            isSetAlwaysValidateRequired = Boolean.valueOf(val);
+        }
+
+        return isSetAlwaysValidateRequired;
+    }
+
 
     /**
      * <p>Convert the submitted value into a "local value" of the
@@ -1027,15 +1106,13 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * on this method, and thus must be handled by the caller.</span></li>
      * <li>Otherwise, use the submitted value without any conversion</li>
      * </ul>
-     * </li>
-     * <p/>
-     * </p>
-     * <p/>
      * <p>This method can be overridden by subclasses for more specific
      * behavior.</p>
+     *
+     * @param context the Faces context.
+     * @param newSubmittedValue the new submitted value.
+     * @return the converted value.
      */
-
-
     protected Object getConvertedValue(FacesContext context,
                                        Object newSubmittedValue) throws ConverterException {
         Renderer renderer = getRenderer(context);
@@ -1082,10 +1159,11 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * #getRequiredMessage} returns non-<code>null</code>, use the value
      * as the <code>summary</code> and <code>detail</code> in the {@link
      * FacesMessage} that is enqueued on the <code>FacesContext</code>,
-     * otherwise use the message for the {@link #REQUIRED_MESSAGE_ID}.
-     * </li> <li>Set the <code>valid</code> property on this component
-     * to <code>false</code>.</p></li> 
-
+     * otherwise use the message for the {@link #REQUIRED_MESSAGE_ID}.</li>
+     *
+     * <li>Set the <code>valid</code> property on this component
+     * to <code>false</code>.</li>
+     *
      * <li><p class="changed_modified_2_0">If calling {@link
      * ValidatorException#getFacesMessages} returns
      * non-<code>null</code>, each message should be added to the
@@ -1094,11 +1172,12 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * added.</p></li>
      *
      * </ul>
-
+     *
      * </li>
      *
+     * <li class="changed_added_2_0">
      *
-     * <li class="changed_added_2_0"><p>Otherwise, if the
+     * <p>Otherwise, if the
      * <code>valid</code> property on this component is still
      * <code>true</code>, take the following action to determine if
      * validation of this component should proceed.</p>
@@ -1123,7 +1202,9 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * (ignoring case) to &#8220;<code>true</code>&#8221; (without the
      * quotes) validation should proceed.  Otherwise, validation should
      * not proceed.</p></li>
-
+     *
+     * </ul>
+     *
      * <p>If the above determination indicates that validation should
      * proceed, call the <code>validate()</code> method of each {@link
      * Validator} registered for this {@link UIInput}, followed by the
@@ -1134,6 +1215,9 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * <code>valid</code> property of this component to false.</li>
 
      * </ul>
+     *
+     * @param context the Faces context.
+     * @param newValue the new value.
      */
 
     protected void validateValue(FacesContext context, Object newValue) {
@@ -1212,6 +1296,8 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      *
      * @param previous old value of this component (if any)
      * @param value    new value of this component (if any)
+     * @return <code>true</code> if the new value is different from the
+     *  previous value, <code>false</code> otherwise.
      */
     protected boolean compareValues(Object previous, Object value) {
         boolean result = true;
@@ -1222,7 +1308,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
             result = true;
         } else {
 	    boolean previousEqualsValue = previous.equals(value);
-	    if (!previousEqualsValue && 
+	    if (!previousEqualsValue &&
 		previous instanceof Comparable &&
 		value instanceof Comparable) {
                 try {
@@ -1257,6 +1343,23 @@ public class UIInput extends UIOutput implements EditableValueHolder {
         }
     }
 
+    /**
+     * <p class="changed_modified_2_3">
+     *  Is the value denoting an empty value.
+     * </p>
+     *
+     * <p class="changed_modified_2_3">
+     *  If the value is null, return true. If the value is a String and it is
+     *  the empty string, return true. If the value is an array and the array
+     *  length is 0, return true. If the value is a List and the List is empty,
+     *  return true. If the value is a Collection and the Collection is empty,
+     *  return true. If the value is a Map and the Map is empty, return true.
+     *  In all other cases, return false.
+     * </p>
+     *
+     * @param value the value to check.
+     * @return true if it is, false otherwise.
+     */
     public static boolean isEmpty(Object value) {
 
         if (value == null) {
@@ -1297,6 +1400,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * @throws NullPointerException if <code>validator</code>
      *                              is null
      */
+    @Override
     public void addValidator(Validator validator) {
 
         if (validator == null) {
@@ -1304,18 +1408,19 @@ public class UIInput extends UIOutput implements EditableValueHolder {
         }
 
         if (validators == null) {
-            validators = new AttachedObjectListHolder<Validator>();
+            validators = new AttachedObjectListHolder<>();
         }
         validators.add(validator);
 
     }
-    
+
 
     /**
      * <p>Return the set of registered {@link Validator}s for this
      * {@link UIInput} instance.  If there are no registered validators,
      * a zero-length array is returned.</p>
      */
+    @Override
     public Validator[] getValidators() {
 
         return ((validators != null) ? validators.asArray(Validator.class) : EMPTY_VALIDATOR);
@@ -1330,6 +1435,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      *
      * @param validator The {@link Validator} to remove
      */
+    @Override
     public void removeValidator(Validator validator) {
 
         if (validator == null) {
@@ -1353,6 +1459,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * @throws NullPointerException if <code>listener</code>
      *                              is <code>null</code>
      */
+    @Override
     public void addValueChangeListener(ValueChangeListener listener) {
 
         addFacesListener(listener);
@@ -1365,6 +1472,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * {@link UIInput} instance.  If there are no registered listeners,
      * a zero-length array is returned.</p>
      */
+    @Override
     public ValueChangeListener[] getValueChangeListeners() {
 
         return (ValueChangeListener[]) getFacesListeners(ValueChangeListener.class);
@@ -1380,6 +1488,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * @throws NullPointerException if <code>listener</code>
      *                              is <code>null</code>
      */
+    @Override
     public void removeValueChangeListener(ValueChangeListener listener) {
 
         removeFacesListener(listener);
@@ -1395,14 +1504,14 @@ public class UIInput extends UIOutput implements EditableValueHolder {
         }
 
         Object[] result = null;
-        
+
         Object superState = super.saveState(context);
         Object validatorsState = ((validators != null) ? validators.saveState(context) : null);
-        
+
         if (superState != null || validatorsState != null) {
             result = new Object[] { superState, validatorsState};
         }
-        
+
         return (result);
     }
 
@@ -1420,7 +1529,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
         super.restoreState(context, values[0]);
         if (values[1] != null) {
             if (validators == null) {
-                validators = new AttachedObjectListHolder<Validator>();
+                validators = new AttachedObjectListHolder<>();
             }
             validators.restoreState(context, values[1]);
         }
@@ -1476,7 +1585,7 @@ public class UIInput extends UIOutput implements EditableValueHolder {
             message = ce.getFacesMessage();
             if (message == null) {
                 message = MessageFactory.getMessage(context,
-                     CONVERSION_MESSAGE_ID);                
+                     CONVERSION_MESSAGE_ID);
                 if (message.getDetail() == null) {
                     message.setDetail(ce.getMessage());
                 }
@@ -1490,12 +1599,12 @@ public class UIInput extends UIOutput implements EditableValueHolder {
     private boolean considerEmptyStringNull(FacesContext ctx) {
 
         if (emptyStringIsNull == null) {
-            String val = ctx.getExternalContext().getInitParameter(EMPTY_STRING_AS_NULL);
+            String val = ctx.getExternalContext().getInitParameter(EMPTY_STRING_AS_NULL_PARAM_NAME);
             emptyStringIsNull = Boolean.valueOf(val);
         }
 
         return emptyStringIsNull;
-        
+
     }
 
     private boolean validateEmptyFields(FacesContext ctx) {
@@ -1517,12 +1626,12 @@ public class UIInput extends UIOutput implements EditableValueHolder {
         return validateEmptyFields;
 
     }
-    
+
     private boolean isBeansValidationAvailable(FacesContext context) {
         boolean result = false;
 
         Map<String,Object> appMap = context.getExternalContext().getApplicationMap();
-        
+
         if (appMap.containsKey(BEANS_VALIDATION_AVAILABLE)) {
             result = (Boolean) appMap.get(BEANS_VALIDATION_AVAILABLE);
         } else {

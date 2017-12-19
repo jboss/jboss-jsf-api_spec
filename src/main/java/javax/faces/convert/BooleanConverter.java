@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -69,7 +69,7 @@ public class BooleanConverter implements Converter {
      * <li><code>{0}</code> replaced by the unconverted value.</li>
      * <li><code>{1}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String BOOLEAN_ID =
          "javax.faces.converter.BooleanConverter.BOOLEAN";
@@ -83,7 +83,7 @@ public class BooleanConverter implements Converter {
      * <li><code>{0}</code> relaced by the unconverted value.</li>
      * <li><code>{1}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String STRING_ID =
          "javax.faces.converter.STRING";
@@ -94,6 +94,7 @@ public class BooleanConverter implements Converter {
      * @throws ConverterException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public Object getAsObject(FacesContext context, UIComponent component,
                               String value) {
 
@@ -129,6 +130,7 @@ public class BooleanConverter implements Converter {
      * @throws ConverterException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public String getAsString(FacesContext context, UIComponent component,
                               Object value) {
 

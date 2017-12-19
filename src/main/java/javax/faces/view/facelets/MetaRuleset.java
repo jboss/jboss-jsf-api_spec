@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -74,8 +74,9 @@ public abstract class MetaRuleset {
      * <code>MetaRuleset</code> instance to advise it to ignore the
      * attribute named by the <code>attribute</code> argument, returning
      * <code>this</code>.</p>
-     * @param attribute the name of the attribute to ignore.
      * 
+     * @param attribute the name of the attribute to ignore.
+     * @return the MetaRuleset with the given attribute ignored.
      * @since 2.0
      */
     public abstract MetaRuleset ignore(String attribute);
@@ -85,6 +86,8 @@ public abstract class MetaRuleset {
      * <code>MetaRuleset</code> instance to advise it to ignore all
      * attributes, returning
      * <code>this</code>.</p>
+     * 
+     * @return the ignoreAll <code>MetaRuleset</code>.
      * @since 2.0
      */
     public abstract MetaRuleset ignoreAll();
@@ -95,6 +98,10 @@ public abstract class MetaRuleset {
      * argument <code>attribute</code> and re-adding it under the name
      * given by the argument <code>property</code>, returning
      * <code>this</code>.</p>
+     * 
+     * @param attribute the attribute to remove.
+     * @param property the property to add.
+     * @return the aliased MetaRuleSet.
      * @since 2.0
      */
     public abstract MetaRuleset alias(String attribute, String property);
@@ -102,13 +109,19 @@ public abstract class MetaRuleset {
     /**
      * <p class="changed_added_2_0">Add another {@link Metadata} to this
      * ruleset, returning <code>this</code>.</p>
+     * 
+     * @param metadata the {@link Metadata} to add.
+     * @return the {@link MetaRuleset} with the {@link Metadata} added.
      * @since 2.0
      */
-    public abstract MetaRuleset add(Metadata mapper);
+    public abstract MetaRuleset add(Metadata metadata);
 
     /**
      * <p class="changed_added_2_0">Add another {@link MetaRule} to this
      * ruleset, returning <code>this</code>.</p>
+     * 
+     * @param rule the rule to add.
+     * @return the {@link MetaRuleset} with the {@link MetaRule} added.
      * @since 2.0
      */
     public abstract MetaRuleset addRule(MetaRule rule);
@@ -116,6 +129,7 @@ public abstract class MetaRuleset {
     /**
      * <p class="changed_added_2_0">Take actions to apply the rule.</p>
      * 
+     * @return the Metadata with the MetaRuleSet applied.
      */
     public abstract Metadata finish();
 }

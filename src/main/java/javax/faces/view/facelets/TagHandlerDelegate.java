@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -64,6 +64,8 @@ public abstract class TagHandlerDelegate {
      *
      * @param type the <code>Class</code> for which the
      * <code>MetaRuleset</code> must be created.
+     * 
+     * @return a {@link MetaRuleset} particular to this kind of tag handler. 
      *
      * @since 2.0
      */ 
@@ -89,6 +91,9 @@ public abstract class TagHandlerDelegate {
      *
      * @param comp the <code>UIComponent</code> that corresponds to this
      * element.
+     * 
+     * @throws IOException if any files necessary to apply this tag handler 
+     * have any difficulty while loading
      *
      */
     public abstract void apply(FaceletContext ctx, UIComponent comp)

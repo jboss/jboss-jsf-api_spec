@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -64,6 +64,8 @@ public abstract class ResponseWriter extends Writer {
      * <p>Return the content type (such as "text/html") for this {@link
      * ResponseWriter}.  Note: this must not include the "charset="
      * suffix.</p>
+     *
+     * @return the content type
      */
     public abstract String getContentType();
 
@@ -73,6 +75,8 @@ public abstract class ResponseWriter extends Writer {
      * {@link ResponseWriter}.  Please see <a
      * href="http://www.iana.org/assignments/character-sets">the
      * IANA</a> for a list of character encodings.</p>
+     *
+     * @return the character encoding
      */
     public abstract String getCharacterEncoding();
 
@@ -83,6 +87,7 @@ public abstract class ResponseWriter extends Writer {
      * will not flush the underlying Writer or OutputStream;  it
      * simply clears any values buffered by this {@link ResponseWriter}.</p>
      */
+    @Override
     public abstract void flush() throws IOException;
 
 
@@ -111,7 +116,7 @@ public abstract class ResponseWriter extends Writer {
      * call the <code>writeAttribute()</code> or
      * <code>writeURIAttribute()</code> methods to add attributes and
      * corresponding values.  The starting element will be closed
-     * (that is, the trailing '>' character added)
+     * (that is, the trailing '&gt;' character added)
      * on any subsequent call to <code>startElement()</code>,
      * <code>writeComment()</code>,
      * <code>writeText()</code>, <code>endElement()</code>,
@@ -338,7 +343,7 @@ public abstract class ResponseWriter extends Writer {
      * <code>component</code> property to allow custom
      * <code>ResponseWriter</code> implementations to associate a
      * component with an arbitrary portion of text.</p>
-     * <p/>
+     * 
      * <p>The default implementation simply ignores the
      * <code>component</code> argument and calls through to {@link
      * #writeText(java.lang.Object,java.lang.String)}</p>
@@ -384,6 +389,8 @@ public abstract class ResponseWriter extends Writer {
      * using the specified <code>Writer</code> as the output destination.</p>
      *
      * @param writer The <code>Writer</code> that is the output destination
+     *
+     * @return the new <code>ResponseWriter</code>
      */
     public abstract ResponseWriter cloneWithWriter(Writer writer);
 

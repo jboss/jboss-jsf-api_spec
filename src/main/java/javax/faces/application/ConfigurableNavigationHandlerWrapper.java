@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
 
@@ -41,35 +41,52 @@ package javax.faces.application;
 
 import java.util.Map;
 import java.util.Set;
+
 import javax.faces.FacesWrapper;
 import javax.faces.context.FacesContext;
 import javax.faces.flow.Flow;
 
 /**
- * <p class="changed_added_2_2">Provides a simple implementation of
+ * <p class="changed_added_2_2"><span class="changed_modified_2_3">Provides</span> a simple implementation of
  * {@link ConfigurableNavigationHandler} that can be subclassed by developers wishing
  * to provide specialized behavior to an existing {@link
  * ConfigurableNavigationHandler} instance.  The default implementation of all methods
  * is to call through to the wrapped {@link ConfigurableNavigationHandler}.</p>
  *
- * <div class="changed_added_2_2">
- *
- * <p>Usage: extend this class and override {@link #getWrapped} to
- * return the instance we are wrapping.</p>
- *
- * </div>
+ * <p class="changed_added_2_3">Usage: extend this class and push the implementation being wrapped to the
+ * constructor and use {@link #getWrapped} to access the instance being wrapped.</p>
  *
  * @since 2.2
  */
 public abstract class ConfigurableNavigationHandlerWrapper extends ConfigurableNavigationHandler implements FacesWrapper<ConfigurableNavigationHandler>{
 
+    private ConfigurableNavigationHandler wrapped;
+
     /**
-     * @return the instance that we are wrapping.
-     */ 
+     * @deprecated Use the other constructor taking the implementation being wrapped.
+     */
+    @Deprecated
+    public ConfigurableNavigationHandlerWrapper() {
+
+    }
+
+    /**
+     * <p class="changed_added_2_3">If this configurable navigation handler has been decorated,
+     * the implementation doing the decorating should push the implementation being wrapped to this constructor.
+     * The {@link #getWrapped()} will then return the implementation being wrapped.</p>
+     *
+     * @param wrapped The implementation being wrapped.
+     * @since 2.3
+     */
+    public ConfigurableNavigationHandlerWrapper(ConfigurableNavigationHandler wrapped) {
+        this.wrapped = wrapped;
+    }
+
     @Override
-    public abstract ConfigurableNavigationHandler getWrapped();
-    
-    
+    public ConfigurableNavigationHandler getWrapped() {
+        return wrapped;
+    }
+
     @Override
     public NavigationCase getNavigationCase(FacesContext context, String fromAction, String outcome) {
         return getWrapped().getNavigationCase(context, fromAction, outcome);
@@ -89,8 +106,7 @@ public abstract class ConfigurableNavigationHandlerWrapper extends ConfigurableN
     public void handleNavigation(FacesContext context, String fromAction, String outcome) {
         getWrapped().handleNavigation(context, fromAction, outcome);
     }
-    
-    
+
     @Override
     public void performNavigation(String outcome) {
         getWrapped().performNavigation(outcome);
@@ -101,5 +117,4 @@ public abstract class ConfigurableNavigationHandlerWrapper extends ConfigurableN
         getWrapped().inspectFlow(context, flow);
     }
 
-    
 }

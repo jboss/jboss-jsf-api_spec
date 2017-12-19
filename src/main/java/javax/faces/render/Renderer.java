@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -213,6 +213,8 @@ public abstract class Renderer {
      *
      * @throws NullPointerException if <code>context</code>
      *  or <code>clientId</code> is <code>null</code>
+     *
+     * @return the converted {@code clientId}
      */ 
     public String convertClientId(FacesContext context, String clientId) {
 
@@ -227,6 +229,8 @@ public abstract class Renderer {
      * <p>Return a flag indicating whether this {@link Renderer} is responsible
      * for rendering the children the component it is asked to render.
      * The default implementation returns <code>false</code>.</p>
+     *
+     * @return the current value of the flag
      */
 
     public boolean getRendersChildren() {
@@ -251,6 +255,8 @@ public abstract class Renderer {
      *   cannot be converted successfully.
      * @throws NullPointerException if <code>context</code>
      *  or <code>component</code> is <code>null</code>
+     *
+     * @return the converted value
      */
     public Object getConvertedValue(FacesContext context,
                                     UIComponent  component,

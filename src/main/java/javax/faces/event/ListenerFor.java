@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -41,6 +41,7 @@
 package javax.faces.event;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -69,7 +70,7 @@ import java.lang.annotation.Inherited;
  * <ul>
 
           <li><p> If this annotation is not present on the class in
-          question, no action must be taken.  </p></li>
+          question, no action must be taken.  </p>
 
           <p>Determine the "target" on which to call
           <code>subscribeToEvent</code>.</p>
@@ -156,6 +157,7 @@ import java.lang.annotation.Inherited;
 @Retention(value=RetentionPolicy.RUNTIME)
 @Target(value=ElementType.TYPE)
 @Inherited
+@Repeatable(ListenersFor.class)
 public @interface ListenerFor {
 
     /**
@@ -165,6 +167,8 @@ public @interface ListenerFor {
      * not honor subclass relationships.  It is valid to have EL
      * Expressions in the value of this attribute, as long as the
      * expression resolves to an instance of the expected type.</p>
+     *
+     * @return the event class
      */
 
     public Class<? extends SystemEvent> systemEventClass();
@@ -176,6 +180,8 @@ public @interface ListenerFor {
      * attribute.  It is valid to have EL Expressions in the value of
      * this attribute, as long as the expression resolves to an instance
      * of the expected type.</p>
+     *
+     * @return the source class
      */ 
     public Class sourceClass() default Void.class;
 

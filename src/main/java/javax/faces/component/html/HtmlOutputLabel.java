@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -115,6 +115,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>accesskey</code> property.</p>
+     * @return the property value
      * <p>Contents: Access key that, when pressed, transfers focus
      * to this element.
      */
@@ -125,6 +126,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>accesskey</code> property.</p>
+     * @param accesskey the new property value
      */
     public void setAccesskey(java.lang.String accesskey) {
         getStateHelper().put(PropertyKeys.accesskey, accesskey);
@@ -134,6 +136,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>dir</code> property.</p>
+     * @return the property value
      * <p>Contents: Direction indication for text that does not inherit directionality.
      * Valid values are "LTR" (left-to-right) and "RTL" (right-to-left).
      * These attributes are case sensitive when rendering to XHTML, so
@@ -146,6 +149,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>dir</code> property.</p>
+     * @param dir the new property value
      */
     public void setDir(java.lang.String dir) {
         getStateHelper().put(PropertyKeys.dir, dir);
@@ -155,6 +159,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>escape</code> property.</p>
+     * @return the property value
      * <p>Contents: Flag indicating that characters that are sensitive
      * in HTML and XML markup must be escaped.  If omitted, this
      * flag is assumed to be "true".
@@ -166,6 +171,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>escape</code> property.</p>
+     * @param escape the new property value
      */
     public void setEscape(boolean escape) {
         getStateHelper().put(PropertyKeys.escape, escape);
@@ -174,8 +180,9 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>for</code> property.</p>
-     * <p>Contents: Client identifier of the component for which this element
-     * is a label.
+     * @return the property value
+     * <p>Contents: <p class="changed_modified_2_3">Search expression to the component
+     * for which this element is a label.</p>
      */
     public java.lang.String getFor() {
         return (java.lang.String) getStateHelper().eval(PropertyKeys.forVal);
@@ -184,6 +191,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>for</code> property.</p>
+     * @param _for the new property value
      */
     public void setFor(java.lang.String _for) {
         getStateHelper().put(PropertyKeys.forVal, _for);
@@ -192,6 +200,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>lang</code> property.</p>
+     * @return the property value
      * <p>Contents: Code describing the language used in the generated markup
      * for this component.
      */
@@ -202,6 +211,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>lang</code> property.</p>
+     * @param lang the new property value
      */
     public void setLang(java.lang.String lang) {
         getStateHelper().put(PropertyKeys.lang, lang);
@@ -211,6 +221,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>onblur</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when this element loses focus.
      */
     public java.lang.String getOnblur() {
@@ -220,6 +231,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>onblur</code> property.</p>
+     * @param onblur the new property value
      */
     public void setOnblur(java.lang.String onblur) {
         getStateHelper().put(PropertyKeys.onblur, onblur);
@@ -229,6 +241,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>onclick</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * clicked over this element.
      */
@@ -239,6 +252,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>onclick</code> property.</p>
+     * @param onclick the new property value
      */
     public void setOnclick(java.lang.String onclick) {
         getStateHelper().put(PropertyKeys.onclick, onclick);
@@ -248,6 +262,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>ondblclick</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * double clicked over this element.
      */
@@ -258,6 +273,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>ondblclick</code> property.</p>
+     * @param ondblclick the new property value
      */
     public void setOndblclick(java.lang.String ondblclick) {
         getStateHelper().put(PropertyKeys.ondblclick, ondblclick);
@@ -267,6 +283,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>onfocus</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when this element receives focus.
      */
     public java.lang.String getOnfocus() {
@@ -276,6 +293,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>onfocus</code> property.</p>
+     * @param onfocus the new property value
      */
     public void setOnfocus(java.lang.String onfocus) {
         getStateHelper().put(PropertyKeys.onfocus, onfocus);
@@ -285,6 +303,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>onkeydown</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * pressed down over this element.
      */
@@ -295,6 +314,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>onkeydown</code> property.</p>
+     * @param onkeydown the new property value
      */
     public void setOnkeydown(java.lang.String onkeydown) {
         getStateHelper().put(PropertyKeys.onkeydown, onkeydown);
@@ -304,6 +324,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>onkeypress</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * pressed and released over this element.
      */
@@ -314,6 +335,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>onkeypress</code> property.</p>
+     * @param onkeypress the new property value
      */
     public void setOnkeypress(java.lang.String onkeypress) {
         getStateHelper().put(PropertyKeys.onkeypress, onkeypress);
@@ -323,6 +345,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>onkeyup</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * released over this element.
      */
@@ -333,6 +356,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>onkeyup</code> property.</p>
+     * @param onkeyup the new property value
      */
     public void setOnkeyup(java.lang.String onkeyup) {
         getStateHelper().put(PropertyKeys.onkeyup, onkeyup);
@@ -342,6 +366,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>onmousedown</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * pressed down over this element.
      */
@@ -352,6 +377,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>onmousedown</code> property.</p>
+     * @param onmousedown the new property value
      */
     public void setOnmousedown(java.lang.String onmousedown) {
         getStateHelper().put(PropertyKeys.onmousedown, onmousedown);
@@ -361,6 +387,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>onmousemove</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved within this element.
      */
@@ -371,6 +398,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>onmousemove</code> property.</p>
+     * @param onmousemove the new property value
      */
     public void setOnmousemove(java.lang.String onmousemove) {
         getStateHelper().put(PropertyKeys.onmousemove, onmousemove);
@@ -380,6 +408,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>onmouseout</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved away from this element.
      */
@@ -390,6 +419,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>onmouseout</code> property.</p>
+     * @param onmouseout the new property value
      */
     public void setOnmouseout(java.lang.String onmouseout) {
         getStateHelper().put(PropertyKeys.onmouseout, onmouseout);
@@ -399,6 +429,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>onmouseover</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved onto this element.
      */
@@ -409,6 +440,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>onmouseover</code> property.</p>
+     * @param onmouseover the new property value
      */
     public void setOnmouseover(java.lang.String onmouseover) {
         getStateHelper().put(PropertyKeys.onmouseover, onmouseover);
@@ -418,6 +450,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>onmouseup</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * released over this element.
      */
@@ -428,6 +461,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>onmouseup</code> property.</p>
+     * @param onmouseup the new property value
      */
     public void setOnmouseup(java.lang.String onmouseup) {
         getStateHelper().put(PropertyKeys.onmouseup, onmouseup);
@@ -437,6 +471,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>role</code> property.</p>
+     * @return the property value
      * <p>Contents: <p class="changed_added_2_2">Per the WAI-ARIA spec and its
      * relationship to HTML5 (Section title ARIA Role Attriubute),
      * every HTML element may have a "role" attribute whose value
@@ -459,6 +494,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>role</code> property.</p>
+     * @param role the new property value
      */
     public void setRole(java.lang.String role) {
         getStateHelper().put(PropertyKeys.role, role);
@@ -468,6 +504,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>style</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style(s) to be applied when this component is rendered.
      */
     public java.lang.String getStyle() {
@@ -477,6 +514,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>style</code> property.</p>
+     * @param style the new property value
      */
     public void setStyle(java.lang.String style) {
         getStateHelper().put(PropertyKeys.style, style);
@@ -486,6 +524,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>styleClass</code> property.</p>
+     * @return the property value
      * <p>Contents: Space-separated list of CSS style class(es) to be applied when
      * this element is rendered.  This value must be passed through
      * as the "class" attribute on generated markup.
@@ -497,6 +536,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>styleClass</code> property.</p>
+     * @param styleClass the new property value
      */
     public void setStyleClass(java.lang.String styleClass) {
         getStateHelper().put(PropertyKeys.styleClass, styleClass);
@@ -505,6 +545,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>tabindex</code> property.</p>
+     * @return the property value
      * <p>Contents: Position of this element in the tabbing order
      * for the current document.  This value must be
      * an integer between 0 and 32767.
@@ -516,6 +557,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>tabindex</code> property.</p>
+     * @param tabindex the new property value
      */
     public void setTabindex(java.lang.String tabindex) {
         getStateHelper().put(PropertyKeys.tabindex, tabindex);
@@ -525,6 +567,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Return the value of the <code>title</code> property.</p>
+     * @return the property value
      * <p>Contents: Advisory title information about markup elements generated
      * for this component.
      */
@@ -535,6 +578,7 @@ public class HtmlOutputLabel extends javax.faces.component.UIOutput implements C
 
     /**
      * <p>Set the value of the <code>title</code> property.</p>
+     * @param title the new property value
      */
     public void setTitle(java.lang.String title) {
         getStateHelper().put(PropertyKeys.title, title);

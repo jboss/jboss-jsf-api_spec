@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -46,8 +46,9 @@ import java.net.URL;
 
 
 /**
- * <p class="changed_added_2_1">This API defines the facility by which
- * the Facelets {@link javax.faces.view.ViewDeclarationLanguage}
+ * <p class="changed_added_2_1"><span
+ * class="changed_modified_2_3">This</span> API defines the facility by
+ * which the Facelets {@link javax.faces.view.ViewDeclarationLanguage}
  * creates and caches instances of Facelets.</p>
 
  * <p class="changed_added_2_1">The cache handles two different kinds of
@@ -81,6 +82,11 @@ public abstract class FaceletCache<V> {
 	 *
 	 * @throws NullPointerException if argument <code>key</code> is
 	 * <code>null</code>.
+         * 
+         * @throws IOException if unable to load a file necessary to respond
+         * to service this method.
+         * 
+         * @return the newly created {@code Facelet} or View Metadata {@code Facelet}
 	 */
         public V newInstance(final URL key) throws IOException;
     }
@@ -95,6 +101,11 @@ public abstract class FaceletCache<V> {
      * 
      * @throws NullPointerException if argument <code>url</code> is
      * <code>null</code>.
+     * 
+     * @throws IOException if unable to load a file necessary to respond
+     * to service this method.
+     * 
+     * @return a cached or new {@code Facelet}
 
      */
 
@@ -110,6 +121,8 @@ public abstract class FaceletCache<V> {
 
      * @throws NullPointerException if argument <code>url</code> is
      * <code>null</code>.
+     * 
+     * @return true if a cached instance exists, false otherwise
 
      */
 
@@ -126,6 +139,11 @@ public abstract class FaceletCache<V> {
 
      * @throws NullPointerException if argument <code>url</code> is
      * <code>null</code>.
+     * 
+     * @throws IOException if unable to load a file necessary to respond
+     * to service this method.
+     * 
+     * @return a cached or new View Metadata {@code Facelet} instance
 
      */
 
@@ -139,10 +157,36 @@ public abstract class FaceletCache<V> {
 
      * @throws NullPointerException if argument <code>url</code> is
      * <code>null</code>.
+     * 
+     * @return true if a cached instance exists, false otherwise
      */
 
     public abstract boolean isViewMetadataFaceletCached(URL url);
 
+    /**
+     * 
+     * <p class="changed_added_2_3">This must be called by the runtime
+     * at startup time, before any requests are serviced, and allows for
+     * the <code>FaceletCache</code> implementation to provide the
+     * {@link MemberFactory} instances that will be used to create
+     * instances of Facelets and View Metadata Facelets.  The default
+     * implementation calls through to {@link #setMemberFactories(javax.faces.view.facelets.FaceletCache.MemberFactory, javax.faces.view.facelets.FaceletCache.MemberFactory)}.</p>
+     * 
+     * @param faceletFactory the {@link MemberFactory} instance that
+     * will be used to create instances of Facelets.
+
+     * @param viewMetadataFaceletFactory the {@link MemberFactory}
+     * instance that will be used to create instances of metadata
+     * Facelets.
+
+     * @throws NullPointerException if either argument is <code>null</code>
+
+     * @since 2.3
+     */
+    public void setCacheFactories(MemberFactory<V> faceletFactory,
+            MemberFactory<V> viewMetadataFaceletFactory) {
+        this.setMemberFactories(faceletFactory, viewMetadataFaceletFactory);
+    }
 
     /**
      * <p class="changed_added_2_1">This must be called by the runtime
@@ -159,8 +203,11 @@ public abstract class FaceletCache<V> {
      * Facelets.
 
      * @throws NullPointerException if either argument is <code>null</code>
+     * 
+     * @deprecated 
 
      */
+    @Deprecated
     protected void setMemberFactories(MemberFactory<V> faceletFactory,
             MemberFactory<V> viewMetadataFaceletFactory) {
 	if (null == faceletFactory || null == viewMetadataFaceletFactory) {
@@ -179,6 +226,10 @@ public abstract class FaceletCache<V> {
      * <p class="changed_added_2_1">Returns the {@link MemberFactory}
      * passed to {@link #setMemberFactories} for the purpose of creating
      * Facelet instance.</p>
+     * 
+     * @return the {@link MemberFactory}
+     * passed to {@link #setMemberFactories} for the purpose of creating
+     * Facelet instance.
      */
     protected MemberFactory<V> getMemberFactory() {
         return memberFactory;
@@ -188,6 +239,9 @@ public abstract class FaceletCache<V> {
      * <p class="changed_added_2_1">Returns the {@link MemberFactory}
      * passed to {@link #setMemberFactories} for the purpose of creating
      * View Metadata Facelet instance.</p>
+     * 
+     * @return the {@link MemberFactory} passed to {@link #setMemberFactories} for the purpose of creating
+     * View Metadata Facelet instance.
      */
     protected MemberFactory<V> getMetadataMemberFactory() {
         return viewMetadataMemberFactory;

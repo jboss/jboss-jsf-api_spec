@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -115,6 +115,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>alt</code> property.</p>
+     * @return the property value
      * <p>Contents: Alternate textual description of the
      * element rendered by this component.
      */
@@ -125,6 +126,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>alt</code> property.</p>
+     * @param alt the new property value
      */
     public void setAlt(java.lang.String alt) {
         getStateHelper().put(PropertyKeys.alt, alt);
@@ -134,6 +136,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>dir</code> property.</p>
+     * @return the property value
      * <p>Contents: Direction indication for text that does not inherit directionality.
      * Valid values are "LTR" (left-to-right) and "RTL" (right-to-left).
      * These attributes are case sensitive when rendering to XHTML, so
@@ -146,6 +149,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>dir</code> property.</p>
+     * @param dir the new property value
      */
     public void setDir(java.lang.String dir) {
         getStateHelper().put(PropertyKeys.dir, dir);
@@ -155,6 +159,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>height</code> property.</p>
+     * @return the property value
      * <p>Contents: Override for the height of this image.
      */
     public java.lang.String getHeight() {
@@ -164,6 +169,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>height</code> property.</p>
+     * @param height the new property value
      */
     public void setHeight(java.lang.String height) {
         getStateHelper().put(PropertyKeys.height, height);
@@ -173,6 +179,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>ismap</code> property.</p>
+     * @return the property value
      * <p>Contents: Flag indicating that this image is to be used as a server side
      * image map.  Such an image must be enclosed within a hyperlink
      * ("a").  A value of false causes no attribute to be rendered,
@@ -186,6 +193,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>ismap</code> property.</p>
+     * @param ismap the new property value
      */
     public void setIsmap(boolean ismap) {
         getStateHelper().put(PropertyKeys.ismap, ismap);
@@ -194,6 +202,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>lang</code> property.</p>
+     * @return the property value
      * <p>Contents: Code describing the language used in the generated markup
      * for this component.
      */
@@ -204,6 +213,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>lang</code> property.</p>
+     * @param lang the new property value
      */
     public void setLang(java.lang.String lang) {
         getStateHelper().put(PropertyKeys.lang, lang);
@@ -213,6 +223,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>longdesc</code> property.</p>
+     * @return the property value
      * <p>Contents: URI to a long description of the image
      * represented by this element.
      */
@@ -223,6 +234,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>longdesc</code> property.</p>
+     * @param longdesc the new property value
      */
     public void setLongdesc(java.lang.String longdesc) {
         getStateHelper().put(PropertyKeys.longdesc, longdesc);
@@ -232,6 +244,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>onclick</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * clicked over this element.
      */
@@ -242,6 +255,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>onclick</code> property.</p>
+     * @param onclick the new property value
      */
     public void setOnclick(java.lang.String onclick) {
         getStateHelper().put(PropertyKeys.onclick, onclick);
@@ -251,6 +265,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>ondblclick</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * double clicked over this element.
      */
@@ -261,6 +276,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>ondblclick</code> property.</p>
+     * @param ondblclick the new property value
      */
     public void setOndblclick(java.lang.String ondblclick) {
         getStateHelper().put(PropertyKeys.ondblclick, ondblclick);
@@ -270,6 +286,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>onkeydown</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * pressed down over this element.
      */
@@ -280,6 +297,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>onkeydown</code> property.</p>
+     * @param onkeydown the new property value
      */
     public void setOnkeydown(java.lang.String onkeydown) {
         getStateHelper().put(PropertyKeys.onkeydown, onkeydown);
@@ -289,6 +307,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>onkeypress</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * pressed and released over this element.
      */
@@ -299,6 +318,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>onkeypress</code> property.</p>
+     * @param onkeypress the new property value
      */
     public void setOnkeypress(java.lang.String onkeypress) {
         getStateHelper().put(PropertyKeys.onkeypress, onkeypress);
@@ -308,6 +328,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>onkeyup</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * released over this element.
      */
@@ -318,6 +339,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>onkeyup</code> property.</p>
+     * @param onkeyup the new property value
      */
     public void setOnkeyup(java.lang.String onkeyup) {
         getStateHelper().put(PropertyKeys.onkeyup, onkeyup);
@@ -327,6 +349,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>onmousedown</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * pressed down over this element.
      */
@@ -337,6 +360,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>onmousedown</code> property.</p>
+     * @param onmousedown the new property value
      */
     public void setOnmousedown(java.lang.String onmousedown) {
         getStateHelper().put(PropertyKeys.onmousedown, onmousedown);
@@ -346,6 +370,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>onmousemove</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved within this element.
      */
@@ -356,6 +381,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>onmousemove</code> property.</p>
+     * @param onmousemove the new property value
      */
     public void setOnmousemove(java.lang.String onmousemove) {
         getStateHelper().put(PropertyKeys.onmousemove, onmousemove);
@@ -365,6 +391,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>onmouseout</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved away from this element.
      */
@@ -375,6 +402,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>onmouseout</code> property.</p>
+     * @param onmouseout the new property value
      */
     public void setOnmouseout(java.lang.String onmouseout) {
         getStateHelper().put(PropertyKeys.onmouseout, onmouseout);
@@ -384,6 +412,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>onmouseover</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved onto this element.
      */
@@ -394,6 +423,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>onmouseover</code> property.</p>
+     * @param onmouseover the new property value
      */
     public void setOnmouseover(java.lang.String onmouseover) {
         getStateHelper().put(PropertyKeys.onmouseover, onmouseover);
@@ -403,6 +433,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>onmouseup</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * released over this element.
      */
@@ -413,6 +444,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>onmouseup</code> property.</p>
+     * @param onmouseup the new property value
      */
     public void setOnmouseup(java.lang.String onmouseup) {
         getStateHelper().put(PropertyKeys.onmouseup, onmouseup);
@@ -422,6 +454,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>role</code> property.</p>
+     * @return the property value
      * <p>Contents: <p class="changed_added_2_2">Per the WAI-ARIA spec and its
      * relationship to HTML5 (Section title ARIA Role Attriubute),
      * every HTML element may have a "role" attribute whose value
@@ -444,6 +477,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>role</code> property.</p>
+     * @param role the new property value
      */
     public void setRole(java.lang.String role) {
         getStateHelper().put(PropertyKeys.role, role);
@@ -453,6 +487,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>style</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style(s) to be applied when this component is rendered.
      */
     public java.lang.String getStyle() {
@@ -462,6 +497,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>style</code> property.</p>
+     * @param style the new property value
      */
     public void setStyle(java.lang.String style) {
         getStateHelper().put(PropertyKeys.style, style);
@@ -471,6 +507,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>styleClass</code> property.</p>
+     * @return the property value
      * <p>Contents: Space-separated list of CSS style class(es) to be applied when
      * this element is rendered.  This value must be passed through
      * as the "class" attribute on generated markup.
@@ -482,6 +519,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>styleClass</code> property.</p>
+     * @param styleClass the new property value
      */
     public void setStyleClass(java.lang.String styleClass) {
         getStateHelper().put(PropertyKeys.styleClass, styleClass);
@@ -490,6 +528,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>title</code> property.</p>
+     * @return the property value
      * <p>Contents: Advisory title information about markup elements generated
      * for this component.
      */
@@ -500,6 +539,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>title</code> property.</p>
+     * @param title the new property value
      */
     public void setTitle(java.lang.String title) {
         getStateHelper().put(PropertyKeys.title, title);
@@ -509,6 +549,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>usemap</code> property.</p>
+     * @return the property value
      * <p>Contents: The name of a client side image map (an HTML "map"
      * element) for which this element provides the image.
      */
@@ -519,6 +560,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>usemap</code> property.</p>
+     * @param usemap the new property value
      */
     public void setUsemap(java.lang.String usemap) {
         getStateHelper().put(PropertyKeys.usemap, usemap);
@@ -528,6 +570,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Return the value of the <code>width</code> property.</p>
+     * @return the property value
      * <p>Contents: Override for the width of this image.
      */
     public java.lang.String getWidth() {
@@ -537,6 +580,7 @@ public class HtmlGraphicImage extends javax.faces.component.UIGraphic implements
 
     /**
      * <p>Set the value of the <code>width</code> property.</p>
+     * @param width the new property value
      */
     public void setWidth(java.lang.String width) {
         getStateHelper().put(PropertyKeys.width, width);

@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -79,6 +79,8 @@ public class MethodExpressionValidator implements Validator, StateHolder {
 
     /**
      * <p>Construct a {@link Validator} that contains a {@link MethodExpression}.</p>
+     *
+     * @param methodExpression the expression to wrap
      */
     public MethodExpressionValidator(MethodExpression methodExpression) {
 
@@ -93,6 +95,7 @@ public class MethodExpressionValidator implements Validator, StateHolder {
      * @throws NullPointerException {@inheritDoc}
      * @throws ValidatorException   {@inheritDoc}
      */
+    @Override
     public void validate(FacesContext context,
                          UIComponent component,
                          Object value) throws ValidatorException {
@@ -118,6 +121,7 @@ public class MethodExpressionValidator implements Validator, StateHolder {
     // ----------------------------------------------------- StateHolder Methods
 
 
+    @Override
     public Object saveState(FacesContext context) {
         if (context == null) {
             throw new NullPointerException();
@@ -129,6 +133,7 @@ public class MethodExpressionValidator implements Validator, StateHolder {
     }
 
 
+    @Override
     public void restoreState(FacesContext context, Object state) {
         if (context == null) {
             throw new NullPointerException();
@@ -141,9 +146,10 @@ public class MethodExpressionValidator implements Validator, StateHolder {
     }
 
 
-    private boolean transientValue = false;
+    private boolean transientValue;
 
 
+    @Override
     public boolean isTransient() {
 
         return (this.transientValue);
@@ -151,6 +157,7 @@ public class MethodExpressionValidator implements Validator, StateHolder {
     }
 
 
+    @Override
     public void setTransient(boolean transientValue) {
 
         this.transientValue = transientValue;

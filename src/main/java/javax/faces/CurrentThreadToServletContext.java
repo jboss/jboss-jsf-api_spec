@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -53,7 +53,7 @@ import javax.faces.context.FacesContext;
 
 // ----------------------------------------------------------- Inner Classes
 final class CurrentThreadToServletContext {
-    ConcurrentMap<FactoryManagerCacheKey, FactoryFinderInstance> applicationMap = new ConcurrentHashMap<FactoryManagerCacheKey, FactoryFinderInstance>();
+    ConcurrentMap<FactoryManagerCacheKey, FactoryFinderInstance> applicationMap = new ConcurrentHashMap<>();
     private AtomicBoolean logNullFacesContext = new AtomicBoolean(false);
     private AtomicBoolean logNonNullFacesContext = new AtomicBoolean(false);
     // Bug 20458755: This instance provides a method to look up the current FacesContext

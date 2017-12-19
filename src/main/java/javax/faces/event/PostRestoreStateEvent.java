@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -41,6 +41,7 @@
 package javax.faces.event;
 
 import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 
 /**
  *
@@ -67,10 +68,24 @@ public class PostRestoreStateEvent extends ComponentSystemEvent {
 
      * @param component the <code>UIComponent</code> whose state was just restored.
 
-     * @throws <code>IllegalArgumentException</code> if the argument is <code>null</code>.
+     * @throws IllegalArgumentException if the argument is <code>null</code>.
      */
     public PostRestoreStateEvent(UIComponent component) {
         super(component);
+    }
+        
+    /**
+     * <p class="changed_added_2_3">Instantiate a new
+     * <code>PostRestoreStateEvent</code> that indicates the argument
+     * <code>component</code> just had its state restored.</p>
+     * 
+     * @param facesContext the Faces context.
+     * @param component the <code>UIComponent</code> whose state was just restored.
+
+     * @throws IllegalArgumentException if the argument is <code>null</code>.
+     */
+    public PostRestoreStateEvent(FacesContext facesContext, UIComponent component) {
+        super(facesContext, component);
     }
     
     public void setComponent(UIComponent newComponent) {

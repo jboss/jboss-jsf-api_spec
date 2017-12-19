@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -56,12 +56,13 @@ import java.util.Iterator;
 class AttachedObjectListHolder<T> implements PartialStateHolder {
 
     private boolean initialState;
-    private List<T> attachedObjects = new ArrayList<T>(2);
+    private List<T> attachedObjects = new ArrayList<>(2);
 
 
     // ------------------------------------- Methods from PartialStateHolder
 
 
+    @Override
     public void markInitialState() {
 
         if (!attachedObjects.isEmpty()) {
@@ -76,6 +77,7 @@ class AttachedObjectListHolder<T> implements PartialStateHolder {
     }
 
 
+    @Override
     public boolean initialStateMarked() {
 
         return initialState;
@@ -83,6 +85,7 @@ class AttachedObjectListHolder<T> implements PartialStateHolder {
     }
 
 
+    @Override
     public void clearInitialState() {
 
         if (!attachedObjects.isEmpty()) {
@@ -100,6 +103,7 @@ class AttachedObjectListHolder<T> implements PartialStateHolder {
     // -------------------------------------------- Methods from StateHolder
 
 
+    @Override
     public Object saveState(FacesContext context) {
 
         if (context == null) {
@@ -136,6 +140,7 @@ class AttachedObjectListHolder<T> implements PartialStateHolder {
     }
 
 
+    @Override
     public void restoreState(FacesContext context, Object state) {
 
         if (context == null) {
@@ -152,7 +157,7 @@ class AttachedObjectListHolder<T> implements PartialStateHolder {
             if (this.attachedObjects != null) {
                 this.attachedObjects.clear();
             } else {
-                this.attachedObjects = new ArrayList<T>(2);
+                this.attachedObjects = new ArrayList<>(2);
             }
             for (int i = 0, len = attachedObjects.length; i < len; i++) {
                 T restored = (T) ((StateHolderSaver) attachedObjects[i]).restore(context);
@@ -173,6 +178,7 @@ class AttachedObjectListHolder<T> implements PartialStateHolder {
     }
 
 
+    @Override
     public boolean isTransient() {
 
         return false;
@@ -180,6 +186,7 @@ class AttachedObjectListHolder<T> implements PartialStateHolder {
     }
 
 
+    @Override
     public void setTransient(boolean newTransientValue) {
 
         // no-op
@@ -206,7 +213,7 @@ class AttachedObjectListHolder<T> implements PartialStateHolder {
 
     T[] asArray(Class<T> type) {
 
-        return new ArrayList<T>(attachedObjects).toArray((T[])Array.newInstance(type, attachedObjects.size()));
+        return new ArrayList<>(attachedObjects).toArray((T[])Array.newInstance(type, attachedObjects.size()));
         
     }
     

@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -124,7 +124,7 @@ import javax.faces.component.UIComponent;
  * <p>A common use case for extending this class is to gain access to
  * the process by which the Facelets runtime creates component instances
  * corresponding to markup in a Facelets view. These three methods are
- * useful in such  cases.<p>
+ * useful in such cases.</p>
 
  * <ul>
 
@@ -142,7 +142,7 @@ import javax.faces.component.UIComponent;
  * <code>UIComponent</code> instance has been populated with children as
  * a result of execution of child tag handlers, subclasses may override
  * {@link #onComponentPopulated}.</p></li>
-
+ * </ul>
  * </div>
 
  * </div>
@@ -159,6 +159,8 @@ public class ComponentHandler extends DelegatingMetaTagHandler {
      * TagHandlerDelegateFactory} provided by the implementation to create
      * an instance of {@link TagHandlerDelegate} designed for use with
      * <code>ComponentHandler</code>.</p>
+     * 
+     * @param config the configuration for this handler.
      *
      * @since 2.0
      */ 
@@ -186,6 +188,10 @@ public class ComponentHandler extends DelegatingMetaTagHandler {
      * so.  A <code>null</code> return from this method will cause the
      * <code>TagHandlerDelegate</code> for instance to create the
      * component instead.</p>
+     * 
+     * @param ctx the <code>FaceletContext</code> for this view execution
+     * 
+     * @return the newly created {@link UIComponent}
      *
      * @since 2.2
      */
@@ -239,6 +245,10 @@ public class ComponentHandler extends DelegatingMetaTagHandler {
      * should be wired to the component.</p>
      * 
      * @param component the component you wish to modify
+     * 
+     * @return true if and only if the argument is not {@code null} and the 
+     * component is new during this run of the lifecycle.
+     * 
      * @since 2.0
      */
     public static boolean isNew(UIComponent component) {

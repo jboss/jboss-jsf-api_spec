@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -40,6 +40,7 @@
 
 package javax.faces.event;
 
+import javax.faces.context.FacesContext;
 import javax.faces.context.Flash;
 
 /**
@@ -69,6 +70,21 @@ public class PreRemoveFlashValueEvent extends SystemEvent {
      */
     public PreRemoveFlashValueEvent(String key) {
         super(null == key ? Flash.NULL_VALUE : key);
+    }
+    
+    /**
+     * <p class="changed_added_2_3">Instantiate a new
+     * <code>PreRemoveFlashValueEvent</code> that indicates the argument
+     * <code>key</code> will be removed from the flash. If the argument is 
+     * <code>null</code>, the literal {@link Flash#NULL_VALUE} must be passed
+     * to the superclass constructor.</p>
+     * 
+     * @param facesContext the Faces context.
+     * @param key the key in the flash that was just added.
+     *
+     */
+    public PreRemoveFlashValueEvent(FacesContext facesContext, String key) {
+        super(facesContext, key);
     }
     
     public String getKey() {

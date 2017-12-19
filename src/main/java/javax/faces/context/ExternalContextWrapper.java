@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -42,43 +42,62 @@ package javax.faces.context;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.*;
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.Principal;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import javax.faces.FacesWrapper;
 import javax.faces.lifecycle.ClientWindow;
 
 /**
- * <p class="changed_added_2_0"><span class="changed_modified_2_2">Provides</span>
+ * <p class="changed_added_2_0"><span class="changed_modified_2_2 changed_modified_2_3">Provides</span>
  * a simple implementation of {@link ExternalContext} that can
  * be subclassed by developers wishing to provide specialized behavior
  * to an existing {@link ExternalContext} instance.  The default
  * implementation of all methods is to call through to the wrapped
  * {@link ExternalContext} instance.</p>
  *
- * <p class="changed_added_2_0">Usage: extend this class and override 
- * {@link #getWrapped} to
- * return the instance being wrapping.</p>
+ * <p class="changed_added_2_3">Usage: extend this class and push the implementation being wrapped to the
+ * constructor and use {@link #getWrapped} to access the instance being wrapped.</p>
  *
  * @since 2.0
  */
 public abstract class ExternalContextWrapper extends ExternalContext implements FacesWrapper<ExternalContext> {
 
-
-    // ----------------------------------------------- Methods from FacesWrapper
-
+    private ExternalContext wrapped;
 
     /**
-     * @return the wrapped {@link ExternalContext} instance
-     * @see javax.faces.FacesWrapper#getWrapped()
+     * @deprecated Use the other constructor taking the implementation being wrapped.
      */
+    @Deprecated
+    public ExternalContextWrapper() {
+
+    }
+
+    /**
+     * <p class="changed_added_2_3">If this external context has been decorated,
+     * the implementation doing the decorating should push the implementation being wrapped to this constructor.
+     * The {@link #getWrapped()} will then return the implementation being wrapped.</p>
+     *
+     * @param wrapped The implementation being wrapped.
+     * @since 2.3
+     */
+    public ExternalContextWrapper(ExternalContext wrapped) {
+        this.wrapped = wrapped;
+    }
+
     @Override
-    public abstract ExternalContext getWrapped();
+    public ExternalContext getWrapped() {
+        return wrapped;
+    }
 
 
     // -------------------------------------------- Methods from ExternalContext
@@ -131,8 +150,8 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
     public String encodePartialActionURL(String url) {
         return getWrapped().encodePartialActionURL(url);
     }
-    
-    
+
+
     /**
      * <p>The default behavior of this method is to
      * call {@link ExternalContext#encodeResourceURL(String)}
@@ -144,6 +163,20 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
     public String encodeResourceURL(String url) {
         return getWrapped().encodeResourceURL(url);
     }
+
+
+    /**
+     * <p>The default behavior of this method is to
+     * call {@link ExternalContext#encodeWebsocketURL(String)}
+     * on the wrapped {@link ExternalContext} object.</p>
+     *
+     * @see javax.faces.context.ExternalContext#encodeWebsocketURL(String)
+     */
+    @Override
+    public String encodeWebsocketURL(String url) {
+        return getWrapped().encodeWebsocketURL(url);
+    }
+
 
     /**
      * <p>The default behavior of this method is to
@@ -168,8 +201,8 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
     public String getApplicationContextPath() {
         return getWrapped().getApplicationContextPath();
     }
-    
-    
+
+
 
     /**
      * <p>The default behavior of this method is to
@@ -248,7 +281,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      * call {@link ExternalContext#getRequestContextPath}
      * on the wrapped {@link ExternalContext} object.</p>
      *
-     * @see javax.faces.context.ExternalContext#getRequestContextPath() 
+     * @see javax.faces.context.ExternalContext#getRequestContextPath()
      */
     @Override
     public String getRequestContextPath() {
@@ -296,7 +329,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      * call {@link ExternalContext#getRequestLocale}
      * on the wrapped {@link ExternalContext} object.</p>
      *
-     * @see javax.faces.context.ExternalContext#getRequestLocale() 
+     * @see javax.faces.context.ExternalContext#getRequestLocale()
      */
     @Override
     public Locale getRequestLocale() {
@@ -320,7 +353,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      * call {@link ExternalContext#getRequestMap}
      * on the wrapped {@link ExternalContext} object.</p>
      *
-     * @see javax.faces.context.ExternalContext#getRequestMap() 
+     * @see javax.faces.context.ExternalContext#getRequestMap()
      */
     @Override
     public Map<String, Object> getRequestMap() {
@@ -346,6 +379,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      *
      * @see javax.faces.context.ExternalContext#getRequestParameterNames()
      */
+    @Override
     public Iterator<String> getRequestParameterNames() {
         return getWrapped().getRequestParameterNames();
     }
@@ -357,6 +391,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      *
      * @see javax.faces.context.ExternalContext#getRequestParameterValuesMap()
      */
+    @Override
     public Map<String, String[]> getRequestParameterValuesMap() {
         return getWrapped().getRequestParameterValuesMap();
     }
@@ -368,6 +403,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      *
      * @see javax.faces.context.ExternalContext#getRequestPathInfo()
      */
+    @Override
     public String getRequestPathInfo() {
         return getWrapped().getRequestPathInfo();
     }
@@ -379,6 +415,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      *
      * @see javax.faces.context.ExternalContext#getRequestServletPath()
      */
+    @Override
     public String getRequestServletPath() {
         return getWrapped().getRequestServletPath();
     }
@@ -388,8 +425,9 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      * call {@link ExternalContext#getResource(String)}
      * on the wrapped {@link ExternalContext} object.</p>
      *
-     * @see javax.faces.context.ExternalContext#getResource(String) 
+     * @see javax.faces.context.ExternalContext#getResource(String)
      */
+    @Override
     public URL getResource(String path) throws MalformedURLException {
         return getWrapped().getResource(path);
     }
@@ -401,6 +439,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      *
      * @see javax.faces.context.ExternalContext#getResourceAsStream(String)
      */
+    @Override
     public InputStream getResourceAsStream(String path) {
         return getWrapped().getResourceAsStream(path);
     }
@@ -412,6 +451,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      *
      * @see javax.faces.context.ExternalContext#getResourcePaths(String)
      */
+    @Override
     public Set<String> getResourcePaths(String path) {
         return getWrapped().getResourcePaths(path);
     }
@@ -423,6 +463,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      *
      * @see javax.faces.context.ExternalContext#getResponse()
      */
+    @Override
     public Object getResponse() {
         return getWrapped().getResponse();
     }
@@ -434,6 +475,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      *
      * @see javax.faces.context.ExternalContext#getSession(boolean)
      */
+    @Override
     public Object getSession(boolean create) {
         return getWrapped().getSession(create);
     }
@@ -442,7 +484,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      * <p class="changed_added_2_2">The default behavior of this method is to
      * call {@link ExternalContext#getSessionId(boolean)}
      * on the wrapped {@link ExternalContext} object.</p>
-     * 
+     *
      * @since 2.2
      *
      * @see javax.faces.context.ExternalContext#getSessionId(boolean)
@@ -459,10 +501,11 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      *
      * @see javax.faces.context.ExternalContext#getSessionMap()
      */
+    @Override
     public Map<String, Object> getSessionMap() {
         return getWrapped().getSessionMap();
     }
-    
+
     /**
      * <p class="changed_added_2_2">The default behavior of this method is to
      * call {@link ExternalContext#getSessionMaxInactiveInterval()}
@@ -474,7 +517,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
     public int getSessionMaxInactiveInterval() {
         return getWrapped().getSessionMaxInactiveInterval();
     }
-    
+
     /**
      * <p class="changed_added_2_2">The default behavior of this method is to
      * call {@link ExternalContext#setSessionMaxInactiveInterval(int)}
@@ -486,14 +529,14 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
     public void setSessionMaxInactiveInterval(int interval) {
         getWrapped().setSessionMaxInactiveInterval(interval);
     }
-    
+
     /**
      * <p class="changed_added_2_2">The default behavior of this method is to
      * call {@link ExternalContext#setClientWindow}
      * on the wrapped {@link ExternalContext} object.</p>
-     * 
+     *
      * @since 2.2
-     * 
+     *
      * @param window the window associated with this request.
      */
 
@@ -501,8 +544,8 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
     public void setClientWindow(ClientWindow window) {
         getWrapped().setClientWindow(window);
     }
-    
-    
+
+
 
     /**
      * <p>The default behavior of this method is to
@@ -520,7 +563,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      * <p class="changed_added_2_2">The default behavior of this method is to
      * call {@link ExternalContext#getClientWindow}
      * on the wrapped {@link ExternalContext} object.</p>
-     * 
+     *
      * @since 2.2
      *
      * @see javax.faces.context.ExternalContext#getClientWindow()
@@ -854,7 +897,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      */
     @Override
     public void setResponseBufferSize(int size) {
-        getWrapped().setResponseBufferSize(size);   
+        getWrapped().setResponseBufferSize(size);
     }
 
     /**
@@ -880,7 +923,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
     public boolean isResponseCommitted() {
         return getWrapped().isResponseCommitted();
     }
-    
+
     /**
      * <p class="changed_added_2_2">The default behavior of this method is to
      * call {@link ExternalContext#isSecure}
@@ -925,7 +968,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
      */
     @Override
     public void setResponseStatus(int statusCode) {
-        getWrapped().setResponseStatus(statusCode);    
+        getWrapped().setResponseStatus(statusCode);
     }
 
     /**
@@ -982,7 +1025,7 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
     /**
      * <p>The default behavior of this method is to
      * call {@link ExternalContext#getFlash()} on the wrapped {@link ExternalContext}
-     * object.</p?
+     * object.</p>
      *
      * @see javax.faces.context.ExternalContext#getFlash()
      */
@@ -990,5 +1033,5 @@ public abstract class ExternalContextWrapper extends ExternalContext implements 
     public Flash getFlash() {
         return getWrapped().getFlash();
     }
-    
+
 }

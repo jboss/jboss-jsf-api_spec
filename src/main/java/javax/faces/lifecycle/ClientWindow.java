@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -55,7 +55,7 @@ import javax.faces.render.ResponseStateManager;
 
  * <p>Modes of Operation</p>
 
- * <ul>
+ * <blockquote>
 
  * <p>none mode</p>
 
@@ -101,7 +101,7 @@ import javax.faces.render.ResponseStateManager;
  * javax.faces.context.ExternalContext#encodeActionURL(java.lang.String)
  * } for details.</p>
 
- * </ul>
+ * </blockquote>
  
  * </div>
  * 
@@ -148,6 +148,8 @@ public abstract class ClientWindow {
      * specification of how to derive this value.</p>
      * 
      * @since 2.2
+     * 
+     * @return the id of the {@code ClientWindow}
      */
     
     public abstract String getId();
@@ -231,6 +233,8 @@ public abstract class ClientWindow {
      * without having access to an actual {@code ClientWindow} instance.</p>
      * 
      * @param context the {@link FacesContext} for this request.
+     * 
+     * @return the result as specified above
      * 
      * @since 2.2
      */

@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -55,7 +55,6 @@ import javax.faces.event.BehaviorListener;
  * convenience base class that provides a default implementation of the 
  * {@link Behavior} contract.  It also provides behavior listener registration 
  * and state saving support.</p>
- * </p>
  *
  * @since 2.0
  */
@@ -93,6 +92,7 @@ public class BehaviorBase implements Behavior, PartialStateHolder {
      *
      * @since 2.0
      */
+    @Override
     public void broadcast(BehaviorEvent event)
         throws AbortProcessingException {
 
@@ -113,6 +113,7 @@ public class BehaviorBase implements Behavior, PartialStateHolder {
      * <p class="changed_added_2_0">Implementation of
      * {@link javax.faces.component.StateHolder#isTransient}.
      */
+    @Override
     public boolean isTransient() {
         return transientFlag;
     }
@@ -121,6 +122,7 @@ public class BehaviorBase implements Behavior, PartialStateHolder {
      * <p class="changed_added_2_0">Implementation of
      * {@link javax.faces.component.StateHolder#setTransient}.
      */
+    @Override
     public void setTransient(boolean transientFlag) {
         this.transientFlag = transientFlag;
     }
@@ -129,6 +131,7 @@ public class BehaviorBase implements Behavior, PartialStateHolder {
      * <p class="changed_added_2_0">Implementation of
      * {@link javax.faces.component.StateHolder#saveState}.
      */
+    @Override
     public Object saveState(FacesContext context) {
 
         if (context == null) {
@@ -150,6 +153,7 @@ public class BehaviorBase implements Behavior, PartialStateHolder {
      * {@link javax.faces.component.StateHolder#restoreState}.
      */
     @SuppressWarnings("unchecked")
+    @Override
     public void restoreState(FacesContext context, Object state) {
 
         if (context == null) {
@@ -171,6 +175,7 @@ public class BehaviorBase implements Behavior, PartialStateHolder {
      * <p class="changed_added_2_0">Implementation of
      * {@link javax.faces.component.PartialStateHolder#markInitialState}.
      */
+    @Override
     public void markInitialState() {
         initialState = true;
     }
@@ -179,6 +184,7 @@ public class BehaviorBase implements Behavior, PartialStateHolder {
      * <p class="changed_added_2_0">Implementation of
      * {@link javax.faces.component.PartialStateHolder#initialStateMarked}.
      */
+    @Override
     public boolean initialStateMarked() {
         return initialState;
     }
@@ -187,6 +193,7 @@ public class BehaviorBase implements Behavior, PartialStateHolder {
      * <p class="changed_added_2_0">Clears the initial state flag, causing
      * the behavior to revert from partial to full state saving.</p>
      */
+    @Override
     public void clearInitialState() {
         initialState = false;
     }
@@ -232,7 +239,7 @@ public class BehaviorBase implements Behavior, PartialStateHolder {
         }
         if (listeners == null) {
             //noinspection CollectionWithoutInitialCapacity
-            listeners = new ArrayList<BehaviorListener>();
+            listeners = new ArrayList<>();
         }
         listeners.add(listener);
 

@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -47,8 +47,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
 /**
- * <p class="changed_added_2_0"><strong>ClientBehaviorContext</strong>
- * provides context information that may be useful to 
+ * <p class="changed_added_2_0"><strong class="changed_modified_2_3">ClientBehaviorContext</strong>
+ * provides context information that may be useful to
  * {@link javax.faces.component.behavior.ClientBehavior#getScript}
  * implementations.
  * </p>
@@ -56,12 +56,28 @@ import javax.faces.context.FacesContext;
  * @since 2.0
  */
 public abstract class ClientBehaviorContext {
-	
+
+    /**
+     * <p class="changed_added_2_3">
+     * The request parameter name whose request parameter value identifies the source component of behavior event.</p>
+     *
+     * @since 2.3
+     */
+    public static final String BEHAVIOR_SOURCE_PARAM_NAME = "javax.faces.source";
+
+    /**
+     * <p class="changed_added_2_3">
+     * The request parameter name whose request parameter value identifies the type of behavior event.</p>
+     *
+     * @since 2.3
+     */
+    public static final String BEHAVIOR_EVENT_PARAM_NAME = "javax.faces.behavior.event";
+
     /**
      * <p class="changed_added_2_0">Creates a ClientBehaviorContext instance.</p>
      *
      * @param context the <code>FacesContext</code> for the current request.
-     * @param component the component instance to which the 
+     * @param component the component instance to which the
      * <code>ClientBehavior</code> is attached.
      * @param eventName the name of the behavior event to which the
      * <code>ClientBehavior</code> is attached.
@@ -86,41 +102,47 @@ public abstract class ClientBehaviorContext {
     }
 
     /**
-     * <p class="changed_added_2_0">Returns the {@link FacesContext} for 
+     * <p class="changed_added_2_0">Returns the {@link FacesContext} for
      * the current request.</p>
+     *
+     * @return the {@link FacesContext}.
      *
      * @since 2.0
      */
     abstract public FacesContext getFacesContext();
 
     /**
-     * <p class="changed_added_2_0">Returns the {@link UIComponent} that is 
+     * <p class="changed_added_2_0">Returns the {@link UIComponent} that is
      * requesting the {@link ClientBehavior} script.</p>
+     *
+     * @return the component.
      *
      * @since 2.0
      */
     abstract public UIComponent getComponent();
 
     /**
-     * <p class="changed_added_2_0">Returns the name of the behavior event 
+     * <p class="changed_added_2_0">Returns the name of the behavior event
      * for which the ClientBehavior script is being requested. </p>
+     *
+     * @return the event name.
      *
      * @since 2.0
      */
     abstract public String getEventName();
 
     /**
-     * <p class="changed_added_2_0">Returns an id for use as the 
-     * {@link ClientBehavior} source.  ClientBehavior implementations that submit back 
-     * to the Faces lifecycle are required to identify which component 
-     * triggered the ClientBehavior-initiated request via the 
-     * <code>javax.faces.source</code> request parameter.  In 
-     * most cases, th source id can be trivially derived from the element 
-     * to which the behavior's client-side script is attached - ie. the 
-     * source id is typically the id of this element.  However, in components 
+     * <p class="changed_added_2_0">Returns an id for use as the
+     * {@link ClientBehavior} source.  ClientBehavior implementations that submit back
+     * to the Faces lifecycle are required to identify which component
+     * triggered the ClientBehavior-initiated request via the
+     * <code>javax.faces.source</code> request parameter.  In
+     * most cases, th source id can be trivially derived from the element
+     * to which the behavior's client-side script is attached - ie. the
+     * source id is typically the id of this element.  However, in components
      * which produce more complex content, the behavior script may not be able to
      * determine the correct id to use for the javax.faces.source
-     * value.  The {@link ClientBehaviorContext#getSourceId} method allows the component 
+     * value.  The {@link ClientBehaviorContext#getSourceId} method allows the component
      * to pass this information into the {@link ClientBehavior#getScript}
      * implementation.</p>
      *
@@ -132,10 +154,12 @@ public abstract class ClientBehaviorContext {
     abstract public String getSourceId();
 
     /**
-     * <p class="changed_added_2_0">Returns parameters that "submitting" 
-     * {@link ClientBehavior} implementations should include when posting back data 
+     * <p class="changed_added_2_0">Returns parameters that "submitting"
+     * {@link ClientBehavior} implementations should include when posting back data
      * into the Faces lifecycle.  If no parameters are specified, this method
      * returns an empty (non-null) collection.</p>
+     *
+     * @return the parameters.
      *
      * @since 2.0
      */
@@ -172,10 +196,10 @@ public abstract class ClientBehaviorContext {
             this.eventName = eventName;
             this.sourceId = sourceId;
 
-            this.parameters =  (parameters == null) ? 
-                                   Collections.<ClientBehaviorContext.Parameter>emptyList() : 
+            this.parameters =  (parameters == null) ?
+                                   Collections.<ClientBehaviorContext.Parameter>emptyList() :
                                    parameters;
-        }        
+        }
 
         @Override
         public FacesContext getFacesContext() {
@@ -240,6 +264,8 @@ public abstract class ClientBehaviorContext {
         /**
          * <p class="changed_added_2_0">Returns the Parameter's name.</p>
          *
+         * @return the parameter's name.
+         *
          * @since 2.0
          */
         public String getName() {
@@ -248,6 +274,8 @@ public abstract class ClientBehaviorContext {
 
         /**
          * <p class="changed_added_2_0">Returns the Parameter's value.</p>
+         *
+         * @return the parameter's value.
          *
          * @since 2.0
          */

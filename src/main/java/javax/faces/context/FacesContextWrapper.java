@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -41,43 +41,60 @@
 package javax.faces.context;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
+import javax.el.ELContext;
 import javax.faces.FacesWrapper;
-import javax.faces.event.PhaseId;
-import javax.faces.component.UIViewRoot;
-import javax.faces.render.RenderKit;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.ProjectStage;
-import javax.el.ELContext;
+import javax.faces.component.UIViewRoot;
+import javax.faces.event.PhaseId;
+import javax.faces.render.RenderKit;
 
 /**
- * <p><span class="changed_modified_2_1 changed_modified_2_2">Provides</span> a simple
+ * <p><span class="changed_modified_2_1 changed_modified_2_2 changed_modified_2_3">Provides</span> a simple
  * implementation of {@link FacesContext} that can be subclassed by
  * developers wishing to provide specialized behavior to an existing
  * {@link FacesContext} instance.  The default implementation of all
  * methods is to call through to the wrapped {@link FacesContext}
  * instance.</p>
  *
- * <p>Usage: extend this class and override {@link #getWrapped} to
- * return the instance being wrapping.</p>
+ * <p class="changed_added_2_3">Usage: extend this class and push the implementation being wrapped to the
+ * constructor and use {@link #getWrapped} to access the instance being wrapped.</p>
  *
  * @since 2.0
  */
 public abstract class FacesContextWrapper extends FacesContext implements FacesWrapper<FacesContext> {
 
 
-    // ----------------------------------------------- Methods from FacesWrapper
-
+    private FacesContext wrapped;
 
     /**
-     * @return the wrapped {@link FacesContext} instance
-     * @see javax.faces.FacesWrapper#getWrapped()
+     * @deprecated Use the other constructor taking the implementation being wrapped.
      */
+    @Deprecated
+    public FacesContextWrapper() {
+
+    }
+
+    /**
+     * <p class="changed_added_2_3">If this faces context has been decorated,
+     * the implementation doing the decorating should push the implementation being wrapped to this constructor.
+     * The {@link #getWrapped()} will then return the implementation being wrapped.</p>
+     *
+     * @param wrapped The implementation being wrapped.
+     * @since 2.3
+     */
+    public FacesContextWrapper(FacesContext wrapped) {
+        this.wrapped = wrapped;
+    }
+
     @Override
-    public abstract FacesContext getWrapped();
+    public FacesContext getWrapped() {
+        return wrapped;
+    }
 
 
     // ----------------------------------------------- Methods from FacesContext
@@ -202,7 +219,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
     public void setResourceLibraryContracts(List<String> contracts) {
         getWrapped().setResourceLibraryContracts(contracts);
     }
-    
+
     /**
      * <p>The default behavior of this method is to
      * call {@link FacesContext#getResponseComplete()}
@@ -373,8 +390,8 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
     public char getNamingContainerSeparatorChar() {
         return getWrapped().getNamingContainerSeparatorChar();
     }
-    
-    
+
+
 
     /**
      * <p>The default behavior of this method is to
@@ -472,7 +489,7 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
     public PhaseId getCurrentPhaseId() {
         return getWrapped().getCurrentPhaseId();
     }
-    
+
     /**
      * <p>The default behavior of this method is to
      * call {@link FacesContext#setCurrentPhaseId(PhaseId)}
@@ -547,10 +564,10 @@ public abstract class FacesContextWrapper extends FacesContext implements FacesW
      * call {@link javax.faces.context.FacesContext#isProjectStage(javax.faces.application.ProjectStage)}
      * on the wrapped {@link FacesContext} object.</p>
      *
-     * @see FacesContext#isProjectStage(javax.faces.application.ProjectStage) 
+     * @see FacesContext#isProjectStage(javax.faces.application.ProjectStage)
      */
     @Override
     public boolean isProjectStage(ProjectStage stage) {
-        return getWrapped().isProjectStage(stage);    
+        return getWrapped().isProjectStage(stage);
     }
 }

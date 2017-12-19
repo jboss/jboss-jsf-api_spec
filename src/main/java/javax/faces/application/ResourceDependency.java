@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -45,6 +45,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.annotation.Inherited;
+import java.lang.annotation.Repeatable;
 
 
 /**
@@ -55,13 +56,9 @@ import java.lang.annotation.Inherited;
  * have a resource dependency added so that the named resource will be
  * present in user agent's view of the <code>UIViewRoot</code> in which
  * this component or renderer is used.</p>
-
- * <p/>
-
+ * 
  * <div class="changed_added_2_0">
-
- * <p/>
-
+ * 
  * <p>The default implementation must support attaching this annotation
  * to {@link javax.faces.component.UIComponent} or {@link
  * javax.faces.render.Renderer} classes.  In both cases, the event that
@@ -125,6 +122,7 @@ import java.lang.annotation.Inherited;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.TYPE)
 @Inherited
+@Repeatable(ResourceDependencies.class)
 public @interface ResourceDependency {
 
     /**
@@ -133,6 +131,8 @@ public @interface ResourceDependency {
      * is valid to have EL Expressions in the value of this attribute,
      * as long as the expression resolves to an instance of the expected
      * type.</p>
+     * 
+     * @return the name.
      */
     public String name();
 
@@ -143,6 +143,8 @@ public @interface ResourceDependency {
      * valid to have EL Expressions in the value of this attribute, as
      * long as the expression resolves to an instance of the expected
      * type.</p>
+     * 
+     * @return the library.
      */
     public String library() default "";
 
@@ -156,6 +158,8 @@ public @interface ResourceDependency {
      * must be called instead, as described above.  It is valid to have
      * EL Expressions in the value of this attribute, as long as the
      * expression resolves to an instance of the expected type.</p>
+     * 
+     * @return the target.
      */
     public String target() default "";
 

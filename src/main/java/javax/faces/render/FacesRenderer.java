@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -103,6 +103,8 @@ public @interface FacesRenderer {
      * attribute is taken to be the <em>render-kit-id</em> in which an
      * instance of this class of <code>Renderer</code> must be
      * installed.</p>
+     * 
+     * @return the <em>render-kit-id</em>
      */ 
 
     String renderKitId() default RenderKitFactory.HTML_BASIC_RENDER_KIT;
@@ -115,6 +117,8 @@ public @interface FacesRenderer {
      * reference to an instance of this {@link Renderer} by calling
      * {@link javax.faces.render.RenderKit#getRenderer(java.lang.String,
      * java.lang.String)}.</p>
+     * 
+     * @return the <em>renderer-type</em>
      */ 
 
     String rendererType();
@@ -127,6 +131,8 @@ public @interface FacesRenderer {
      * reference to an instance of this {@link Renderer} by calling
      * {@link javax.faces.render.RenderKit#getRenderer(java.lang.String,
      * java.lang.String)}.</p>
+     * 
+     * @return the <em>component-family</em>
      */ 
 
     String componentFamily();

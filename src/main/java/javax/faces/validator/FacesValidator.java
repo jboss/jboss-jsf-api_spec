@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -45,6 +45,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.annotation.Inherited;
+import javax.inject.Qualifier;
 
 /**
  * <p class="changed_added_2_0"><span class="changed_modified_2_2">The</span>
@@ -68,6 +69,7 @@ import java.lang.annotation.Inherited;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
+@Qualifier
 public @interface FacesValidator {
 
     /**
@@ -81,6 +83,8 @@ public @interface FacesValidator {
      * <code>getSimpleName</code> on the class to which this annotation
      * is attached and lowercasing the first character.  If more than one
      * validator with this derived name is found, the results are undefined.</span></p>
+     *
+     * @return the validator-id
      */ 
 
     String value() default "";
@@ -90,9 +94,20 @@ public @interface FacesValidator {
      * id for this annotation is added to the list of default validators
      * by a call to {@link
      * javax.faces.application.Application#addDefaultValidatorId}.</p>
+     *
+     * @return whether or not this is a default validator
      */ 
 
     boolean isDefault() default false;
 
 
+    /**
+     * <p class="changed_added_2_3">The value of this annotation attribute is
+     * taken to be an indicator that flags whether or not the given converter
+     * is a CDI managed converter. </p>
+     * 
+     * @return true if CDI managed, false otherwise.
+     */
+    
+    boolean managed() default false;
 }

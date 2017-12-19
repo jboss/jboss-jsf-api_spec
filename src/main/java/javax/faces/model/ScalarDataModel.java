@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -95,8 +95,9 @@ public class ScalarDataModel<E> extends DataModel<E> {
      * available, and the current value of <code>rowIndex</code> is zero.
      * Otherwise, return <code>false</code>.</p>
      *
-     * @throws FacesException if an error occurs getting the row availability
+     * @throws javax.faces.FacesException if an error occurs getting the row availability
      */
+    @Override
     public boolean isRowAvailable() {
 
         if (scalar == null) {
@@ -114,8 +115,9 @@ public class ScalarDataModel<E> extends DataModel<E> {
      * <p>If there is <code>wrappedData</code> available, return 1.
      * If no <code>wrappedData</code> is available, return -1.</p>
      *
-     * @throws FacesException if an error occurs getting the row count
+     * @throws javax.faces.FacesException if an error occurs getting the row count
      */
+    @Override
     public int getRowCount() {
 
         if (scalar == null) {
@@ -130,10 +132,11 @@ public class ScalarDataModel<E> extends DataModel<E> {
      * <p>If wrapped data is available, return the wrapped data instance.
      * Otherwise, return <code>null</code>.</p>
      *
-     * @throws FacesException if an error occurs getting the row data
+     * @throws javax.faces.FacesException if an error occurs getting the row data
      * @throws IllegalArgumentException if now row data is available
      *  at the currently specified row index
      */
+    @Override
     public E getRowData() {
 
         if (scalar == null) {
@@ -149,8 +152,9 @@ public class ScalarDataModel<E> extends DataModel<E> {
 
 
     /**
-     * @throws FacesException {@inheritDoc}     
+     * @throws javax.faces.FacesException {@inheritDoc}     
      */ 
+    @Override
     public int getRowIndex() {
 
         return (index);
@@ -159,9 +163,10 @@ public class ScalarDataModel<E> extends DataModel<E> {
 
 
     /**
-     * @throws FacesException {@inheritDoc}
+     * @throws javax.faces.FacesException {@inheritDoc}
      * @throws IllegalArgumentException {@inheritDoc}
      */ 
+    @Override
     public void setRowIndex(int rowIndex) {
 
         if (rowIndex < -1) {
@@ -191,6 +196,7 @@ public class ScalarDataModel<E> extends DataModel<E> {
     }
 
 
+    @Override
     public Object getWrappedData() {
 
         return (this.scalar);
@@ -201,6 +207,7 @@ public class ScalarDataModel<E> extends DataModel<E> {
     /**
      * @throws ClassCastException {@inheritDoc}
      */
+    @Override
     public void setWrappedData(Object data) {
 
         if (data == null) {

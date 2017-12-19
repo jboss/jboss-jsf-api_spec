@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -148,6 +148,7 @@ public class ValidatorTag extends TagSupport {
      *
      * @throws JspException if a JSP error occurs
      */
+    @Override
     public int doStartTag() throws JspException {
         
         // Locate our parent UIComponentTag
@@ -207,6 +208,7 @@ public class ValidatorTag extends TagSupport {
     /**
      * <p>Release references to any acquired resources.
      */
+    @Override
     public void release() {
 
         this.id = null;
@@ -222,6 +224,8 @@ public class ValidatorTag extends TagSupport {
      * on our surrounding {@link UIComponent}.</p>
      *
      * @throws JspException if a new instance cannot be created
+     *
+     * @return the created {@code Validator}
      */
     protected Validator createValidator()
         throws JspException {

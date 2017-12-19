@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -51,15 +51,17 @@ import javax.enterprise.context.NormalScope;
 
 /**
  * <p class="changed_added_2_2"><strong class="changed_modified_2_3">
- * FlowScoped</strong> is a CDI
- * scope that causes the runtime to consider classes with this
- * annotation to be in the scope of the specified {@link Flow}.  The
- * implementation must provide an implementation of {@code
- * javax.enterprise.inject.spi.Extension} that implements the semantics
- * such that beans with this annotation are created when the user enters
- * into the specified {@code Flow}, and de-allocated when the user exits
- * the specified {@code Flow}.  See {@link FlowHandler#transition} for
- * the specification of flow entry and exit.</p>
+ * FlowScoped</strong> is a CDI scope that causes the runtime to
+ * consider classes with this annotation to be in the scope of the
+ * specified {@link Flow}.  The implementation must provide an
+ * implementation of {@code javax.enterprise.inject.spi.Extension} that
+ * implements the semantics such that beans with this annotation are
+ * created <span class="changed_added_2_3">lazily, when referenced,
+ * after</span> the user enters into the specified {@code Flow}, and
+ * <span class="changed_added_2_3">made available for garbage
+ * collection</span> when the user exits the specified {@code Flow}.
+ * See {@link FlowHandler#transition} for the specification of flow
+ * entry and exit.</p>
  * 
  * <p class="changed_added_2_3">When replacing (rather than decorating) the flow 
  * implementation with a custom {@link FlowHandler} implementation, it is necessary
@@ -70,7 +72,7 @@ import javax.enterprise.context.NormalScope;
  */
 
 
-@NormalScope
+@NormalScope(passivating = true)
 @Inherited
 @Documented
 @Target(ElementType.TYPE)
@@ -83,6 +85,8 @@ public @interface FlowScoped {
      * Flow#getId} of a defined flow for this application.</p>
      *
      * @since 2.2
+     * 
+     * @return the id of this flow
      */
     String value();
 
@@ -93,6 +97,8 @@ public @interface FlowScoped {
      * ids are unique within the scope of the application.</p>
      *
      * @since 2.2
+     * 
+     * @return the defining document id of this flow
      */
     
     String definingDocumentId() default "";

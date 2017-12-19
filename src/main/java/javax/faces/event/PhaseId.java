@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -92,6 +92,7 @@ public class PhaseId implements Comparable {
      *
      * @param other The other object to be compared to
      */
+    @Override
     public int compareTo(Object other) {
 
         return this.ordinal - ((PhaseId) other).ordinal;
@@ -101,6 +102,8 @@ public class PhaseId implements Comparable {
 
     /**
      * <p>Return the ordinal value of this {@link PhaseId} instance.</p>
+     *
+     * @return the ordinal
      */
     public int getOrdinal() {
 
@@ -112,6 +115,7 @@ public class PhaseId implements Comparable {
     /**
      * <p>Return a String representation of this {@link PhaseId} instance.</p>
      */
+    @Override
     public String toString() {
         if (null == phaseName) {
             return (String.valueOf(this.ordinal));
@@ -124,6 +128,8 @@ public class PhaseId implements Comparable {
      * <p class="changed_added_2_2">Return the name of this phase.</p>
      * 
      * @since 2.2
+     *
+     * @return the name
      */
 
     public String getName() {
@@ -137,13 +143,15 @@ public class PhaseId implements Comparable {
      * @param phase the String for which the corresponding
      * <code>PhaseId</code> should be returned.
      *
-     * @throws <code>NullPointerException</code> if argument <code>phase</code> is
+     * @throws NullPointerException if argument <code>phase</code> is
      * <code>null</code>.
      *
-     * @throws <code>FacesException</code> if the <code>PhaseId</code>
+     * @throws FacesException if the <code>PhaseId</code>
      * corresponding to the argument <code>phase</code> cannot be found.
      *
      * @since 2.2
+     *
+     * @return the phase id corresponding to the argument {@code phase}
      */
     
     public static PhaseId phaseIdValueOf(String phase) {

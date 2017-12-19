@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -75,6 +75,8 @@ public interface SystemEventListener extends FacesListener {
      *
      * @param source the source that is inquiring about the
      * appropriateness of sending an event to this listener instance.  
+     * 
+     * @return the value as specified above
      */ 
     public boolean isListenerForSource(Object source);
 

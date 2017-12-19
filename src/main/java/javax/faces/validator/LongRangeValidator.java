@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -76,7 +76,7 @@ import javax.faces.convert.Converter;
  * specified minimum, throw a {@link ValidatorException} containing a
  * MINIMUM_MESSAGE_ID message.</li>
  * </ul>
- * <p/>
+ * 
  * <p>For all of the above cases that cause a {@link ValidatorException}
  * to be thrown, if there are parameters to the message that match up
  * with validator parameters, the values of these parameters must be
@@ -105,7 +105,7 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
      * <li><code>{0}</code> replaced by the configured maximum value.</li>
      * <li><code>{1}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String MAXIMUM_MESSAGE_ID =
          "javax.faces.validator.LongRangeValidator.MAXIMUM";
@@ -119,7 +119,7 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
      * <li><code>{0}</code> replaced by the configured minimum value.</li>
      * <li><code>{1}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String MINIMUM_MESSAGE_ID =
          "javax.faces.validator.LongRangeValidator.MINIMUM";
@@ -135,7 +135,7 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
      * <li><code>{1}</code> replaced by the configured maximum value.</li>
      * <li><code>{2}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String NOT_IN_RANGE_MESSAGE_ID =
          "javax.faces.validator.LongRangeValidator.NOT_IN_RANGE";
@@ -201,6 +201,8 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
 
     /**
      * <p>Return the maximum value to be enforced by this {@link Validator}.</p>
+     *
+     * @return the maximum
      */
     public long getMaximum() {
 
@@ -227,6 +229,8 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
 
     /**
      * <p>Return the minimum value to be enforced by this {@link Validator}.</p>
+     *
+     * @return the minimum
      */
     public long getMinimum() {
 
@@ -253,6 +257,7 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
      * @throws NullPointerException {@inheritDoc}
      * @throws ValidatorException   {@inheritDoc}
      */
+    @Override
     public void validate(FacesContext context,
                          UIComponent component,
                          Object value) throws ValidatorException {
@@ -309,6 +314,7 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
     }
 
 
+    @Override
     public boolean equals(Object otherObj) {
 
         if (!(otherObj instanceof LongRangeValidator)) {
@@ -323,6 +329,7 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
     }
 
 
+    @Override
     public int hashCode() {
 
         int hashCode = Long.valueOf(getMinimum()).hashCode()
@@ -379,6 +386,7 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
     // ----------------------------------------------------- StateHolder Methods
 
 
+    @Override
     public Object saveState(FacesContext context) {
 
         if (context == null) {
@@ -395,6 +403,7 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
     }
 
 
+    @Override
     public void restoreState(FacesContext context, Object state) {
 
         if (context == null) {
@@ -409,9 +418,10 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
     }
 
 
-    private boolean transientValue = false;
+    private boolean transientValue;
 
 
+    @Override
     public boolean isTransient() {
 
         return (this.transientValue);
@@ -419,6 +429,7 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
     }
 
 
+    @Override
     public void setTransient(boolean transientValue) {
 
         this.transientValue = transientValue;
@@ -427,14 +438,17 @@ public class LongRangeValidator implements Validator, PartialStateHolder {
 
     private boolean initialState;
 
+    @Override
     public void markInitialState() {
         initialState = true;
     }
 
+    @Override
     public boolean initialStateMarked() {
         return initialState;
     }
 
+    @Override
     public void clearInitialState() {
         initialState = false;
     }

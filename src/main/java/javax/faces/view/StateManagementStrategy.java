@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -115,6 +115,8 @@ public abstract class StateManagementStrategy {
      * @param context the <code>FacesContext</code> for this request.
      *
      * @since 2.0
+     * 
+     * @return the saved view state
      */
 
     public abstract Object saveView(FacesContext context);
@@ -189,6 +191,8 @@ public abstract class StateManagementStrategy {
      * @param renderKitId the render kit id for this state.
 
      * @since 2.0
+     *
+     * @return the root of the restored view
      */
 
     public abstract UIViewRoot restoreView(FacesContext context, String viewId,

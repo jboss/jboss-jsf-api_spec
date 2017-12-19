@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -81,6 +81,8 @@ public abstract class FaceletsAttachedObjectHandler extends DelegatingMetaTagHan
     /**
      * <p class="changed_added_2_0">Return the underlying handler for
      * this tag handler instance.</p>
+     *
+     * @return the handler instance
      */
     protected final AttachedObjectHandler getAttachedObjectHandlerHelper() {
         return (AttachedObjectHandler) this.getTagHandlerDelegate();
@@ -94,6 +96,7 @@ public abstract class FaceletsAttachedObjectHandler extends DelegatingMetaTagHan
      * @param parent The <code>UIComponent</code> to which this attached
      * object must be applied.
      */
+    @Override
     public final void applyAttachedObject(FacesContext ctx, UIComponent parent) {
         getAttachedObjectHandlerHelper().applyAttachedObject(ctx, parent);
     }
@@ -103,6 +106,7 @@ public abstract class FaceletsAttachedObjectHandler extends DelegatingMetaTagHan
      * attribute.  This enables the runtime to know to which inner
      * component this attached object should be retargeted.</p>
      */
+    @Override
     public final String getFor() {
         return getAttachedObjectHandlerHelper().getFor();
     }

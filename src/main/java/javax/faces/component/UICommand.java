@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -69,7 +69,7 @@ import javax.faces.render.Renderer;
  *      {@link Application} - and therefore, any attached "action"
  *      {@link MethodExpression}.
  * </ol>
- * </p>
+ * 
  * <p>By default, the <code>rendererType</code> property must be set to
  * "<code>javax.faces.Button</code>".  This value can be changed by calling the
  * <code>setRendererType()</code> method.</p>
@@ -123,6 +123,7 @@ public class UICommand extends UIComponentBase
     // -------------------------------------------------------------- Properties
 
 
+    @Override
     public String getFamily() {
 
         return (COMPONENT_FAMILY);
@@ -138,6 +139,7 @@ public class UICommand extends UIComponentBase
      *
      * @deprecated This has been replaced by {@link #getActionExpression}.
      */
+    @Override
     public MethodBinding getAction() {
         MethodBinding result = null;
         MethodExpression me;
@@ -162,6 +164,7 @@ public class UICommand extends UIComponentBase
      *
      * @deprecated This has been replaced by {@link #setActionExpression(javax.el.MethodExpression)}.
      */
+    @Override
     public void setAction(MethodBinding action) {
         MethodExpressionMethodBindingAdapter adapter;
         if (null != action) {
@@ -176,6 +179,7 @@ public class UICommand extends UIComponentBase
      * {@inheritDoc}
      * @deprecated Use {@link #getActionListeners} instead.
      */
+    @Override
     public MethodBinding getActionListener() {
         return (MethodBinding) getStateHelper().get(PropertyKeys.methodBindingActionListener);
     }
@@ -184,6 +188,7 @@ public class UICommand extends UIComponentBase
      * {@inheritDoc}
      * @deprecated This has been replaced by {@link #addActionListener(javax.faces.event.ActionListener)}.
      */
+    @Override
     public void setActionListener(MethodBinding actionListener) {
         getStateHelper().put(PropertyKeys.methodBindingActionListener, actionListener);
     } 
@@ -194,6 +199,7 @@ public class UICommand extends UIComponentBase
     //private Boolean immediate;
 
 
+    @Override
     public boolean isImmediate() {
 
         return (Boolean) getStateHelper().eval(PropertyKeys.immediate, false);
@@ -201,6 +207,7 @@ public class UICommand extends UIComponentBase
     }
 
 
+    @Override
     public void setImmediate(boolean immediate) {
 
         getStateHelper().put(PropertyKeys.immediate, immediate);
@@ -212,6 +219,8 @@ public class UICommand extends UIComponentBase
     /**
      * <p>Returns the <code>value</code> property of the
      * <code>UICommand</code>. This is most often rendered as a label.</p>
+     * 
+     * @return The object representing the value of this component.
      */
     public Object getValue() {
 
@@ -236,10 +245,12 @@ public class UICommand extends UIComponentBase
     // ---------------------------------------------------- ActionSource / ActionSource2 Methods
 
     
+    @Override
     public MethodExpression getActionExpression() {
         return (MethodExpression) getStateHelper().get(PropertyKeys.actionExpression);
     }
     
+    @Override
     public void setActionExpression(MethodExpression actionExpression) {
         getStateHelper().put(PropertyKeys.actionExpression, actionExpression);
     }
@@ -247,12 +258,14 @@ public class UICommand extends UIComponentBase
     /** 
      * @throws NullPointerException {@inheritDoc}
      */ 
+    @Override
     public void addActionListener(ActionListener listener) {
 
         addFacesListener(listener);
 
     }
     
+    @Override
     public ActionListener[] getActionListeners() {
 
         ActionListener al[] = (ActionListener [])
@@ -266,6 +279,7 @@ public class UICommand extends UIComponentBase
     /**
      * @throws NullPointerException {@inheritDoc}
      */ 
+    @Override
     public void removeActionListener(ActionListener listener) {
 
         removeFacesListener(listener);
@@ -293,6 +307,7 @@ public class UICommand extends UIComponentBase
      * @throws NullPointerException if <code>event</code> is
      * <code>null</code>
      */
+    @Override
     public void broadcast(FacesEvent event) throws AbortProcessingException {
 
         // Perform standard superclass processing (including calling our
@@ -300,7 +315,7 @@ public class UICommand extends UIComponentBase
         super.broadcast(event);
 
         if (event instanceof ActionEvent) {
-            FacesContext context = getFacesContext();
+            FacesContext context = event.getFacesContext();
             
             // Notify the specified action listener method (if any)
             MethodBinding mb = getActionListener();
@@ -332,6 +347,7 @@ public class UICommand extends UIComponentBase
 
      */
 
+    @Override
     public void queueEvent(FacesEvent e) {
         UIComponent c = e.getComponent();
         if (e instanceof ActionEvent && c instanceof ActionSource) {

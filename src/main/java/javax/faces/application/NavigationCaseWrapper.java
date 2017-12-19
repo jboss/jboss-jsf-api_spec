@@ -1,30 +1,30 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
- * 
+ *
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+ *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
- * 
+ *
  * When distributing the software, include this License Header Notice in each
  * file and include the License file at packager/legal/LICENSE.txt.
- * 
+ *
  * GPL Classpath Exception:
  * Oracle designates this particular file as subject to the "Classpath"
  * exception as provided by Oracle in the GPL Version 2 section of the License
  * file that accompanied this code.
- * 
+ *
  * Modifications:
  * If applicable, add the following below the License Header, with the fields
  * enclosed by brackets [] replaced by your own identifying information:
  * "Portions Copyright [year] [name of copyright owner]"
- * 
+ *
  * Contributor(s):
  * If you wish your version of this file to be governed by only the CDDL or
  * only the GPL Version 2, indicate your decision by adding "[Contributor]
@@ -44,29 +44,53 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+
 import javax.faces.FacesWrapper;
 import javax.faces.context.FacesContext;
 
 /**
- * <p class="changed_added_2_2">Provides a simple implementation of 
+ * <p class="changed_added_2_2"><span class="changed_modified_2_3">Provides</span> a simple implementation of
  * {@link NavigationCase} that can be subclassed by developers wishing to
  * provide specialized behavior to an existing {@link NavigationCase}
  * instance.  The default implementation of all methods is to call
  * through to the wrapped {@link NavigationCase} instance.</p>
  *
- * <p class="changed_added_2_2">Usage: extend this class and override 
- * {@link #getWrapped} to
- * return the instance being wrapping.</p>
+ * <p class="changed_added_2_3">Usage: extend this class and push the implementation being wrapped to the
+ * constructor and use {@link #getWrapped} to access the instance being wrapped.</p>
  *
  * @since 2.2
  */
 public abstract class NavigationCaseWrapper extends NavigationCase implements FacesWrapper<NavigationCase> {
 
+    private NavigationCase wrapped;
+
+    /**
+     * @deprecated Use the other constructor taking the implementation being wrapped.
+     */
+    @Deprecated
     public NavigationCaseWrapper() {
-		super((String) null, (String) null, (String) null, (String) null, (String) null,
-                        (Map<String, List<String>>) null, false, false);
+        this(null);
     }
-    
+
+    /**
+     * <p class="changed_added_2_3">If this navigation case has been decorated,
+     * the implementation doing the decorating should push the implementation being wrapped to this constructor.
+     * The {@link #getWrapped()} will then return the implementation being wrapped.</p>
+     *
+     * @param wrapped The implementation being wrapped.
+     * @since 2.3
+     */
+    public NavigationCaseWrapper(NavigationCase wrapped) {
+        super((String) null, (String) null, (String) null, (String) null, (String) null,
+                (Map<String, List<String>>) null, false, false);
+        this.wrapped = wrapped;
+    }
+
+    @Override
+    public NavigationCase getWrapped() {
+        return wrapped;
+    }
+
     @Override
     public boolean equals(Object o) {
         return getWrapped().equals(o);
@@ -81,9 +105,6 @@ public abstract class NavigationCaseWrapper extends NavigationCase implements Fa
     public String toString() {
         return getWrapped().toString();
     }
-
-    @Override
-    public abstract NavigationCase getWrapped();
 
     @Override
     public URL getActionURL(FacesContext context) throws MalformedURLException {

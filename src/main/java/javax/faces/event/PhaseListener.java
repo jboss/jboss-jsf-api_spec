@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -57,6 +57,8 @@ public interface PhaseListener extends EventListener, Serializable {
     /**
      * <p>Handle a notification that the processing for a particular
      * phase has just been completed.</p>
+     * 
+     * @param event the phase event.
      */
     public void afterPhase(PhaseEvent event);
 
@@ -64,6 +66,8 @@ public interface PhaseListener extends EventListener, Serializable {
     /**
      * <p>Handle a notification that the processing for a particular
      * phase of the request processing lifecycle is about to begin.</p>
+     * 
+     * @param event the phase event.
      */
     public void beforePhase(PhaseEvent event);
 
@@ -74,6 +78,8 @@ public interface PhaseListener extends EventListener, Serializable {
      * events.  Legal values are the singleton instances defined by the
      * {@link PhaseId} class, including <code>PhaseId.ANY_PHASE</code>
      * to indicate an interest in being notified for all standard phases.</p>
+     * 
+     * @return the phase id.
      */
     public PhaseId getPhaseId();
 

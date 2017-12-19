@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -217,9 +217,7 @@ class SelectUtils {
         try {
             ExpressionFactory ef = ctx.getApplication().getExpressionFactory();
             newValue = ef.coerceToType(value, toType);
-        } catch (ELException ele) {
-            newValue = value;
-        } catch (IllegalArgumentException iae) {
+        } catch (ELException | IllegalArgumentException ele) {
             // If coerceToType fails, per the docs it should throw
             // an ELException, however, GF 9.0 and 9.0u1 will throw
             // an IllegalArgumentException instead (see GF issue 1527).
@@ -246,10 +244,12 @@ class SelectUtils {
         private Object items[];
         private int index = 0;
 
+        @Override
         public boolean hasNext() {
             return (index < items.length);
         }
 
+        @Override
         public Object next() {
             try {
                 return (items[index++]);
@@ -258,6 +258,7 @@ class SelectUtils {
             }
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }

@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -108,8 +108,9 @@ public class ResultDataModel extends DataModel<SortedMap<String,Object>> {
      * by calling <code>getRows()</code> on the underlying <code>Result</code>.
      * Otherwise, return <code>false</code>.</p>
      *
-     * @throws FacesException if an error occurs getting the row availability
+     * @throws javax.faces.FacesException if an error occurs getting the row availability
      */ 
+    @Override
     public boolean isRowAvailable() {
 
         if (result == null) {
@@ -129,8 +130,9 @@ public class ResultDataModel extends DataModel<SortedMap<String,Object>> {
      * on the underlying <code>Result</code>.  If no <code>wrappedData</code>
      * is available, return -1.</p>
      *
-     * @throws FacesException if an error occurs getting the row count
+     * @throws javax.faces.FacesException if an error occurs getting the row count
      */
+    @Override
     public int getRowCount() {
 
         if (result == null) {
@@ -153,10 +155,11 @@ public class ResultDataModel extends DataModel<SortedMap<String,Object>> {
      * current row, keyed by column name.  Column name comparisons must be
      * performed in a case-insensitive manner.</p>
      *
-     * @throws FacesException if an error occurs getting the row data
+     * @throws javax.faces.FacesException if an error occurs getting the row data
      * @throws IllegalArgumentException if now row data is available
      *  at the currently specified row index
      */
+    @Override
     public SortedMap<String,Object> getRowData() {
 
         if (result == null) {
@@ -172,8 +175,9 @@ public class ResultDataModel extends DataModel<SortedMap<String,Object>> {
 
 
     /**
-     * @throws FacesException {@inheritDoc}     
+     * @throws javax.faces.FacesException {@inheritDoc}     
      */ 
+    @Override
     public int getRowIndex() {
 
         return (index);
@@ -182,9 +186,10 @@ public class ResultDataModel extends DataModel<SortedMap<String,Object>> {
 
 
     /**
-     * @throws FacesException {@inheritDoc}
+     * @throws javax.faces.FacesException {@inheritDoc}
      * @throws IllegalArgumentException {@inheritDoc}
      */ 
+    @Override
     public void setRowIndex(int rowIndex) {
 
         if (rowIndex < -1) {
@@ -214,6 +219,7 @@ public class ResultDataModel extends DataModel<SortedMap<String,Object>> {
     }
 
 
+    @Override
     public Object getWrappedData() {
 
         return (this.result);
@@ -225,6 +231,7 @@ public class ResultDataModel extends DataModel<SortedMap<String,Object>> {
      * @throws ClassCastException if <code>data</code> is
      *  non-<code>null</code> and is not a <code>Result</code>
      */
+    @Override
     public void setWrappedData(Object data) {
 
         if (data == null) {

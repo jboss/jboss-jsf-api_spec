@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -77,6 +77,8 @@ public abstract class MethodBinding {
      * @throws MethodNotFoundException if no suitable method can be found
      * @throws NullPointerException if <code>context</code>
      *  is <code>null</code>
+     *
+     * @return the result of the invocation
      */
     public abstract Object invoke(FacesContext context, Object params[])
         throws EvaluationException, MethodNotFoundException;
@@ -91,6 +93,8 @@ public abstract class MethodBinding {
      * @throws MethodNotFoundException if no suitable method can be found
      * @throws NullPointerException if <code>context</code>
      *  is <code>null</code>
+     *
+     * @return the type of the return value
      */
     public abstract Class getType(FacesContext context)
         throws MethodNotFoundException;
@@ -101,6 +105,7 @@ public abstract class MethodBinding {
      * <code>MethodBinding</code> was built.  The default implementation
      * returns <code>null</code>.</p>
      *
+     * @return the expression string
      */
     public String getExpressionString() {
 	return null;

@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -68,6 +68,8 @@ public abstract class VariableResolver {
      *  <code>cause</code> property of this exception)
      * @throws NullPointerException if <code>context</code>
      *  or <code>name</code> is <code>null</code>
+     *
+     * @return the result of the resolution
      */
     public abstract Object resolveVariable(FacesContext context, String name)
         throws EvaluationException;

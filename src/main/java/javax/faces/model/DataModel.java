@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -92,6 +92,8 @@ public abstract class DataModel<E> implements Iterable<E> {
      * <code>wrappedData</code> is available, return <code>false</code>.</p>
      *
      * @throws javax.faces.FacesException if an error occurs getting the row availability
+     * 
+     * @return true if and only if there is data available at the current index, false otherwise.
      */
     public abstract boolean isRowAvailable();
 
@@ -102,18 +104,23 @@ public abstract class DataModel<E> implements Iterable<E> {
      * <code>wrappedData</code> is available, return -1.</p>
      *
      * @throws javax.faces.FacesException if an error occurs getting the row count
+     * 
+     * @return the number of rows of data represented by this {@code DataModel}
      */
     public abstract int getRowCount();
 
 
     /**
-     * <p>Return an object representing the data for the currenty selected
+     * <p>Return an object representing the data for the currently selected
      * row index.  If no <code>wrappedData</code> is available, return
      * <code>null</code>.</p>
      *
      * @throws javax.faces.FacesException if an error occurs getting the row data
      * @throws IllegalArgumentException if now row data is available
      *  at the currently specified row index
+     * 
+     * @return an object representing the data for the currently selected
+     * row index
      */
     public abstract E getRowData();
 
@@ -124,6 +131,8 @@ public abstract class DataModel<E> implements Iterable<E> {
      * is available, return -1.</p>
      *
      * @throws javax.faces.FacesException if an error occurs getting the row index
+     * 
+     * @return the index of the currently selected row
      */
     public abstract int getRowIndex();
 
@@ -156,6 +165,8 @@ public abstract class DataModel<E> implements Iterable<E> {
     /**
      * <p>Return the object representing the data wrapped by this
      * {@link DataModel}, if any.</p>
+     * 
+     * @return the {@code Object} that this model wraps.
      */
     public abstract Object getWrappedData();
 
@@ -211,7 +222,7 @@ public abstract class DataModel<E> implements Iterable<E> {
         }
         if (listeners == null) {
             //noinspection CollectionWithoutInitialCapacity
-            listeners = new ArrayList<DataModelListener>();
+            listeners = new ArrayList<>();
         }
         listeners.add(listener);
 
@@ -222,6 +233,8 @@ public abstract class DataModel<E> implements Iterable<E> {
      * <p>Return the set of {@link DataModelListener}s interested in
      * notifications from this {@link DataModel}.  If there are no such
      * listeners, an empty array is returned.</p>
+     * 
+     * @return the listeners for this instance, or an empty array
      */
     public DataModelListener[] getDataModelListeners() {
 
@@ -264,9 +277,10 @@ public abstract class DataModel<E> implements Iterable<E> {
      * 
      * @since 2.0
      */
+    @Override
     public Iterator<E> iterator() {
 
-        return new DataModelIterator<E>(this);
+        return new DataModelIterator<>(this);
         
     }
     
@@ -298,6 +312,7 @@ public abstract class DataModel<E> implements Iterable<E> {
         /**
          * @see java.util.Iterator#hasNext()
          */
+        @Override
         public boolean hasNext() {
 
             return model.isRowAvailable();
@@ -308,6 +323,7 @@ public abstract class DataModel<E> implements Iterable<E> {
         /**
          * @see java.util.Iterator#next()
          */
+        @Override
         public T next() {
 
             if (!model.isRowAvailable()) {
@@ -324,6 +340,7 @@ public abstract class DataModel<E> implements Iterable<E> {
          * Unsupported.
          * @see java.util.Iterator#remove()
          */
+        @Override
         public void remove() {
 
             throw new UnsupportedOperationException();

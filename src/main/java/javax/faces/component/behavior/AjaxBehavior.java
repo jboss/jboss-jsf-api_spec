@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -125,6 +125,7 @@ public class AjaxBehavior extends ClientBehaviorBase {
      *
      * @since 2.0
      */
+    @Override
     public Set<ClientBehaviorHint> getHints() {
         return HINTS;
     }
@@ -135,6 +136,8 @@ public class AjaxBehavior extends ClientBehaviorBase {
      * the client callback function that should be run in the event of
      * an error.
      *
+     * @return the JavaScript function name of <code>ONERROR</code>.
+     * 
      * @since 2.0
      */
     public String getOnerror() {
@@ -165,6 +168,8 @@ public class AjaxBehavior extends ClientBehaviorBase {
      * client callback function that should be run on the occurance
      * of a client-side event.
      *
+     * @return the JavaScript function name of <code>ONEVENT</code>.
+     *      
      * @since 2.0
      */
     public String getOnevent() {
@@ -197,7 +202,9 @@ public class AjaxBehavior extends ClientBehaviorBase {
      * processing lifecycle.</p>
      * <p>Note that the returned collection may be unmodifiable.  Modifications
      * should be performed by calling {@link #setExecute}.</p>
-     *
+     * 
+     * @return the JavaScript function name of <code>EXECUTE</code>.
+     * 
      * @since 2.0
      */
     public Collection<String> getExecute() {
@@ -226,7 +233,9 @@ public class AjaxBehavior extends ClientBehaviorBase {
     /**
      * <p class="changed_added_2_2">Returns the delay value, or <code>null</code>
      * if no value was set.</p>
-     *
+     * 
+     * @return the delay value.
+     * 
      * @since 2.2
      */
     public String getDelay() {
@@ -238,7 +247,7 @@ public class AjaxBehavior extends ClientBehaviorBase {
      * <em>delay</em> milliseconds elapses between calls to
      * <em>request()</em> only the most recent one is sent and all other
      * requests are discarded. The default value of this option is
-     * 300.</code> If the value of <em>delay</em> is the literal string
+     * 300. If the value of <em>delay</em> is the literal string
      * <code>'none'</code> without the quotes, no delay is used.</p>
      *
      * @param delay the ajax delay value
@@ -260,6 +269,8 @@ public class AjaxBehavior extends ClientBehaviorBase {
      * processing lifecycle.</p>
      * <p>Note that the returned collection may be unmodifiable.  Modifications
      * should be performed by calling {@link #setRender}.</p>
+     *
+     * @return  the ids of components to render.
      *
      * @since 2.0
      */
@@ -289,6 +300,8 @@ public class AjaxBehavior extends ClientBehaviorBase {
     /**
      * <p class="changed_added_2_2">
      * Return the resetValues status of this behavior.</p>
+     *
+     *  @return the resetValues status.
      * 
      * @since 2.2
      */
@@ -301,6 +314,8 @@ public class AjaxBehavior extends ClientBehaviorBase {
     /**
      * <p class="changed_added_2_2">
      * Set the resetValues status of this behavior.</p>
+     * 
+     *  @param resetValues the resetValues status.
      * 
      * @since 2.2
      */
@@ -316,6 +331,8 @@ public class AjaxBehavior extends ClientBehaviorBase {
     /**
      * <p class="changed_added_2_0">Return the disabled status of this behavior.</p>
      *
+     * @return the disabled status of this behavior.
+     *
      * @since 2.0
      */
     public boolean isDisabled() {
@@ -327,6 +344,8 @@ public class AjaxBehavior extends ClientBehaviorBase {
     /**
      * <p class="changed_added_2_0">Sets the disabled status of this 
      * behavior.</p>
+     *
+     * @param disabled the flag to be set.
      *
      * @since 2.0
      */
@@ -341,6 +360,8 @@ public class AjaxBehavior extends ClientBehaviorBase {
      * <p class="changed_added_2_0">Return the immediate status of this 
      * behavior.</p>
      *
+     * @return  the immediate status.
+     * 
      * @since 2.0
      */
     public boolean isImmediate() {
@@ -352,6 +373,8 @@ public class AjaxBehavior extends ClientBehaviorBase {
     /**
      * <p class="changed_added_2_0">Sets the immediate status of this 
      * behavior.</p>
+     *
+     * @param immediate the flag to be set.
      *
      * @since 2.0
      */
@@ -370,7 +393,9 @@ public class AjaxBehavior extends ClientBehaviorBase {
      * on the parent component's immediate status when immediate is not 
      * explicitly specified on the <code>AjaxBehavior</code>.
      * </p>
-     *
+     *  
+     *  @return the flag whether the immediate attribute is specified.
+     *  
      * @since 2.0
      */
     public boolean isImmediateSet() {
@@ -382,6 +407,8 @@ public class AjaxBehavior extends ClientBehaviorBase {
      * is specified.  Returns true if the resetValues attribute is specified,
      * either as a locally set property or as a value expression. 
      * </p>
+     *
+     * @return the flag whether the resetValues attribute is specified.
      *
      * @since 2.2
      */
@@ -396,6 +423,8 @@ public class AjaxBehavior extends ClientBehaviorBase {
      *
      * @param name Name of the property for which to retrieve a
      *  {@link ValueExpression}
+     *
+     * @return the {@link ValueExpression}.
      *
      * @throws NullPointerException if <code>name</code>
      *  is <code>null</code>
@@ -412,7 +441,6 @@ public class AjaxBehavior extends ClientBehaviorBase {
     /**
      * <p class="changed_added_2_0">Sets the {@link ValueExpression} 
      * used to calculate the value for the specified property name.</p>
-     * </p>
      *
      * @param name Name of the property for which to set a
      *  {@link ValueExpression}
@@ -441,7 +469,7 @@ public class AjaxBehavior extends ClientBehaviorBase {
                     // an AjaxBehavior would have more than 1 or 2 bound 
                     // properties - and even if more are present, it's okay
                     // if we have some collisions - will still be fast.
-                    bindings = new HashMap<String, ValueExpression>(6,1.0f);
+                    bindings = new HashMap<>(6,1.0f);
                 }
 
                 bindings.put(name, binding);
@@ -594,7 +622,7 @@ public class AjaxBehavior extends ClientBehaviorBase {
         Object values[] = (Object[]) state;
         String names[] = (String[]) values[0];
         Object states[] = (Object[]) values[1];
-        Map<String, ValueExpression> bindings = new HashMap<String, ValueExpression>(names.length);
+        Map<String, ValueExpression> bindings = new HashMap<>(names.length);
         for (int i = 0; i < names.length; i++) {
             bindings.put(names[i],
                     (ValueExpression) UIComponentBase.restoreAttachedState(context, states[i]));
@@ -700,22 +728,33 @@ public class AjaxBehavior extends ClientBehaviorBase {
             throw new FacesException(ele);
         }
 
-        if (ONEVENT.equals(propertyName)) {
-            onevent = (String)value;
-        } else if (DELAY.equals(propertyName)) {
-            delay = (String)value;
-        } else if (ONERROR.equals(propertyName)) {
-            onerror = (String)value;
-        } else if (IMMEDIATE.equals(propertyName)) {
-            immediate = (Boolean)value;
-        } else if (RESET_VALUES.equals(propertyName)) {
-            resetValues = (Boolean)value;
-        } else if (DISABLED.equals(propertyName)) {
-            disabled = (Boolean)value;
-        } else if (EXECUTE.equals(propertyName)) {
-            execute = toList(propertyName, expression, value);
-        } else if (RENDER.equals(propertyName)) {
-            render = toList(propertyName, expression, value);
+        if (null != propertyName) {
+            switch (propertyName) {
+                case ONEVENT:
+                    onevent = (String)value;
+                    break;
+                case DELAY:
+                    delay = (String)value;
+                    break;
+                case ONERROR:
+                    onerror = (String)value;
+                    break;
+                case IMMEDIATE:
+                    immediate = (Boolean)value;
+                    break;
+                case RESET_VALUES:
+                    resetValues = (Boolean)value;
+                    break;
+                case DISABLED:
+                    disabled = (Boolean)value;
+                    break;
+                case EXECUTE:
+                    execute = toList(propertyName, expression, value);
+                    break;
+                case RENDER:
+                    render = toList(propertyName, expression, value);
+                    break;
+            }
         }
     }
 

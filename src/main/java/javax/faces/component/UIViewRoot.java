@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -39,42 +39,62 @@
  */
 package javax.faces.component;
 
-import javax.el.MethodExpression;
-import javax.faces.FacesException;
-import javax.faces.FactoryFinder;
-import javax.faces.application.ProjectStage;
-import javax.faces.component.visit.VisitResult;
-import javax.faces.context.FacesContext;
-import javax.faces.lifecycle.Lifecycle;
-import javax.faces.lifecycle.LifecycleFactory;
-import javax.faces.webapp.FacesServlet;
+import static java.util.Collections.unmodifiableList;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ListIterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.el.MethodExpression;
+import javax.faces.FacesException;
+import javax.faces.FactoryFinder;
+import javax.faces.application.ProjectStage;
+import javax.faces.application.ResourceHandler;
+import javax.faces.component.behavior.ClientBehaviorContext;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
-import javax.faces.event.*;
+import javax.faces.component.visit.VisitResult;
+import javax.faces.context.FacesContext;
+import javax.faces.context.PartialViewContext;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.ComponentSystemEvent;
+import javax.faces.event.ExceptionQueuedEvent;
+import javax.faces.event.ExceptionQueuedEventContext;
+import javax.faces.event.FacesEvent;
+import javax.faces.event.PhaseEvent;
+import javax.faces.event.PhaseId;
+import javax.faces.event.PhaseListener;
+import javax.faces.event.PostConstructViewMapEvent;
+import javax.faces.event.PostRestoreStateEvent;
+import javax.faces.event.PreDestroyViewMapEvent;
+import javax.faces.event.SystemEvent;
+import javax.faces.event.SystemEventListener;
+import javax.faces.lifecycle.Lifecycle;
+import javax.faces.lifecycle.LifecycleFactory;
+import javax.faces.render.ResponseStateManager;
 import javax.faces.view.ViewDeclarationLanguage;
 import javax.faces.view.ViewMetadata;
+import javax.faces.webapp.FacesServlet;
 
 /**
  * <p><strong class="changed_modified_2_0"><span
  * class="changed_modified_2_0_rev_a changed_modified_2_1
- * changed_modified_2_2">UIViewRoot</span></strong> is the UIComponent
- * that represents the root of the UIComponent tree.  This component
- * renders markup as the response to Ajax requests.  It also serves as
- * the root of the component tree, and as a place to hang per-view
- * {@link PhaseListener}s.</p>
+ * changed_modified_2_2 changed_modified_2_3">UIViewRoot</span></strong>
+ * is the UIComponent that represents the root of the UIComponent tree.
+ * This component renders markup as the response to Ajax requests.  It
+ * also serves as the root of the component tree, and as a place to hang
+ * per-view {@link PhaseListener}s.</p>
  *
  * <p>For each of the following lifecycle phase methods:</p>
 
@@ -96,7 +116,7 @@ import javax.faces.view.ViewMetadata;
  * <p>Take the following action regarding
  * <code>PhaseListener</code>s.</p>
 
- * <ul>
+ * <blockquote>
 
  * <p>Initialize a state flag to <code>false</code>.</p>
 
@@ -127,15 +147,14 @@ import javax.faces.view.ViewMetadata;
  * <p>If {@link #getAfterPhaseListener} returns non-<code>null</code>,
  * invoke the listener, passing in the correct corresponding {@link
  * PhaseId} for this phase.</p>
- * <p/>
+ * 
  * <p>If or one or more listeners have been added by a call to {@link
  * #addPhaseListener}, invoke the <code>afterPhase</code> method on each
  * one whose {@link PhaseListener#getPhaseId} matches the current
  * phaseId, passing in the same <code>PhaseId</code> as in the previous
  * step.</p>
- * <p/>
- * <p/>
- * </ul>
+ * 
+ * </blockquote>
  */
 
 public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
@@ -159,6 +178,19 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
     /** <p>The standard component family for this component.</p> */
     public static final String COMPONENT_FAMILY = "javax.faces.ViewRoot";
+    
+    /**
+     * <p class="changed_added_2_3">If this param is set, and calling 
+     * toLowerCase().equals("true") on a
+     * String representation of its value returns true, exceptions thrown
+     * by {@link PhaseListener}s installed on the {@code UIViewRoot} are
+     * queued to the {@link javax.faces.context.ExceptionHandler} instead of 
+     * being logged and swallowed.</p>
+     * 
+     * @since 2.3
+     */
+    public static final String VIEWROOT_PHASE_LISTENER_QUEUES_EXCEPTIONS_PARAM_NAME = 
+            "javax.faces.VIEWROOT_PHASE_LISTENER_QUEUES_EXCEPTIONS";
 
 
     /**
@@ -174,7 +206,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
     private static final String LOCATION_IDENTIFIER_PREFIX = "javax_faces_location_";
     private static final Map<String,String> LOCATION_IDENTIFIER_MAP =
-          new HashMap<String,String>(6, 1.0f);
+          new LinkedHashMap<>(3, 1.0f);
     static {
         LOCATION_IDENTIFIER_MAP.put("head", LOCATION_IDENTIFIER_PREFIX + "HEAD");
         LOCATION_IDENTIFIER_MAP.put("form", LOCATION_IDENTIFIER_PREFIX + "FORM");
@@ -260,7 +292,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * <p class="changed_added_2_0">Overridden to take no action.</p>
      *
      * @since 2.0
-     * @param isInView
+     * @param isInView ignore the value.
      */
     @Override
     public void setInView(boolean isInView) {
@@ -270,6 +302,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     /**
      * @see UIComponent#getFamily()
      */
+    @Override
     public String getFamily() {
 
         return (COMPONENT_FAMILY);
@@ -283,6 +316,8 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * explicitly set, as in {@link
      * javax.faces.application.ViewHandler#createView}, the returned
      * value will be <code>null.</code></p>
+     * 
+     * @return the render kit id, or <code>null</code>.
      */
     public String getRenderKitId() {
 
@@ -309,7 +344,10 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     }
 
 
-    /** <p>Return the view identifier for this view.</p> */
+    /** <p>Return the view identifier for this view.</p>
+     * 
+     * @return the view id.
+     */
     public String getViewId() {
 
         return (String) getStateHelper().get(PropertyKeys.viewId);
@@ -385,7 +423,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * phases <span class="changed_modified_2_0">including {@link
      * PhaseId#RESTORE_VIEW}</span>.  Unlike a true {@link
      * PhaseListener}, this approach doesn't allow for only receiving
-     * {@link PhaseEvent}s for a given phase.</p> <p/> <p>The method
+     * {@link PhaseEvent}s for a given phase.</p> <p>The method
      * must conform to the signature of {@link
      * PhaseListener#afterPhase}.</p>
      *
@@ -432,11 +470,12 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * <code>PhaseListener</code> instances attached to this 
      * <code>UIViewRoot</code> instance.</p>
      *
+     * @return the list of phase listeners.
      * @since 2.0
      */
+    @SuppressWarnings("unchecked")
     public List<PhaseListener> getPhaseListeners() {
 
-        //noinspection unchecked
         List<PhaseListener> result = (List<PhaseListener>)
               getStateHelper().get(PropertyKeys.phaseListeners);
 
@@ -461,6 +500,9 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * @param context {@link FacesContext} for the current request
      * @param componentResource The {@link UIComponent} representing a 
      * {@link javax.faces.application.Resource} instance
+     * 
+     * </p>
+     * </div>
      *
      * @since 2.0
      */
@@ -502,6 +544,14 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
      * </div>
      *  
+     * <div class="changed_added_2_3"><p>The resource <code>Renderer</code> must ensure of the following:
+     * <ul>
+     * <li>Do not render when {@link ResourceHandler#isResourceRendered(FacesContext, String, String)}
+     * returns <code>true</code>.</li>
+     * <li>After rendering, call {@link ResourceHandler#markResourceRendered(FacesContext, String, String)}.</li>
+     * </ul>
+     * </div>
+     * 
      * @param context {@link FacesContext} for the current request
      * @param componentResource The {@link UIComponent} representing a 
      * {@link javax.faces.application.Resource} instance 
@@ -555,7 +605,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * must refer to a component that extends {@link UIPanel} and
      * overrides the <code>encodeAll()</code> method to take no action.
      * This is necessary to prevent component resources from being
-     * inadvertently rendered.</span></li>
+     * inadvertently rendered.</span>
 
      * <ul>
 
@@ -571,8 +621,9 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
      * </div>
      *
+     * @param context the Faces context.
      * @param target The name of the facet for which the components will be returned. 
-     *
+     * 
      * @return A <code>List</code> of {@link UIComponent} children of
      * the facet with the name <code>target</code>.  If no children are
      * found for the facet, return <code>Collections.emptyList()</code>.
@@ -597,7 +648,33 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
                 : Collections.<UIComponent>emptyList());
 
     }
-    
+
+    /**
+     * <p class="changed_added_2_3">
+     * Return an unmodifiable ordered <code>List</code> of all {@link UIComponent} resources of all supported targets.
+     * Each <code>component</code> in the <code>List</code> is assumed to represent a resource instance. The ordering
+     * is the same as the resources would appear in the component tree.
+     * </p>
+     * 
+     * @param context The Faces context.
+     * 
+     * @return A <code>List</code> of all {@link UIComponent} resources of all supported targets. If no resources are
+     * found, return an empty <code>List</code>.
+     * 
+     * @throws NullPointerException If <code>context</code> is <code>null</code>.
+     * 
+     * @since 2.3
+     */
+    public List<UIComponent> getComponentResources(FacesContext context) {
+        List<UIComponent> resources = new ArrayList<>();
+
+        for (String target : LOCATION_IDENTIFIER_MAP.keySet()) {
+            resources.addAll(getComponentResources(context, target));
+        }
+
+        return unmodifiableList(resources);
+    }
+
     /**
      * <p class="changed_added_2_0">Remove argument <code>component</code>,
      * which is assumed to represent a resource instance, as a resource
@@ -610,6 +687,9 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * @param componentResource The {@link UIComponent} representing a 
      * {@link javax.faces.application.Resource} instance
      *
+     * </p>
+     * </div>
+     * 
      * @since 2.0
      */
     public void removeComponentResource(FacesContext context, UIComponent componentResource) {
@@ -634,7 +714,6 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * given target.</li>
      * <li>Remove the <code>component</code> resource from the child list.</li>
      * </ul>
-     * </p>
      * </div>
      *  
      * @param context {@link FacesContext} for the current request
@@ -685,6 +764,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * @throws NullPointerException  if <code>event</code>
      *                               is <code>null</code>
      */
+    @Override
     public void queueEvent(FacesEvent event) {
 
         if (event == null) {
@@ -693,9 +773,9 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         // We are a UIViewRoot, so no need to check for the ISE
         if (events == null) {
             int len = PhaseId.VALUES.size();
-            List<List<FacesEvent>> events = new ArrayList<List<FacesEvent>>(len);
+            List<List<FacesEvent>> events = new ArrayList<>(len);
             for (int i = 0; i < len; i++) {
-                events.add(new ArrayList<FacesEvent>(5));
+                events.add(new ArrayList<>(5));
             }
             this.events = events;
         }
@@ -824,10 +904,10 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     // ------------------------------------------------ Lifecycle Phase Handlers
 
 
+    @SuppressWarnings("unchecked")
     private void initState() {
         skipPhase = false;
         beforeMethodException = false;
-        //noinspection unchecked
         List<PhaseListener> listeners =
               (List<PhaseListener>) getStateHelper().get(PropertyKeys.phaseListeners);
         phaseListenerIterator =
@@ -858,8 +938,8 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * UIComponentBase#processRestoreState} from within a
      * <code>try</code> block.  The <code>try</code> block must have a
      * <code>finally</code> block that ensures that no {@link
-     * FacesEvent}s remain in the event queue. <a
-     * class="changed_deleted_2_0_rev_a" title="text removed in 2.0 Rev a: and that the this.visitTree is called, passing a ContextCallback that takes the following action: call the processEvent method of the current component. The argument event must be an instance of PostRestoreStateEvent whose component property is the current component in the traversal.">&nbsp;&nbsp;&nbsp;</a> </p>
+     * FacesEvent}s remain in the event queue. <a class="changed_deleted_2_0_rev_a"> 
+     *  <!-- text removed in 2.0 Rev a: and that the this.visitTree is called, passing a ContextCallback that takes the following action: call the processEvent method of the current component. The argument event must be an instance of PostRestoreStateEvent whose component property is the current component in the traversal. --></a> </p>
      * @param context the <code>FacesContext</code> for this requets
      * @param state the opaque state object obtained from the {@link
      * javax.faces.application.StateManager}
@@ -876,6 +956,30 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
 
     }
     
+    /**
+     * <p class="changed_added_2_3">
+     * If the argument <code>event</code> is an instance of {@link PostRestoreStateEvent} and 
+     * {@link PartialViewContext#isPartialRequest()} returns <code>true</code>, then loop over all component resources
+     * and call {@link ResourceHandler#markResourceRendered(FacesContext, String, String)} for each of them.
+     * Finally, delegate to super.
+     * </p>
+     */
+    @Override
+    public void processEvent(ComponentSystemEvent event) throws AbortProcessingException {
+        FacesContext context = event.getFacesContext();
+
+        if (event instanceof PostRestoreStateEvent && context.getPartialViewContext().isPartialRequest()) {
+            ResourceHandler resourceHandler = context.getApplication().getResourceHandler();
+
+            for (UIComponent resource : getComponentResources(context)) {
+                String name = (String) resource.getAttributes().get("name"); 
+                String library = (String) resource.getAttributes().get("library"); 
+                resourceHandler.markResourceRendered(context, name, library);
+            }
+        }
+
+        super.processEvent(event);
+    }
 
     /**
      * <div class="changed_added_2_0">
@@ -901,7 +1005,6 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * <li>{@link javax.faces.context.PartialViewContext#isPartialRequest}
      * returns <code>false</code></li>
      * </ul>
-     * </p>
      * </div>
      * <p class="changed_modified_2_0">Override the default 
      * {@link UIComponentBase#processDecodes} behavior to broadcast any queued 
@@ -964,17 +1067,19 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     }        
 
     /**
-     * <p><span class="changed_added_2_0">Override</span> the default
-     * {@link UIComponentBase#encodeBegin} behavior.  If
+     * <p><span class="changed_added_2_0 changed_modified_2_3">
+     * Override</span> the default {@link UIComponentBase#encodeBegin} behavior.  If
      * {@link #getBeforePhaseListener} returns non-<code>null</code>,
      * invoke it, passing a {@link PhaseEvent} for the {@link
      * PhaseId#RENDER_RESPONSE} phase.  If the internal list populated
      * by calls to {@link #addPhaseListener} is non-empty, any listeners
      * in that list must have their {@link PhaseListener#beforePhase}
-     * method called, passing the <code>PhaseEvent</code>.  Any errors
-     * that occur during invocation of any of the the beforePhase
-     * listeners must be logged and swallowed.  After listeners are invoked
-     * call superclass processing.</p>
+     * method called, passing the <code>PhaseEvent</code>.  Any {@code Exception}s
+     * that occur during invocation of any of the beforePhase
+     * listeners must be logged and swallowed, <span class="changed_added_2_3">
+     * unless the {@link #VIEWROOT_PHASE_LISTENER_QUEUES_EXCEPTIONS_PARAM_NAME}
+     * parameter is set.  In that case, the {@code Exception} must be passed to the
+     * {@link javax.faces.context.ExceptionHandler} as well.</span></p>
      */
     @Override
     public void encodeBegin(FacesContext context) throws IOException {
@@ -996,6 +1101,21 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * <code>false</code>, delegate to the parent {@link
      * javax.faces.component.UIComponentBase#encodeChildren} method.</p>
      *
+     * <p class="changed_added_2_3">If this {@link UIViewRoot} is an instance of {@link NamingContainer}, then the JSF
+     * implementation must ensure that all encoded POST request parameter names are prefixed with
+     * {@link UIViewRoot#getContainerClientId(FacesContext)} as per rules of {@link UIComponent#getClientId(FacesContext)}.
+     * This also covers all predefined POST request parameters which are listed below:</p>
+     * <ul class="changed_added_2_3">
+     * <li>{@link ResponseStateManager#VIEW_STATE_PARAM}</li>
+     * <li>{@link ResponseStateManager#CLIENT_WINDOW_PARAM}</li>
+     * <li>{@link ResponseStateManager#RENDER_KIT_ID_PARAM}</li>
+     * <li>{@link ClientBehaviorContext#BEHAVIOR_SOURCE_PARAM_NAME}</li>
+     * <li>{@link ClientBehaviorContext#BEHAVIOR_EVENT_PARAM_NAME}</li>
+     * <li>{@link PartialViewContext#PARTIAL_EVENT_PARAM_NAME}</li>
+     * <li>{@link PartialViewContext#PARTIAL_EXECUTE_PARAM_NAME}</li>
+     * <li>{@link PartialViewContext#PARTIAL_RENDER_PARAM_NAME}</li>
+     * <li>{@link PartialViewContext#RESET_VALUES_PARAM_NAME}</li>
+     * </ul>
      * @since 2.0
      */
     @Override
@@ -1008,12 +1128,15 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     }
 
     /**
-     * <p class="changed_added_2_0"> If {@link #getAfterPhaseListener}
-     * returns non-<code>null</code>, invoke it, passing a {@link
+     * <p class="changed_added_2_0"><span class="changed_modified_2_3">If</span> 
+     * {@link #getAfterPhaseListener} returns non-<code>null</code>, invoke it, passing a {@link
      * PhaseEvent} for the {@link PhaseId#RENDER_RESPONSE} phase.  Any
-     * errors that occur during invocation of the afterPhase listener
-     * must be logged and swallowed.  If the current view has view
-     * parameters, as indicated by a non-empty and
+     * {@code Exception}s that occur during invocation of the afterPhase listener
+     * must be logged and swallowed, <span class="changed_added_2_3">
+     * unless the {@link #VIEWROOT_PHASE_LISTENER_QUEUES_EXCEPTIONS_PARAM_NAME}
+     * parameter is set.  In that case, the {@code Exception} must be passed to the
+     * {@link javax.faces.context.ExceptionHandler} as well.</span>.  If the 
+     * current view has view parameters, as indicated by a non-empty and
      * non-<code>UnsupportedOperationException</code> throwing return
      * from {@link javax.faces.view.ViewDeclarationLanguage#getViewMetadata(javax.faces.context.FacesContext, String)},
      * call {@link UIViewParameter#encodeAll} on each parameter.  If
@@ -1084,6 +1207,13 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
                                new Object[] { expression.getExpressionString(),
                                               (isBefore ? "beforePhase" : "afterPhase")});
                 }
+                if (context.getAttributes().containsKey(VIEWROOT_PHASE_LISTENER_QUEUES_EXCEPTIONS_PARAM_NAME)) {
+                    ExceptionQueuedEventContext extx = new ExceptionQueuedEventContext(context, e);
+                    String booleanKey = isBefore ? ExceptionQueuedEventContext.IN_BEFORE_PHASE_KEY : ExceptionQueuedEventContext.IN_AFTER_PHASE_KEY;
+                    extx.getAttributes().put(booleanKey, Boolean.TRUE);
+                    context.getApplication().publishEvent(context, ExceptionQueuedEvent.class, extx);
+                    
+                }
                 return;
             }
         }
@@ -1114,6 +1244,14 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
                             LOGGER.log(Level.SEVERE,
                                        "severe.component.uiviewroot_error_invoking_phaselistener",
                                        curListener.getClass().getName());
+                        }
+                        if (context.getAttributes().containsKey(VIEWROOT_PHASE_LISTENER_QUEUES_EXCEPTIONS_PARAM_NAME) &&
+                            (Boolean)context.getAttributes().get(VIEWROOT_PHASE_LISTENER_QUEUES_EXCEPTIONS_PARAM_NAME)) {
+                            ExceptionQueuedEventContext extx = new ExceptionQueuedEventContext(context, e);
+                            String booleanKey = isBefore ? ExceptionQueuedEventContext.IN_BEFORE_PHASE_KEY : ExceptionQueuedEventContext.IN_AFTER_PHASE_KEY;
+                            extx.getAttributes().put(booleanKey, Boolean.TRUE);
+                            context.getApplication().publishEvent(context, ExceptionQueuedEvent.class, extx);
+                            
                         }
                         return;
                     }
@@ -1167,7 +1305,6 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * <li>{@link javax.faces.context.PartialViewContext#isPartialRequest}
      * returns <code>false</code></li>
      * </ul>
-     * </p>
      * </div>
      * <p class="changed_modified_2_0">Override the default 
      * {@link UIComponentBase#processValidators} behavior to broadcast any 
@@ -1226,7 +1363,6 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * <li>{@link javax.faces.context.PartialViewContext#isPartialRequest}
      * returns <code>false</code></li>
      * </ul>
-     * </p>
      *</div>
      * <p class="changed_modified_2_0">Override the default {@link UIComponentBase}
      * behavior to broadcast any queued events after the default processing or 
@@ -1309,6 +1445,8 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * UNIQUE_ID_PREFIX, and will be unique within <span
      * class="changed_added_2_2">the non-{@link NamingContainer} child
      * sub-trees of</span> this UIViewRoot.</p>
+     * 
+     * @return the identifier.
      */
     public String createUniqueId() {
         return createUniqueId(getFacesContext(), null);
@@ -1324,6 +1462,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * @param seed an optional seed value - e.g. based on the position of the component in the VDL-template
      * @return a unique-id in this component-container
      */
+    @Override
     public String createUniqueId(FacesContext context, String seed) {
         if (seed != null) {
             return UIViewRoot.UNIQUE_ID_PREFIX + seed;
@@ -1339,9 +1478,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     /**
      * <p>Return the <code>Locale</code> to be used in localizing the
      * response being created for this view.</p>
-     * <p/>
      * <p>Algorithm:</p>
-     * <p/>
      * <p>If we have a <code>locale</code> ivar, return it.  If we have
      * a value expression for "locale", get its value.  If the value is
      * <code>null</code>, return the result of calling {@link
@@ -1493,8 +1630,9 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * <p class="changed_added_2_0">This implementation simply calls through to {@link
      * #getViewMap(boolean)}, passing <code>true</code> as the argument, and
      * returns the result.</p>
-     * <div class="changed_added_2_0">
+     * <div class="changed_added_2_0"></div>
      *
+     * @return the view map, or <code>null</code>.
      * @since 2.0
      */
     public Map<String, Object> getViewMap() {
@@ -1504,17 +1642,25 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     }
 
     /**
-     * <p class="changed_added_2_0"><span class="changed_modified_2_2">Returns</span>
-     * a <code>Map</code> that acts as the
-     * interface to the data store that is the "view scope", or, if this
-     * instance does not have such a <code>Map</code> and the
-     * <code>create</code> argument is <code>true</code>, creates one and
-     * returns it.  This map must be instantiated lazily and cached for return
-     * from subsequent calls to this method on this <code>UIViewRoot</code>
-     * instance. {@link javax.faces.application.Application#publishEvent} must
-     * be called, passing {@link PostConstructViewMapEvent}<code>.class</code> as the
-     * first argument and this <code>UIViewRoot</code> instance as the second
-     * argument.</p>
+     * <p class="changed_added_2_0"><span class="changed_modified_2_2
+     * changed_modified_2_3">Returns</span> a <code>Map</code> that acts
+     * as the interface to the data store that is the "view scope", or,
+     * if this instance does not have such a <code>Map</code> and the
+     * <code>create</code> argument is <code>true</code>, creates one
+     * and returns it.  This map must be instantiated lazily and cached
+     * for return from subsequent calls to this method on this
+     * <code>UIViewRoot</code> instance. {@link
+     * javax.faces.application.Application#publishEvent} must be called,
+     * passing <span class="changed_added_2_3">the current
+     * <code>FacesContext</code> as the first argument</span>, {@link
+     * PostConstructViewMapEvent}<code>.class</code> as the second
+     * argument, <span
+     * class="changed_added_2_3"><code>UIViewRoot.class</code> as the
+     * third argument</span> and this <code>UIViewRoot</code> instance
+     * as the fourth argument.  <span class="changed_added_2_3">It is
+     * necessary to pass the <code>UIViewRoot.class</code> argument to
+     * account for cases when the <code>UIViewRoot</code> has been
+     * extended with a custom class.</span></p>
      *
      * <p>The returned <code>Map</code> must be implemented such that calling
      * <code>clear()</code> on the <code>Map</code> causes {@link javax.faces.application.Application#publishEvent} to be
@@ -1538,15 +1684,14 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      * 
      * <p>See {@link FacesContext#setViewRoot} for the specification of when the
      * <code>clear()</code> method must be called.</p>
-     * <p/>
-     * </div>
      *
      * @param create <code>true</code> to create a new <code>Map</code> for this
      *               instance if necessary; <code>false</code> to return
      *               <code>null</code> if there's no current <code>Map</code>.
-     *
+     * @return the view map, or <code>null</code>.
      * @since 2.0
      */
+    @SuppressWarnings("unchecked")
     public Map<String, Object> getViewMap(boolean create) {
         Map<String, Object> viewMap = (Map<String, Object>) 
                 getTransientStateHelper().getTransient("com.sun.faces.application.view.viewMap");
@@ -1582,7 +1727,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      *  be called when events of type <code>systemEventClass</code> are
      *  fired.
      *
-     * @throws <code>NullPointerException</code> if <code>systemEventClass</code>
+     * @throws NullPointerException if <code>systemEventClass</code>
      *  or <code>listener</code> are <code>null</code>.
      *
      * @since 2.0
@@ -1598,11 +1743,11 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
         }
         
         if (viewListeners == null) {
-            viewListeners = new HashMap<Class<? extends SystemEvent>, List<SystemEventListener>>(4, 1.0f);
+            viewListeners = new HashMap<>(4, 1.0f);
         }
         List<SystemEventListener> listeners = viewListeners.get(systemEvent);
         if (listeners == null) {
-            listeners = new CopyOnWriteArrayList<SystemEventListener>();
+            listeners = new CopyOnWriteArrayList<>();
             viewListeners.put(systemEvent, listeners);
         }
         listeners.add(listener);
@@ -1624,7 +1769,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      *  be called when events of type <code>systemEventClass</code> are
      *  fired.
      *
-     * @throws <code>NullPointerException</code> if
+     * @throws NullPointerException if
      * <code>systemEventClass</code> or <code>listener</code> are
      * <code>null</code>.
      *
@@ -1658,11 +1803,14 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
      *
      * @param systemEvent the <code>Class</code> of event for which the
      * listeners must be returned.
-
+     * 
+     * @return Collection of view listeners.
+     * 
      * @throws NullPointerException if argument <code>systemEvent</code>
      * is <code>null</code>.
      *
      * @since 2.0
+     * 
      */
     public List<SystemEventListener> getViewListenersForEventClass(Class<? extends SystemEvent> systemEvent) {
 
@@ -1757,6 +1905,7 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void restoreState(FacesContext context, Object state) {
 
         if (context == null) {
@@ -1802,7 +1951,6 @@ public class UIViewRoot extends UIComponentBase implements UniqueIdVendor {
     }
 
 
-    @SuppressWarnings({"UnusedDeclaration"})
     private List<UIComponent> getComponentResources(FacesContext context,
                                                     String target,
                                                     boolean create) {

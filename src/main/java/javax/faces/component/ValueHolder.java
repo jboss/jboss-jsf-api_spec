@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -61,6 +61,8 @@ public interface ValueHolder {
     /**
      * <p>Return the local value of this {@link UIComponent} (if any),
      * without evaluating any associated {@link ValueExpression}.</p>
+     * 
+     * @return the local value.
      */
     public Object getLocalValue();
 
@@ -79,6 +81,8 @@ public interface ValueHolder {
      * UIComponent#setValueBinding} requires a call through to {@link
      * UIComponent#setValueExpression}, legacy tags will continue to
      * work.</p>
+     * 
+     * @return the value.
      */
     public Object getValue();
 
@@ -94,6 +98,8 @@ public interface ValueHolder {
     /**
      * <p>Return the {@link Converter} (if any)
      * that is registered for this {@link UIComponent}.</p>
+     * 
+     * @return the converter.
      */
     public Converter getConverter();
 

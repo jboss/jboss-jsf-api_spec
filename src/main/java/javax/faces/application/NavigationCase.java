@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -129,6 +129,7 @@ public class NavigationCase {
      * @param condition A string to be interpreted as a
      * <code>ValueExpression</code> by a call to {@link #getCondition}
      * @param toViewId return from {@link #getToViewId}
+     * @param toFlowDocumentId the toFlow documentId.
      * @param parameters return from {@link #getParameters}
      * @param redirect return from {@link #isRedirect}
      * @param includeViewParams return {@link #isIncludeViewParams}
@@ -166,7 +167,7 @@ public class NavigationCase {
      * portion of the url.</p>
      *
      * @param context the {@link FacesContext} for the current request
-     *
+     * @return the action URL.
      * @throws MalformedURLException if the process of constructing the
      * URL causes this exception to be thrown.
      */
@@ -188,7 +189,7 @@ public class NavigationCase {
      * portion of the url.</p>
      *
      * @param context the {@link FacesContext} for the current request
-     *
+     * @return the resource URL.
      * @throws MalformedURLException if the process of constructing the
      * URL causes this exception to be thrown.
      */
@@ -211,7 +212,7 @@ public class NavigationCase {
      * portion of the url.</p>
      *
      * @param context the {@link FacesContext} for the current request
-     *
+     * @return the redirect URL.
      * @throws MalformedURLException if the process of constructing the
      * URL causes this exception to be thrown.
      */
@@ -238,7 +239,7 @@ public class NavigationCase {
      * as metadata within the view.</p>
      *
      * @param context the {@link FacesContext} for the current request
-     *
+     * @return the bookmarkable URL.
      * @throws MalformedURLException if the process of constructing the
      * URL causes this exception to be thrown.
      */
@@ -260,6 +261,8 @@ public class NavigationCase {
      * <code>&lt;from-view-id&gt;</code> of the
      * <code>&lt;navigation-rule&gt;</code> inside which this
      * <code>&lt;navigation-case&gt;</code> is nested.</p>
+     * 
+     * @return the from viedId.
      */
     public String getFromViewId() {
 
@@ -269,8 +272,10 @@ public class NavigationCase {
 
 
     /**
-     * <p class="changed_added_2_0">Return the <code>&lt;from-action&gt;
-     * for this <code>&lt;navigation-case&gt;</code></code></p>
+     * <p class="changed_added_2_0">Return the <code>&lt;from-action&gt;</code>
+     * for this <code>&lt;navigation-case&gt;</code></p>
+     * 
+     * @return the from action.
      */
     public String getFromAction() {
 
@@ -280,8 +285,10 @@ public class NavigationCase {
 
 
     /**
-     * <p class="changed_added_2_0">Return the <code>&lt;from-outcome&gt;
-     * for this <code>&lt;navigation-case&gt;</code></code></p>
+     * <p class="changed_added_2_0">Return the <code>&lt;from-outcome&gt;</code>
+     * for this <code>&lt;navigation-case&gt;</code></p>
+     * 
+     * @return the from outcome.
      */
     public String getFromOutcome() {
 
@@ -325,6 +332,7 @@ public class NavigationCase {
      * the value defined in the corresponding application configuration resources
      * element.  The base implementation returns the empty string.</p>
      *
+     * @return the toFlow documentId.
      * @since 2.2
      */
     public String getToFlowDocumentId() {
@@ -356,14 +364,14 @@ public class NavigationCase {
      * the expression is evaluated, its value must be coerced into a
      * <code>boolean</code> per the normal EL coercion rules.</p>
      *
+     * Note throws any exceptions encountered during the process of
+     * evaluating the expression or obtaining its value.
+     *
      * @param context the {@link FacesContext} for the current request
      *
      * @return <code>null</code> if there is no <code>&lt;if&gt;</code> element
      *  associated with this <code>&lt;navigation-case&gt;</code>, otherwise
      *  return the evaluation result of the condition
-     *
-     * @throws any exceptions encountered during the process of
-     * evaluating the expression or obtaining its value.
      */
     public Boolean getCondition(FacesContext context) {
 
@@ -389,6 +397,8 @@ public class NavigationCase {
      * <code>Map</code> are parameter names.  For each key, the
      * corresponding value is a <code>List</code> of unconverted
      * values.</p>
+     * 
+     * @return the list of parameters, or <code>null</code>
      */
     public Map<String, List<String>> getParameters() {
 
@@ -403,6 +413,8 @@ public class NavigationCase {
      * <code>&lt;navigation-case&gt;</code>.  This will be
      * <code>true</code> if the new view should be navigated to via a
      * {@link javax.faces.context.ExternalContext#redirect(String)}</p>
+     * 
+     * @return <code>true</code> if this is a redirect, <code>false</code> otherwise.
      */
     public boolean isRedirect() {
 
@@ -417,6 +429,8 @@ public class NavigationCase {
      * <code>&lt;navigation-case&gt;</code>.  This will be
      * <code>true</code> if the view parametets should be encoded into
      * the redirect URL (only applies to redirect case)</p>
+     * 
+     * @return <code>true</code> if view parameters are to be included, <code>false</code> otherwise.
      */
     public boolean isIncludeViewParams() {
 

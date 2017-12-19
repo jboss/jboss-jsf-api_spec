@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -54,7 +54,6 @@ import javax.faces.application.ProjectStage;
 import javax.faces.application.FacesMessage.Severity;
 import javax.faces.component.UIViewRoot;
 import javax.faces.render.RenderKit;
-
 import javax.el.ELContext;
 import javax.faces.FactoryFinder;
 import javax.faces.component.UINamingContainer;
@@ -78,6 +77,10 @@ import javax.faces.event.PhaseId;
  * {@link FacesContext} instance is active, it must not be referenced
  * from any thread other than the one upon which the servlet container
  * executing this web application utilizes for the processing of this request.
+ * </p>
+ * 
+ * <p class="changed_added_2_3">A FacesContext can be injected into a request
+ * scoped bean using <code>@Inject FacesContext facesContext;</code>
  * </p>
  */
 
@@ -123,7 +126,9 @@ public abstract class FacesContext {
      * during application startup or shutdown.  If called during application
      * startup or shutdown, returns the correct current {@link
      * javax.faces.application.Application} instance.</p>
-
+     * 
+     * @return the <code>Application</code> instance associated with this web application.
+     * 
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
@@ -156,6 +161,9 @@ public abstract class FacesContext {
      *
      * </div>
      * 
+     * @return mutable <code>Map</code> representing the attributes associated wth this
+     *               <code>FacesContext</code> instance. 
+     * 
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
      *
@@ -169,7 +177,7 @@ public abstract class FacesContext {
         }
         if (!isCreatedFromValidFactory) {
             if (attributesForInvalidFactoryConstruction == null) {
-                attributesForInvalidFactoryConstruction = new HashMap<Object, Object>();
+                attributesForInvalidFactoryConstruction = new HashMap<>();
             }
             return attributesForInvalidFactoryConstruction;
         }
@@ -188,6 +196,8 @@ public abstract class FacesContext {
      * the rendering of specified components (known as partial rendering).
      * This method must return a new {@link PartialViewContext} if one
      * does not already exist.</p>
+     * 
+     * @return the instance of <code>PartialViewContext</code> for this request.
      * 
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
@@ -225,6 +235,9 @@ public abstract class FacesContext {
      * in the iterated values.  The elements in the <code>Iterator</code> must
      * be returned in the order in which they were added with {@link #addMessage}.</p>
      *
+     * @return the <code>Iterator</code> over the client identifiers for
+     *        which at least one {@link javax.faces.application.FacesMessage} has been queued.
+     *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
@@ -257,6 +270,8 @@ public abstract class FacesContext {
      *
      * </ul>
      *
+     * @return instance of <code>ELContext</code>.
+     *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
      *
@@ -277,6 +292,8 @@ public abstract class FacesContext {
     /**
      * <p class="changed_added_2_0">Return the {@link ExceptionHandler}
      * for this request.</p>
+     * 
+     *  @return instance of <code>ExceptionHandler</code>.
      */ 
     public ExceptionHandler getExceptionHandler() {
 
@@ -318,7 +335,9 @@ public abstract class FacesContext {
      * with the special behaviors indicated in the javadoc for that
      * class.  Methods document as being valid to call during
      * application startup or shutdown must be supported.</p>
-
+     * 
+     * @return instance of <code>ExternalContext</code>
+     * 
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
@@ -330,6 +349,8 @@ public abstract class FacesContext {
      * {@link javax.faces.application.FacesMessage}s that has been queued, whether or not they are
      * associated with any specific {@link javax.faces.component.UIComponent}.  If no such messages
      * have been queued, return <code>null</code>.</p>
+     *
+     * @return the maximum severity level.
      *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
@@ -344,6 +365,9 @@ public abstract class FacesContext {
      * return an empty <code>Iterator</code>.  The elements of the <code>Iterator</code>
      * must be returned in the order in which they were added with calls to {@link 
      * #addMessage}.</p>
+     *
+     * @return <code>Iterator</code> over the <code>FacesMessage</code>s
+     *                that have been queued.
      *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
@@ -390,6 +414,8 @@ public abstract class FacesContext {
      * for the sole purpose of not breaking existing applications that extend
      * this class.</p>
      *
+     * @param clientId the client id of a component.
+     *
      * @return an immutable <code>List</code> which is effectively a snapshot
      *  of the messages present at the time of invocation.
      *
@@ -423,6 +449,8 @@ public abstract class FacesContext {
      * @param clientId The client identifier for which messages are
      *  requested, or <code>null</code> for messages not associated with
      *  any client identifier
+     *  
+     *  @return <code>Iterator</code> over the <code>FacesMessage</code>s.
      *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
@@ -435,6 +463,9 @@ public abstract class FacesContext {
      * the argument.  Note that this enables accessing the value of this
      * property from the EL expression
      * <code>#{facesContext.namingContainerSeparatorChar}</code>.</p>
+     * 
+     * @return the separator char.
+     * 
      */
 
     public char getNamingContainerSeparatorChar() {
@@ -449,6 +480,8 @@ public abstract class FacesContext {
      * specified <code>renderKitId</code>, or if there is no {@link RenderKit}
      * for the specified identifier, return <code>null</code> instead.</p>
      *
+     * @return instance of <code>RenderKit</code> associated with the <code>UIViewRoot</code>.
+     *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
@@ -459,6 +492,9 @@ public abstract class FacesContext {
      * <p>Return <code>true</code> if the <code>renderResponse()</code>
      * method has been called for the current request.</p>
      *
+     * @return flag indicating whether the <code>renderResponse()</code> 
+     *              has been called.
+     *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
@@ -468,6 +504,9 @@ public abstract class FacesContext {
     /**
      * <p>Return <code>true</code> if the <code>responseComplete()</code>
      * method has been called for the current request.</p>
+     *
+     * @return the boolean indicating whether <code>responseComplete()</code>
+     *               method has been called.
      *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
@@ -485,6 +524,8 @@ public abstract class FacesContext {
      * implementation is provided that returns an empty list.  Implementations
      * compliant with the version in which this method was introduced must
      * implement this method as specified.</p>
+     * 
+     * @return the list of resource library contracts. 
      * 
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
@@ -519,6 +560,8 @@ public abstract class FacesContext {
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
      *
+     * @since 2.2 
+     *
      */
     
     public void setResourceLibraryContracts(List<String> contracts) {
@@ -527,6 +570,9 @@ public abstract class FacesContext {
     /**
      * <p class="changed_added_2_0">Return <code>true</code> if the <code>validationFailed()</code>
      * method has been called for the current request.</p>
+     * 
+     *  @return boolean indicating if the <code>validationFailed()</code>
+     *                method has been called for the current request
      * 
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
@@ -545,6 +591,8 @@ public abstract class FacesContext {
      * direct their binary output.  Within a given response, components
      * can use either the ResponseStream or the ResponseWriter,
      * but not both.
+     *
+     * @return <code>ResponseStream</code> instance.
      *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
@@ -572,6 +620,8 @@ public abstract class FacesContext {
      * direct their character-based output.  Within a given response,
      * components can use either the ResponseStream or the ResponseWriter,
      * but not both.</p>
+     *
+     * @return <code>ResponseWriter</code> instance.
      *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
@@ -601,7 +651,8 @@ public abstract class FacesContext {
      * during application startup or shutdown.  If called during application
      * startup or shutdown, this method returns a new <code>UIViewRoot</code> with
      * its locale set to <code>Locale.getDefault()</code>.</p>
-
+     *
+     * @return <code>UIViewRoot</code> instance.
      *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
@@ -729,6 +780,8 @@ public abstract class FacesContext {
      * for the sole purpose of not breaking existing applications that extend
      * this class.</p>
      * 
+     * @return the boolean indicating whether this request is a post one.
+     * 
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
      *
@@ -779,6 +832,8 @@ public abstract class FacesContext {
      * <p class="changed_added_2_0">Return the value last set on this
      * <code>FacesContext</code> instance when {@link #setCurrentPhaseId}
      * was called.</p>
+     *
+     * @return the current phase id.
      *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
@@ -856,6 +911,8 @@ public abstract class FacesContext {
      * return <code>false</code></p>
 
      * @param stage the {@link ProjectStage} to check
+     * 
+     *  @return boolean indicating whether the application has the same stage.
      *
      * @throws IllegalStateException if this method is called after
      *  this instance has been released
@@ -879,6 +936,7 @@ public abstract class FacesContext {
      * {@link FacesContext} instance for each processing thread.</p>
      */
     private static ThreadLocal<FacesContext> instance = new ThreadLocal<FacesContext>() {
+            @Override
             protected FacesContext initialValue() { return (null); }
         };
 
@@ -892,6 +950,8 @@ public abstract class FacesContext {
      * application startup or shutdown time.  The result of calling a
      * method during application startup or shutdown time that does not
      * have this designation is undefined.</p>
+     * 
+     * @return the instance of <code>FacesContext</code>.
      */
     public static FacesContext getCurrentInstance() {
         FacesContext facesContext = instance.get();
@@ -909,6 +969,11 @@ public abstract class FacesContext {
             // In the init case, this will return null if JSF hasn't been
             // initialized in the ServletContext corresponding to this 
             // Thread's context ClassLoader.
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if (cl == null) {
+                return null;
+            }
+            
             FacesContextFactory privateFacesContextFactory = (FacesContextFactory) FactoryFinder.getFactory("com.sun.faces.ServletContextFacesContextFactory");
             if (null != privateFacesContextFactory) {
                 facesContext = privateFacesContextFactory.getFacesContext(null, null, null, null);

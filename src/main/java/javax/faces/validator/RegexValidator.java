@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -109,6 +109,8 @@ public class RegexValidator implements Validator, PartialStateHolder {
     /**
      * <p>Return the <code>ValueExpression</code> that yields the
      * regular expression pattern when evaluated.</p>
+     *
+     * @return the pattern
      */
 
     public String getPattern() {
@@ -117,7 +119,7 @@ public class RegexValidator implements Validator, PartialStateHolder {
 
     /**
 
-     * </p>Validate a String against a regular expression pattern.  The
+     * <p>Validate a String against a regular expression pattern.  The
      * full regex pattern must be matched in order to pass the
      * validation.</p>
 
@@ -129,6 +131,7 @@ public class RegexValidator implements Validator, PartialStateHolder {
      * @throws ValidatorException   {@inheritDoc}
 
      */
+    @Override
     public void validate(FacesContext context,
                          UIComponent component,
                          Object value) {
@@ -176,6 +179,7 @@ public class RegexValidator implements Validator, PartialStateHolder {
     // ----------------------------------------------------- StateHolder Methods
 
 
+    @Override
     public Object saveState(FacesContext context) {
 
         if (context == null) {
@@ -192,6 +196,7 @@ public class RegexValidator implements Validator, PartialStateHolder {
     }
 
 
+    @Override
     public void restoreState(FacesContext context, Object state) {
 
         if (context == null) {
@@ -205,9 +210,10 @@ public class RegexValidator implements Validator, PartialStateHolder {
     }
 
 
-    private boolean transientValue = false;
+    private boolean transientValue;
 
 
+    @Override
     public boolean isTransient() {
 
         return (this.transientValue);
@@ -215,6 +221,7 @@ public class RegexValidator implements Validator, PartialStateHolder {
     }
 
 
+    @Override
     public void setTransient(boolean transientValue) {
 
         this.transientValue = transientValue;
@@ -224,14 +231,17 @@ public class RegexValidator implements Validator, PartialStateHolder {
 
     private boolean initialState;
 
+    @Override
     public void markInitialState() {
         initialState = true;
     }
 
+    @Override
     public boolean initialStateMarked() {
         return initialState;
     }
 
+    @Override
     public void clearInitialState() {
         initialState = false;
     }

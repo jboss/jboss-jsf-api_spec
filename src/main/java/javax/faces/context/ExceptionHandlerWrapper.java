@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -47,29 +47,46 @@ import javax.faces.event.ExceptionQueuedEvent;
 import javax.faces.event.SystemEvent;
 
 /**
- * <p>Provides a simple implementation of {@link ExceptionHandler} that can
+ * <p><span class="changed_modified_2_3">Provides</span>
+ * a simple implementation of {@link ExceptionHandler} that can
  * be subclassed by developers wishing to provide specialized behavior
  * to an existing {@link ExceptionHandler} instance.  The default
  * implementation of all methods is to call through to the wrapped
  * {@link ExceptionHandler} instance.</p>
  *
- * <p>Usage: extend this class and override {@link #getWrapped} to
- * return the instance we are wrapping.</p>
+ * <p class="changed_added_2_3">Usage: extend this class and push the implementation being wrapped to the
+ * constructor and use {@link #getWrapped} to access the instance being wrapped.</p>
  *
  * @since 2.0
  */
 public abstract class ExceptionHandlerWrapper extends ExceptionHandler implements FacesWrapper<ExceptionHandler> {
 
-
-    // ----------------------------------------------- Methods from FacesWrapper
-
+    private ExceptionHandler wrapped;
 
     /**
-     * @return the wrapped {@link ExceptionHandler} instance
-     * @see javax.faces.FacesWrapper#getWrapped() 
+     * @deprecated Use the other constructor taking the implementation being wrapped.
      */
+    @Deprecated
+    public ExceptionHandlerWrapper() {
+
+    }
+
+    /**
+     * <p class="changed_added_2_3">If this exception handler has been decorated,
+     * the implementation doing the decorating should push the implementation being wrapped to this constructor.
+     * The {@link #getWrapped()} will then return the implementation being wrapped.</p>
+     *
+     * @param wrapped The implementation being wrapped.
+     * @since 2.3
+     */
+    public ExceptionHandlerWrapper(ExceptionHandler wrapped) {
+        this.wrapped = wrapped;
+    }
+
     @Override
-    public abstract ExceptionHandler getWrapped();
+    public ExceptionHandler getWrapped() {
+        return wrapped;
+    }
 
 
     // ------------------------------------------- Methods from ExceptionHandler
@@ -152,7 +169,7 @@ public abstract class ExceptionHandlerWrapper extends ExceptionHandler implement
         return getWrapped().getHandledExceptionQueuedEvents();
     }
 
-    
+
     /**
      * <p>The default behavior of this method is to
      * call {@link ExceptionHandler#getUnhandledExceptionQueuedEvents()}

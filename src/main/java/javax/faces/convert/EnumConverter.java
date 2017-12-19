@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -84,7 +84,7 @@ public class EnumConverter implements Converter, PartialStateHolder {
      * string if none can be found.</li>
      * <li><code>{2}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String ENUM_ID =
          "javax.faces.converter.EnumConverter.ENUM";
@@ -99,7 +99,7 @@ public class EnumConverter implements Converter, PartialStateHolder {
      * <li><code>{0}</code> replaced by the unconverted value.</li>
      * <li><code>{1}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String ENUM_NO_CLASS_ID =
          "javax.faces.converter.EnumConverter.ENUM_NO_CLASS";
@@ -131,6 +131,7 @@ public class EnumConverter implements Converter, PartialStateHolder {
      * @throws ConverterException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public Object getAsObject(FacesContext context, UIComponent component,
                               String value) {
 
@@ -171,13 +172,13 @@ public class EnumConverter implements Converter, PartialStateHolder {
     }
 
     /**
-     * <p>Convert the enum constant given by the <code>value</code>
+     * <p class="changed_modified_2_3">Convert the enum constant given by the <code>value</code>
      * argument into a String.  If no target class argument has been
      * provided to the constructor of this instance, throw a
      * <code>ConverterException</code> containing the {@link
      * #ENUM_NO_CLASS_ID} message with proper parameters. If the
      * <code>value</code> argument is <code>null</code>, return
-     * <code>null</code>.  If the value is an instance of the provided
+     * the empty String.  If the value is an instance of the provided
      * target class, return its string value by <span
      * class="changed_added_2_0">casting it to a
      * <code>java.lang.Enum</code> and returning the result of calling
@@ -188,6 +189,7 @@ public class EnumConverter implements Converter, PartialStateHolder {
      * @throws ConverterException   {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public String getAsString(FacesContext context, UIComponent component,
                               Object value) {
 
@@ -204,11 +206,8 @@ public class EnumConverter implements Converter, PartialStateHolder {
                            component)));
         }
 
-        // If the specified value is null, return null
+        // If the specified value is null, return the empty string.
         if (value == null) {
-            // FIXSPEC even though the Javadoc states that we need to return 
-            // null the master Converter contract states that a null value 
-            // results in a zero-length string (see JAVASERVERFACES_SPEC_PUBLIC-1217)
             return "";
         }
 
@@ -227,6 +226,7 @@ public class EnumConverter implements Converter, PartialStateHolder {
 
     // ----------------------------------------------------------- StateHolder
 
+    @Override
     public void restoreState(FacesContext facesContext, Object object) {
         if (facesContext == null) {
             throw new NullPointerException();
@@ -236,6 +236,7 @@ public class EnumConverter implements Converter, PartialStateHolder {
         }
     }
 
+    @Override
     public Object saveState(FacesContext facesContext) {
         if (facesContext == null) {
             throw new NullPointerException();
@@ -246,26 +247,31 @@ public class EnumConverter implements Converter, PartialStateHolder {
         return null;
     }
 
-    private boolean isTransient = false;
+    private boolean isTransient;
 
+    @Override
     public void setTransient(boolean b) {
         isTransient = b;
     }
 
+    @Override
     public boolean isTransient() {
         return isTransient;
     }
 
     private boolean initialState;
 
+    @Override
     public void markInitialState() {
         initialState = true;
     }
 
+    @Override
     public boolean initialStateMarked() {
         return initialState;
     }
 
+    @Override
     public void clearInitialState() {
         initialState = false;
     }

@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -41,11 +41,12 @@
 package javax.faces.lifecycle;
 
 import java.util.Iterator;
+
 import javax.faces.FacesWrapper;
 
 
 /**
- * <p><strong class="changed_modified_2_0">LifecycleFactory</strong> is
+ * <p><strong class="changed_modified_2_0 changed_modified_2_3">LifecycleFactory</strong> is
  * a factory object that creates (if needed) and returns {@link
  * Lifecycle} instances.  Implementations of JavaServer Faces must
  * provide at least a default implementation of {@link Lifecycle}.
@@ -61,27 +62,45 @@ import javax.faces.FacesWrapper;
  *   LifecycleFactory factory = (LifecycleFactory)
  *    FactoryFinder.getFactory(FactoryFinder.LIFECYCLE_FACTORY);
  * </pre>
+ *
+ * <p class="changed_added_2_3">Usage: extend this class and push the implementation being wrapped to the
+ * constructor and use {@link #getWrapped} to access the instance being wrapped.</p>
  */
 
 public abstract class LifecycleFactory implements FacesWrapper<LifecycleFactory> {
 
-    public LifecycleFactory() {
-    }
-    
-    
+    private LifecycleFactory wrapped;
+
     /**
-     * <p class="changed_added_2_0">If this factory has been decorated, the 
+     * @deprecated Use the other constructor taking the implementation being wrapped.
+     */
+    @Deprecated
+    public LifecycleFactory() {
+
+    }
+
+    /**
+     * <p class="changed_added_2_3">If this factory has been decorated,
+     * the implementation doing the decorating should push the implementation being wrapped to this constructor.
+     * The {@link #getWrapped()} will then return the implementation being wrapped.</p>
+     *
+     * @param wrapped The implementation being wrapped.
+     */
+    public LifecycleFactory(LifecycleFactory wrapped) {
+        this.wrapped = wrapped;
+    }
+
+    /**
+     * <p class="changed_modified_2_3">If this factory has been decorated, the
      * implementation doing the decorating may override this method to provide
-     * access to the implementation being wrapped.  A default implementation
-     * is provided that returns <code>null</code>.</p>
-     * 
+     * access to the implementation being wrapped.</p>
+     *
      * @since 2.0
      */
-
+    @Override
     public LifecycleFactory getWrapped() {
-        return null;
+        return wrapped;
     }
-    
 
 
     /**
@@ -128,6 +147,8 @@ public abstract class LifecycleFactory implements FacesWrapper<LifecycleFactory>
      *  can be returned for the specified identifier
      * @throws NullPointerException if <code>lifecycleId</code>
      *  is <code>null</code>
+     *
+     * @return the {@code Lifecycle} instance
      */
     public abstract Lifecycle getLifecycle(String lifecycleId);
 
@@ -137,6 +158,9 @@ public abstract class LifecycleFactory implements FacesWrapper<LifecycleFactory>
      * identifiers supported by this factory.  This set must include
      * the value specified by <code>LifecycleFactory.DEFAULT_LIFECYCLE</code>.
      * </p>
+     *
+     * @return an {@code Iterator} over the set of lifecycle
+     * identifiers supported by this factory
      */
     public abstract Iterator<String> getLifecycleIds();
 

@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -74,6 +74,7 @@ public interface ClientBehaviorHolder {
      * <code>Collection</code> containing the names of the logical 
      * events supported by the component implementing this interface.</p>
      *
+     * @return an unmodifiable collection of event names.
      * @since 2.0
      */
     public Collection<String> getEventNames();
@@ -85,6 +86,7 @@ public interface ClientBehaviorHolder {
      * The keys in this <code>Map</code> are event names defined by
      * {@link #getEventNames}.</p>
      *
+     * @return an unmodifiable map of client behaviors.
      * @since 2.0
      */
     public Map<String, List<ClientBehavior>> getClientBehaviors();
@@ -96,6 +98,7 @@ public interface ClientBehaviorHolder {
      * {@link #getEventNames} or null if the component does not have
      * a default event.
      *
+     * @return the default event name.
      * @since 2.0
      */
     public String getDefaultEventName();

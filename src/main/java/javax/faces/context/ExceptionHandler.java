@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -48,11 +48,12 @@ import javax.faces.event.SystemEventListener;
 
 
 /**
- * <p class="changed_added_2_0"><strong>ExceptionHandler</strong> is the
- * central point for handling <em>unexpected</em>
- * <code>Exception</code>s that are thrown during the Faces
- * lifecycle. The <code>ExceptionHandler</code> must not be notified of
- * any <code>Exception</code>s that occur during application startup or
+ * <p class="changed_added_2_0"><strong
+ * class="changed_modified_2_3">ExceptionHandler</strong> is the central
+ * point for handling <em>unexpected</em> <code>Exception</code>s that
+ * are thrown during the Faces lifecycle. The
+ * <code>ExceptionHandler</code> must not be notified of any
+ * <code>Exception</code>s that occur during application startup or
  * shutdown.</p>
 
  * <div class="changed_added_2_0">
@@ -105,6 +106,13 @@ import javax.faces.event.SystemEventListener;
  * method, which is called at the end of each lifecycle phase, as
  * specified in section JSF.6.2.</p>
 
+ * <p class="changed_added_2_3">Note that if {@link #handle} happens to
+ * be invoked during {@link javax.faces.event.PhaseId#RENDER_RESPONSE},
+ * the recovery options are more limited than when it is invoked during
+ * other phases.  Specifically, it is not valid to call {@link
+ * javax.faces.application.NavigationHandler#handleNavigation} during
+ * {@code RENDER_RESPONSE}.</p>
+
  * <p>Instances of this class are request scoped and are created by
  * virtue of {@link FacesContextFactory#getFacesContext} calling {@link
  * ExceptionHandlerFactory#getExceptionHandler}.</p>
@@ -135,6 +143,9 @@ public abstract class ExceptionHandler implements SystemEventListener {
     /**
      * <p class="changed_added_2_0">Return the first
      * <code>ExceptionQueuedEvent</code> handled by this handler.</p>
+     * 
+     * @return instance of <code>ExceptionQueuedEvent</code>.
+     * 
      */
     public abstract ExceptionQueuedEvent getHandledExceptionQueuedEvent();
 
@@ -143,6 +154,9 @@ public abstract class ExceptionHandler implements SystemEventListener {
      * <p class="changed_added_2_0">Return an <code>Iterable</code> over
      * all <code>ExceptionQueuedEvent</code>s that have not yet been handled
      * by the {@link #handle} method.</p>
+     * 
+     *  @return the unhandled set of <code>ExceptionQueuedEvent</code>s.
+     * 
      */
     public abstract Iterable<ExceptionQueuedEvent> getUnhandledExceptionQueuedEvents();
 
@@ -152,6 +166,9 @@ public abstract class ExceptionHandler implements SystemEventListener {
      * return an <code>Iterable</code> over all
      * <code>ExceptionQueuedEvent</code>s that have been handled by the {@link
      * #handle} method.</p>
+     * 
+     * @return an <code>Iterable</code> over all <code>ExceptionQueuedEvent</code>s.
+     * 
      */
     public abstract Iterable<ExceptionQueuedEvent> getHandledExceptionQueuedEvents();
 
@@ -159,12 +176,14 @@ public abstract class ExceptionHandler implements SystemEventListener {
     /**
      * {@inheritDoc}
      */
+    @Override
     public abstract void processEvent(SystemEvent exceptionQueuedEvent) throws AbortProcessingException;
 
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public abstract boolean isListenerForSource(Object source);
 
     
@@ -174,10 +193,14 @@ public abstract class ExceptionHandler implements SystemEventListener {
      * <code>getClass()</code> is not equal to
      * <code>FacesException.class</code> or
      * <code>javax.el.ELException.class</code>.  If there is no root cause, <code>null</code> is returned.</p>
-
+     *
+     * @param t passed-in wrapped <code>Throwable</code>.
+     *
+     * @return unwrapped object.
+     * 
      * @throws NullPointerException if argument <code>t</code> is
      * <code>null</code>.
-
+     * 
      * @since 2.0
      */
     public abstract Throwable getRootCause(Throwable t);

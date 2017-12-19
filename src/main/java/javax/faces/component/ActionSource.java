@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -80,6 +80,8 @@ public interface ActionSource {
      *
      * @deprecated This has been replaced by {@link
      * ActionSource2#getActionExpression}.
+     * 
+     * @return the action.
      */
     public MethodBinding getAction();
 
@@ -123,6 +125,7 @@ public interface ActionSource {
      * request processing lifecycle, depending upon the value of the
      * <code>immediate</code> property.</p>
      *
+     * @return the action listener.
      * @deprecated Use {@link #getActionListeners} instead.
      */
     public MethodBinding getActionListener();
@@ -154,6 +157,8 @@ public interface ActionSource {
      * of the request processing lifecycle), rather than waiting until the
      * <em>Invoke Application</em> phase.  The default value for this
      * property must be <code>false</code>.</p>
+     * 
+     * @return <code>true</code> if immediate, <code>false</code> otherwise.
      */
     public boolean isImmediate();
 
@@ -185,6 +190,8 @@ public interface ActionSource {
      * <p>Return the set of registered {@link ActionListener}s for this
      * {@link ActionSource} instance.  If there are no registered listeners,
      * a zero-length array is returned.</p>
+     * 
+     * @return the action listeners, or a zero-length array.
      */
     public abstract ActionListener[] getActionListeners();
 

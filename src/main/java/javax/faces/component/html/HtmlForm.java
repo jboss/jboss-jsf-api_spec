@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -116,6 +116,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>accept</code> property.</p>
+     * @return the property value
      * <p>Contents: List of content types that a server processing this form
      * will handle correctly
      */
@@ -126,6 +127,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>accept</code> property.</p>
+     * @param accept the new property value
      */
     public void setAccept(java.lang.String accept) {
         getStateHelper().put(PropertyKeys.accept, accept);
@@ -135,6 +137,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>acceptcharset</code> property.</p>
+     * @return the property value
      * <p>Contents: List of character encodings for input data
      * that are accepted by the server processing
      * this form.
@@ -146,6 +149,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>acceptcharset</code> property.</p>
+     * @param acceptcharset the new property value
      */
     public void setAcceptcharset(java.lang.String acceptcharset) {
         getStateHelper().put(PropertyKeys.acceptcharset, acceptcharset);
@@ -154,6 +158,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>dir</code> property.</p>
+     * @return the property value
      * <p>Contents: Direction indication for text that does not inherit directionality.
      * Valid values are "LTR" (left-to-right) and "RTL" (right-to-left).
      * These attributes are case sensitive when rendering to XHTML, so
@@ -166,6 +171,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>dir</code> property.</p>
+     * @param dir the new property value
      */
     public void setDir(java.lang.String dir) {
         getStateHelper().put(PropertyKeys.dir, dir);
@@ -175,6 +181,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>enctype</code> property.</p>
+     * @return the property value
      * <p>Contents: Content type used to submit the form to the server.  If not
      * specified, the default value is
      * "application/x-www-form-urlencoded".
@@ -186,6 +193,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>enctype</code> property.</p>
+     * @param enctype the new property value
      */
     public void setEnctype(java.lang.String enctype) {
         getStateHelper().put(PropertyKeys.enctype, enctype);
@@ -194,6 +202,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>lang</code> property.</p>
+     * @return the property value
      * <p>Contents: Code describing the language used in the generated markup
      * for this component.
      */
@@ -204,6 +213,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>lang</code> property.</p>
+     * @param lang the new property value
      */
     public void setLang(java.lang.String lang) {
         getStateHelper().put(PropertyKeys.lang, lang);
@@ -213,6 +223,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>onclick</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * clicked over this element.
      */
@@ -223,6 +234,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>onclick</code> property.</p>
+     * @param onclick the new property value
      */
     public void setOnclick(java.lang.String onclick) {
         getStateHelper().put(PropertyKeys.onclick, onclick);
@@ -232,6 +244,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>ondblclick</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * double clicked over this element.
      */
@@ -242,6 +255,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>ondblclick</code> property.</p>
+     * @param ondblclick the new property value
      */
     public void setOndblclick(java.lang.String ondblclick) {
         getStateHelper().put(PropertyKeys.ondblclick, ondblclick);
@@ -251,6 +265,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>onkeydown</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * pressed down over this element.
      */
@@ -261,6 +276,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>onkeydown</code> property.</p>
+     * @param onkeydown the new property value
      */
     public void setOnkeydown(java.lang.String onkeydown) {
         getStateHelper().put(PropertyKeys.onkeydown, onkeydown);
@@ -270,6 +286,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>onkeypress</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * pressed and released over this element.
      */
@@ -280,6 +297,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>onkeypress</code> property.</p>
+     * @param onkeypress the new property value
      */
     public void setOnkeypress(java.lang.String onkeypress) {
         getStateHelper().put(PropertyKeys.onkeypress, onkeypress);
@@ -289,6 +307,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>onkeyup</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * released over this element.
      */
@@ -299,6 +318,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>onkeyup</code> property.</p>
+     * @param onkeyup the new property value
      */
     public void setOnkeyup(java.lang.String onkeyup) {
         getStateHelper().put(PropertyKeys.onkeyup, onkeyup);
@@ -308,6 +328,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>onmousedown</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * pressed down over this element.
      */
@@ -318,6 +339,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>onmousedown</code> property.</p>
+     * @param onmousedown the new property value
      */
     public void setOnmousedown(java.lang.String onmousedown) {
         getStateHelper().put(PropertyKeys.onmousedown, onmousedown);
@@ -327,6 +349,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>onmousemove</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved within this element.
      */
@@ -337,6 +360,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>onmousemove</code> property.</p>
+     * @param onmousemove the new property value
      */
     public void setOnmousemove(java.lang.String onmousemove) {
         getStateHelper().put(PropertyKeys.onmousemove, onmousemove);
@@ -346,6 +370,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>onmouseout</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved away from this element.
      */
@@ -356,6 +381,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>onmouseout</code> property.</p>
+     * @param onmouseout the new property value
      */
     public void setOnmouseout(java.lang.String onmouseout) {
         getStateHelper().put(PropertyKeys.onmouseout, onmouseout);
@@ -365,6 +391,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>onmouseover</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved onto this element.
      */
@@ -375,6 +402,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>onmouseover</code> property.</p>
+     * @param onmouseover the new property value
      */
     public void setOnmouseover(java.lang.String onmouseover) {
         getStateHelper().put(PropertyKeys.onmouseover, onmouseover);
@@ -384,6 +412,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>onmouseup</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * released over this element.
      */
@@ -394,6 +423,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>onmouseup</code> property.</p>
+     * @param onmouseup the new property value
      */
     public void setOnmouseup(java.lang.String onmouseup) {
         getStateHelper().put(PropertyKeys.onmouseup, onmouseup);
@@ -403,6 +433,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>onreset</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when this form is reset.
      */
     public java.lang.String getOnreset() {
@@ -412,6 +443,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>onreset</code> property.</p>
+     * @param onreset the new property value
      */
     public void setOnreset(java.lang.String onreset) {
         getStateHelper().put(PropertyKeys.onreset, onreset);
@@ -421,6 +453,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>onsubmit</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when this form is submitted.
      */
     public java.lang.String getOnsubmit() {
@@ -430,6 +463,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>onsubmit</code> property.</p>
+     * @param onsubmit the new property value
      */
     public void setOnsubmit(java.lang.String onsubmit) {
         getStateHelper().put(PropertyKeys.onsubmit, onsubmit);
@@ -439,6 +473,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>role</code> property.</p>
+     * @return the property value
      * <p>Contents: <p class="changed_added_2_2">Per the WAI-ARIA spec and its
      * relationship to HTML5 (Section title ARIA Role Attriubute),
      * every HTML element may have a "role" attribute whose value
@@ -461,6 +496,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>role</code> property.</p>
+     * @param role the new property value
      */
     public void setRole(java.lang.String role) {
         getStateHelper().put(PropertyKeys.role, role);
@@ -470,6 +506,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>style</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style(s) to be applied when this component is rendered.
      */
     public java.lang.String getStyle() {
@@ -479,6 +516,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>style</code> property.</p>
+     * @param style the new property value
      */
     public void setStyle(java.lang.String style) {
         getStateHelper().put(PropertyKeys.style, style);
@@ -488,6 +526,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>styleClass</code> property.</p>
+     * @return the property value
      * <p>Contents: Space-separated list of CSS style class(es) to be applied when
      * this element is rendered.  This value must be passed through
      * as the "class" attribute on generated markup.
@@ -499,6 +538,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>styleClass</code> property.</p>
+     * @param styleClass the new property value
      */
     public void setStyleClass(java.lang.String styleClass) {
         getStateHelper().put(PropertyKeys.styleClass, styleClass);
@@ -507,6 +547,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>target</code> property.</p>
+     * @return the property value
      * <p>Contents: Name of a frame where the response
      * retrieved after this form submit is to
      * be displayed.
@@ -518,6 +559,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>target</code> property.</p>
+     * @param target the new property value
      */
     public void setTarget(java.lang.String target) {
         getStateHelper().put(PropertyKeys.target, target);
@@ -527,6 +569,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Return the value of the <code>title</code> property.</p>
+     * @return the property value
      * <p>Contents: Advisory title information about markup elements generated
      * for this component.
      */
@@ -537,6 +580,7 @@ public class HtmlForm extends javax.faces.component.UIForm implements ClientBeha
 
     /**
      * <p>Set the value of the <code>title</code> property.</p>
+     * @param title the new property value
      */
     public void setTitle(java.lang.String title) {
         getStateHelper().put(PropertyKeys.title, title);

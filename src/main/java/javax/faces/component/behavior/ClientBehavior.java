@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -113,7 +113,7 @@ public interface ClientBehavior extends Behavior {
      * @param component {@link UIComponent} the component associated with this {@link Behavior} 
      *
      * @throws NullPointerException if <code>context</code> or 
-     * <code>component<code> is <code>null</code>.
+     * <code>component</code> is <code>null</code>.
      *
      * @since 2.0
      */

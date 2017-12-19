@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -63,7 +63,7 @@ public interface StateHolder {
 
     /**
      * <p> Gets the state of the instance as a
-     * <code>Serializable</code> Object.<p>
+     * <code>Serializable</code> Object.</p>
      *
      * <p>If the class that implements this interface has references to
      * instances that implement StateHolder (such as a
@@ -76,15 +76,17 @@ public interface StateHolder {
      * <p>This method must not alter the state of the implementing
      * object.  In other words, after executing this code:</p>
      *
-     * <code><pre>
+     * <pre><code>
      * Object state = component.saveState(facesContext);
-     * </pre></code>
+     * </code></pre>
      *
      * <p><code>component</code> should be the same as before executing
      * it.</p>
      *
      * <p>The return from this method must be <code>Serializable</code></p>
      * 
+     * @param context the Faces context.
+     * @return the saved state.
      * @throws NullPointerException if <code>context</code> is null
      */
 
@@ -92,7 +94,7 @@ public interface StateHolder {
 
     /**
      *
-     * <p><span class="changed_modified_2_0_rev_a">Perform</state> any
+     * <p><span class="changed_modified_2_0_rev_a">Perform</span> any
      * processing required to restore the state from the entries in the
      * state Object.</p>
      *
@@ -105,6 +107,8 @@ public interface StateHolder {
      * <p class="changed_modified_2_0_rev_a">If the <code>state</code>
      * argument is <code>null</code>, take no action and return.</p>
      * 
+     * @param context the Faces context.
+     * @param state the state.
      * @throws NullPointerException if <code>context</code> is null.
      */
 
@@ -114,6 +118,8 @@ public interface StateHolder {
      *
      * <p>If true, the Object implementing this interface must not
      * participate in state saving or restoring.</p>
+     * 
+     * @return <code>true</code> if transient, <code>false</code> otherwise.
      */
 
     public boolean isTransient();

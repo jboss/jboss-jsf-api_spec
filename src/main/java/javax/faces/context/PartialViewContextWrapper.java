@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -41,35 +41,54 @@
 package javax.faces.context;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.faces.FacesWrapper;
 import javax.faces.event.PhaseId;
 
 /**
- * <p class="changed_added_2_0"><span class="changed_modified_2_2">Provides</span> 
+ * <p class="changed_added_2_0"><span class="changed_modified_2_2
+ * changed_modified_2_3">Provides</span>
  * a simple implementation of {@link PartialViewContext} that can
  * be subclassed by developers wishing to provide specialized behavior
  * to an existing {@link PartialViewContext} instance.  The default
  * implementation of all methods is to call through to the wrapped
  * {@link ExternalContext} instance.</p>
  *
- * <p>Usage: extend this class and override {@link #getWrapped} to
- * return the instance being wrapping.</p>
+ * <p class="changed_added_2_3">Usage: extend this class and push the implementation being wrapped to the
+ * constructor and use {@link #getWrapped} to access the instance being wrapped.</p>
  *
  * @since 2.0
  */
 public abstract class PartialViewContextWrapper extends PartialViewContext implements FacesWrapper<PartialViewContext> {
 
 
-    // ----------------------------------------------- Methods from FacesWrapper
-
+    private PartialViewContext wrapped;
 
     /**
-     * @return the wrapped {@link PartialViewContext} instance
-     * @see javax.faces.FacesWrapper#getWrapped()
+     * @deprecated Use the other constructor taking the implementation being wrapped.
      */
+    @Deprecated
+    public PartialViewContextWrapper() {
+
+    }
+
+    /**
+     * <p class="changed_added_2_3">If this partial view context has been decorated,
+     * the implementation doing the decorating should push the implementation being wrapped to this constructor.
+     * The {@link #getWrapped()} will then return the implementation being wrapped.</p>
+     *
+     * @param wrapped The implementation being wrapped.
+     * @since 2.3
+     */
+    public PartialViewContextWrapper(PartialViewContext wrapped) {
+        this.wrapped = wrapped;
+    }
+
     @Override
-    public abstract PartialViewContext getWrapped();
+    public PartialViewContext getWrapped() {
+        return wrapped;
+    }
 
 
     // ----------------------------------------- Methods from PartialViewContext
@@ -87,7 +106,7 @@ public abstract class PartialViewContextWrapper extends PartialViewContext imple
         return getWrapped().getExecuteIds();
     }
 
-     /**
+    /**
      * <p>The default behavior of this method is to
      * call {@link PartialViewContext#getRenderIds()}
      * on the wrapped {@link PartialViewContext} object.</p>
@@ -99,7 +118,21 @@ public abstract class PartialViewContextWrapper extends PartialViewContext imple
         return getWrapped().getRenderIds();
     }
 
-     /**
+    /**
+     * <p class="changed_added_2_3">
+     * The default behavior of this method is to call
+     * {@link PartialViewContext#getRenderIds()}
+     * on the wrapped {@link PartialViewContext} object.
+     * </p>
+     *
+     * @see PartialViewContext#getEvalScripts()
+     */
+    @Override
+    public List<String> getEvalScripts() {
+        return getWrapped().getEvalScripts();
+    }
+
+    /**
      * <p>The default behavior of this method is to
      * call {@link PartialViewContext#getPartialResponseWriter()}
      * on the wrapped {@link PartialViewContext} object.</p>
@@ -122,8 +155,8 @@ public abstract class PartialViewContextWrapper extends PartialViewContext imple
     public void setPartialRequest(boolean isPartialRequest) {
         getWrapped().setPartialRequest(isPartialRequest);
     }
-    
-     /**
+
+    /**
      * <p>The default behavior of this method is to
      * call {@link PartialViewContext#isAjaxRequest()}
      * on the wrapped {@link PartialViewContext} object.</p>
@@ -135,7 +168,7 @@ public abstract class PartialViewContextWrapper extends PartialViewContext imple
         return getWrapped().isAjaxRequest();
     }
 
-     /**
+    /**
      * <p>The default behavior of this method is to
      * call {@link PartialViewContext#isPartialRequest()}
      * on the wrapped {@link PartialViewContext} object.</p>
@@ -147,7 +180,7 @@ public abstract class PartialViewContextWrapper extends PartialViewContext imple
         return getWrapped().isPartialRequest();
     }
 
-     /**
+    /**
      * <p>The default behavior of this method is to
      * call {@link PartialViewContext#isExecuteAll()}
      * on the wrapped {@link PartialViewContext} object.</p>
@@ -159,7 +192,7 @@ public abstract class PartialViewContextWrapper extends PartialViewContext imple
         return getWrapped().isExecuteAll();
     }
 
-     /**
+    /**
      * <p>The default behavior of this method is to
      * call {@link PartialViewContext#isRenderAll()}
      * on the wrapped {@link PartialViewContext} object.</p>
@@ -171,7 +204,7 @@ public abstract class PartialViewContextWrapper extends PartialViewContext imple
         return getWrapped().isRenderAll();
     }
 
-     /**
+    /**
      * <p>The default behavior of this method is to
      * call {@link PartialViewContext#isResetValues()}
      * on the wrapped {@link PartialViewContext} object.</p>
@@ -183,7 +216,7 @@ public abstract class PartialViewContextWrapper extends PartialViewContext imple
         return getWrapped().isResetValues();
     }
 
-     /**
+    /**
      * <p>The default behavior of this method is to
      * call {@link PartialViewContext#setRenderAll(boolean)}
      * on the wrapped {@link PartialViewContext} object.</p>
@@ -195,7 +228,7 @@ public abstract class PartialViewContextWrapper extends PartialViewContext imple
         getWrapped().setRenderAll(renderAll);
     }
 
-     /**
+    /**
      * <p>The default behavior of this method is to
      * call {@link PartialViewContext#release()}
      * on the wrapped {@link PartialViewContext} object.</p>
@@ -207,7 +240,7 @@ public abstract class PartialViewContextWrapper extends PartialViewContext imple
         getWrapped().release();
     }
 
-     /**
+    /**
      * <p>The default behavior of this method is to
      * call {@link PartialViewContext#processPartial(PhaseId)}
      * on the wrapped {@link PartialViewContext} object.</p>

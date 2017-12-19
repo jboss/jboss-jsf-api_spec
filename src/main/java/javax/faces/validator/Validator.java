@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -53,18 +53,17 @@ import java.util.EventListener;
  * javax.faces.component.EditableValueHolder} in the view, and are
  * called during the <em>Process Validations</em> phase of the request
  * processing lifecycle.</p>
-
- * <p/>
+ * 
  * <p>Individual {@link Validator}s should examine the value and
  * component that they are passed, and throw a {@link ValidatorException}
  * containing a {@link javax.faces.application.FacesMessage}, documenting
  * any failures to conform to the required rules.
- * <p/>
+ * 
  * <p>For maximum generality, {@link Validator} instances may be
  * configurable based on properties of the {@link Validator} implementation
  * class.  For example, a range check {@link Validator} might support
  * configuration of the minimum and maximum values to be used.</p>
- * <p/>
+ * 
  * <p>{@link Validator} implementations must have a zero-arguments
  * public constructor.  In addition, if the {@link Validator} class
  * wishes to have configuration property values saved and restored with
@@ -81,10 +80,11 @@ import java.util.EventListener;
  * action described in <code>ResourceDependencies</code> must be taken
  * when {@link javax.faces.component.EditableValueHolder#addValidator} 
  * is called.</p>
-
+ * 
+ * @param <T> The generic type of object value to validate.
  */
 
-public interface Validator extends EventListener {
+public interface Validator<T> extends EventListener {
 
     /**
      * <p>The message identifier of the {@link javax.faces.application.FacesMessage} to be created if
@@ -132,7 +132,7 @@ public interface Validator extends EventListener {
      */
     public void validate(FacesContext context,
                          UIComponent component,
-                         Object value) throws ValidatorException;
+                         T value) throws ValidatorException;
 
 
 }

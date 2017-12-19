@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -79,6 +79,7 @@ public class HtmlColumn extends javax.faces.component.UIColumn {
         footerClass,
         headerClass,
         rowHeader,
+        styleClass,
 ;
         String toString;
         PropertyKeys(String toString) { this.toString = toString; }
@@ -90,6 +91,7 @@ public class HtmlColumn extends javax.faces.component.UIColumn {
 
     /**
      * <p>Return the value of the <code>footerClass</code> property.</p>
+     * @return the property value
      * <p>Contents: Space-separated list of CSS style class(es) that will be
      * applied to any footer generated for this column.
      */
@@ -100,6 +102,7 @@ public class HtmlColumn extends javax.faces.component.UIColumn {
 
     /**
      * <p>Set the value of the <code>footerClass</code> property.</p>
+     * @param footerClass the new property value
      */
     public void setFooterClass(java.lang.String footerClass) {
         getStateHelper().put(PropertyKeys.footerClass, footerClass);
@@ -108,6 +111,7 @@ public class HtmlColumn extends javax.faces.component.UIColumn {
 
     /**
      * <p>Return the value of the <code>headerClass</code> property.</p>
+     * @return the property value
      * <p>Contents: Space-separated list of CSS style class(es) that will be
      * applied to any header generated for this column.
      */
@@ -118,6 +122,7 @@ public class HtmlColumn extends javax.faces.component.UIColumn {
 
     /**
      * <p>Set the value of the <code>headerClass</code> property.</p>
+     * @param headerClass the new property value
      */
     public void setHeaderClass(java.lang.String headerClass) {
         getStateHelper().put(PropertyKeys.headerClass, headerClass);
@@ -126,6 +131,7 @@ public class HtmlColumn extends javax.faces.component.UIColumn {
 
     /**
      * <p>Return the value of the <code>rowHeader</code> property.</p>
+     * @return the property value
      * <p>Contents: Flag indicating that this column is a row header column and
      * therefore cells in this column should be rendered with "th"
      * instead of "td" and must have the 'scope="row"' attribute.
@@ -137,9 +143,30 @@ public class HtmlColumn extends javax.faces.component.UIColumn {
 
     /**
      * <p>Set the value of the <code>rowHeader</code> property.</p>
+     * @param rowHeader the new property value
      */
     public void setRowHeader(boolean rowHeader) {
         getStateHelper().put(PropertyKeys.rowHeader, rowHeader);
+    }
+
+
+    /**
+     * <p>Return the value of the <code>styleClass</code> property.</p>
+     * @return the property value
+     * <p>Contents: Space-separated list of CSS style class(es) that will be
+     * applied to the "td" of this column
+     */
+    public java.lang.String getStyleClass() {
+        return (java.lang.String) getStateHelper().eval(PropertyKeys.styleClass);
+
+    }
+
+    /**
+     * <p>Set the value of the <code>styleClass</code> property.</p>
+     * @param styleClass the new property value
+     */
+    public void setStyleClass(java.lang.String styleClass) {
+        getStateHelper().put(PropertyKeys.styleClass, styleClass);
     }
 
 

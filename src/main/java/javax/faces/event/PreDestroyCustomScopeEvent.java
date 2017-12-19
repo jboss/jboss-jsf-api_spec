@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -40,6 +40,8 @@
 
 package javax.faces.event;
 
+import javax.faces.context.FacesContext;
+
 /**
  * <p class="changed_added_2_0">This class is provided to allow custom
  * scopes to publish a "pre construct" event in the same way that other
@@ -57,6 +59,8 @@ public class PreDestroyCustomScopeEvent extends SystemEvent {
 
     // ------------------------------------------------------------ Constructors
 
+    private static final long serialVersionUID = -3646173841788025206L;
+
     /**
      * <p class="changed_added_2_0">An instance of this event indicates
      * that the custom scope enclosed within the argument
@@ -72,13 +76,28 @@ public class PreDestroyCustomScopeEvent extends SystemEvent {
         super(scopeContext);
 
     }
-
+    
+    /**
+     * <p class="changed_added_2_3">An instance of this event indicates
+     * that the custom scope enclosed within the argument
+     * <code>scopeContext</code> is about to end.</p>
+     * 
+     * @param facesContext the Faces context.
+     * @param scopeContext A structure that contains the name of the
+     * scope and the scope itself exposed as a <code>Map&lt;String,
+     * Object&gt;</code>.
+     */
+    public PreDestroyCustomScopeEvent(FacesContext facesContext, ScopeContext scopeContext) {
+        super(facesContext, scopeContext);
+    }
 
     // ---------------------------------------------------------- Public Methods
 
     /**
      * <p class="changed_added_2_0">Return the <code>ScopeContext</code>
      * for this event.</p>
+     * 
+     * @return the scope context.
      */
     public ScopeContext getContext() {
 

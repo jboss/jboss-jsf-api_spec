@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -70,8 +70,8 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
     public ComponentStateHelper(UIComponent component) {
 
         this.component = component;
-        this.deltaMap = new HashMap<Serializable,Object>();
-        this.defaultMap = new HashMap<Serializable,Object>();
+        this.deltaMap = new HashMap<>();
+        this.defaultMap = new HashMap<>();
         this.transientState = null;
     }
 
@@ -87,6 +87,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
      * @param value
      * @return the original value in the delta-map, if not present, the old value in the main map
      */
+    @Override
     public Object put(Serializable key, Object value) {
 
         if(component.initialStateMarked() || value instanceof PartialStateHolder) {
@@ -113,6 +114,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
      * @param key
      * @return the removed object in the delta-map. if not present, the removed object from the main map
      */
+    @Override
     public Object remove(Serializable key) {
         if(component.initialStateMarked()) {
             Object retVal = deltaMap.remove(key);
@@ -134,13 +136,14 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
     /**
      * @see StateHelper#put(java.io.Serializable, String, Object)
      */
+    @Override
     public Object put(Serializable key, String mapKey, Object value) {
 
         Object ret = null;
         if (component.initialStateMarked()) {
             Map<String,Object> dMap = (Map<String,Object>) deltaMap.get(key);
             if (dMap == null) {
-                dMap = new HashMap<String,Object>(5);
+                dMap = new HashMap<>(5);
                 deltaMap.put(key, dMap);
             }
             ret = dMap.put(mapKey, value);
@@ -148,7 +151,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
         }
         Map<String,Object> map = (Map<String,Object>) get(key);
         if (map == null) {
-            map = new HashMap<String,Object>(8);
+            map = new HashMap<>(8);
             defaultMap.put(key, map);
         }
         if (ret == null) {
@@ -170,6 +173,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
      * @param key
      * @return
      */
+    @Override
     public Object get(Serializable key) {
         return defaultMap.get(key);
     }
@@ -178,6 +182,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
     /**
      * @see StateHelper#eval(java.io.Serializable)
      */
+    @Override
     public Object eval(Serializable key) {
         return eval(key, null);
     }
@@ -186,6 +191,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
     /**
      * @see StateHelper#eval(java.io.Serializable, Object)
      */
+    @Override
     public Object eval(Serializable key, Object defaultValue) {
         Object retVal = get(key);
         if (retVal == null) {
@@ -203,19 +209,20 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
     /**
      * @see StateHelper#add(java.io.Serializable, Object)
      */
+    @Override
     public void add(Serializable key, Object value) {
 
         if (component.initialStateMarked()) {
             List<Object> deltaList = (List<Object>) deltaMap.get(key);
             if (deltaList == null) {
-                deltaList = new ArrayList<Object>(4);
+                deltaList = new ArrayList<>(4);
                 deltaMap.put(key, deltaList);
             }
             deltaList.add(value);
         }
         List<Object> items = (List<Object>) get(key);
         if (items == null) {
-            items = new ArrayList<Object>(4);
+            items = new ArrayList<>(4);
             defaultMap.put(key, items);
         }
         items.add(value);
@@ -226,6 +233,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
     /**
      * @see StateHelper#remove(java.io.Serializable, Object)
      */
+    @Override
     public Object remove(Serializable key, Object valueOrKey) {
         Object source = get(key);
         if (source instanceof Collection) {
@@ -248,6 +256,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
      * @param context
      * @return the saved state
      */
+    @Override
     public Object saveState(FacesContext context) {
         if (context == null) {
             throw new NullPointerException();
@@ -261,7 +270,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
     }
 
 
-
+    
     /**
      * One and only implementation of
      * restore state. Makes all other implementations
@@ -270,6 +279,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
      * @param context FacesContext
      * @param state the state to be restored.
      */
+    @Override
     public void restoreState(FacesContext context, Object state) {
 
         if (context == null) {
@@ -313,22 +323,49 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
                     this.put(serializable, entry.getKey(), entry.getValue());
                 }
             } else if (value instanceof List) {
-                List<Object> list = (List) get(serializable);
-                for (Object o : ((List<Object>) value)) {
-                    if (list == null || !list.contains(o)) {
-                        this.add(serializable, o);
-                    }
-                }
+                defaultMap.remove(serializable);
+                deltaMap.remove(serializable);
+                List values = (List) value;
+                values.stream().forEach((o) -> {
+                    add(serializable, o);
+               });
             } else {
                 put(serializable, value);
+                handleAttribute(serializable.toString(), value);
             }
         }
     }
 
+    /*
+     * Because our renderers optimize we need to make sure that upon restore
+     * we mimic the handleAttribute of our standard generated HTML components
+     * setter methods.
+     */
+    private void handleAttribute(String name, Object value) {
+        List<String> setAttributes = (List<String>) component.getAttributes().get("javax.faces.component.UIComponentBase.attributesThatAreSet");
+        if (setAttributes == null) {
+            String cname = this.getClass().getName();
+            if (cname != null && cname.startsWith("javax.faces.component.")) {
+                setAttributes = new ArrayList<>(6);
+                component.getAttributes().put("javax.faces.component.UIComponentBase.attributesThatAreSet", setAttributes);
+            }
+        }
+        if (setAttributes != null) {
+            if (value == null) {
+                ValueExpression ve = component.getValueExpression(name);
+                if (ve == null) {
+                    setAttributes.remove(name);
+                }
+            } else if (!setAttributes.contains(name)) {
+                setAttributes.add(name);
+            }
+        }
+    }    
 
     /**
      * @see javax.faces.component.StateHolder#isTransient()
      */
+    @Override
     public boolean isTransient() {
         return isTransient;
     }
@@ -337,6 +374,7 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
     /**
      * @see StateHolder#setTransient(boolean)
      */
+    @Override
     public void setTransient(boolean newTransientValue) {
         isTransient = newTransientValue;
     }
@@ -438,11 +476,13 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
     }
 
 
+    @Override
     public Object getTransient(Object key)
     {
         return (transientState == null) ? null : transientState.get(key);
     }
 
+    @Override
     public Object getTransient(Object key, Object defaultValue)
     {
         Object returnValue = (transientState == null) ? null : transientState.get(key);
@@ -453,21 +493,24 @@ class ComponentStateHelper implements StateHelper , TransientStateHelper {
         return defaultValue;
     }
 
+    @Override
     public Object putTransient(Object key, Object value)
     {
         if (transientState == null)
         {
-            transientState = new HashMap<Object, Object>();
+            transientState = new HashMap<>();
         }
         return transientState.put(key, value);
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public void restoreTransientState(FacesContext context, Object state)
     {
         transientState = (Map<Object, Object>) state;
     }
     
+    @Override
     public Object saveTransientState(FacesContext context)
     {
         return transientState;

@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -47,26 +47,45 @@ import javax.faces.context.FacesContext;
  * <p class="changed_added_2_2">Create {@link ClientWindow} instances based on 
  * the incoming request.</p>
  * 
+ * <p class="changed_added_2_3">Usage: extend this class and push the implementation being wrapped to the
+ * constructor and use {@link #getWrapped} to access the instance being wrapped.</p>
  * 
  * @since 2.2
  */
 public abstract class ClientWindowFactory implements FacesWrapper<ClientWindowFactory> {
 
     
+    private ClientWindowFactory wrapped;
+
     /**
-     * <p class="changed_added_2_2">If this factory has been decorated, the 
-     * implementation doing the decorating may override this method to provide
-     * access to the implementation being wrapped.  A default implementation
-     * is provided that returns <code>null</code>.</p>
-     * 
-     * @since 2.2
+     * @deprecated Use the other constructor taking the implementation being wrapped.
      */
-    
+    @Deprecated
+    public ClientWindowFactory() {
+        
+    }
+
+    /**
+     * <p class="changed_added_2_3">If this factory has been decorated, 
+     * the implementation doing the decorating should push the implementation being wrapped to this constructor.
+     * The {@link #getWrapped()} will then return the implementation being wrapped.</p>
+     * 
+     * @param wrapped The implementation being wrapped.
+     */
+    public ClientWindowFactory(ClientWindowFactory wrapped) {
+        this.wrapped = wrapped;
+    }
+
+    /**
+     * <p class="changed_modified_2_3">If this factory has been decorated, the 
+     * implementation doing the decorating may override this method to provide
+     * access to the implementation being wrapped.</p>
+     */
     @Override
     public ClientWindowFactory getWrapped() {
-        return null;
+        return wrapped;
     }
-    
+
     /**
      * <p class="changed_added_2_2">The implementation is responsible
      * for creating the {@link ClientWindow} instance for this request.

@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -55,6 +55,8 @@ import javax.faces.FacesException;
 import javax.faces.FacesWrapper;
 import javax.faces.component.UIComponent;
 import javax.faces.component.behavior.Behavior;
+import javax.faces.component.search.SearchExpressionHandler;
+import javax.faces.component.search.SearchKeywordResolver;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.el.MethodBinding;
@@ -76,19 +78,39 @@ import javax.faces.validator.Validator;
  * Application} instance.  The default implementation of all methods
  * is to call through to the wrapped {@link Application}.</p>
  *
- * <div class="changed_added_2_0">
- *
- * <p>Usage: extend this class and override {@link #getWrapped} to
- * return the instance we are wrapping.</p>
- *
- * </div>
+ * <p class="changed_added_2_3">Usage: extend this class and push the implementation being wrapped to the
+ * constructor and use {@link #getWrapped} to access the instance being wrapped.</p>
  *
  * @since 2.0
  */
 public abstract class ApplicationWrapper extends Application implements FacesWrapper<Application> {
 
+    private Application wrapped;
+
+    /**
+     * @deprecated Use the other constructor taking the implementation being wrapped.
+     */
+    @Deprecated
+    public ApplicationWrapper() {
+
+    }
+
+    /**
+     * <p class="changed_added_2_3">If this application has been decorated,
+     * the implementation doing the decorating should push the implementation being wrapped to this constructor.
+     * The {@link #getWrapped()} will then return the implementation being wrapped.</p>
+     *
+     * @param wrapped The implementation being wrapped.
+     * @since 2.3
+     */
+    public ApplicationWrapper(Application wrapped) {
+        this.wrapped = wrapped;
+    }
+
     @Override
-    public abstract Application getWrapped();
+    public Application getWrapped() {
+        return wrapped;
+    }
 
     /**
      * <p class="changed_added_2_0">The default behavior of this method
@@ -214,7 +236,7 @@ public abstract class ApplicationWrapper extends Application implements FacesWra
      * <p class="changed_added_2_0">The default behavior of this method
      * is to call {@link Application#getPropertyResolver} on the
      * wrapped {@link Application} object.</p>
-     * 
+     *
      * @deprecated See superclass for alternative.
      */
     @Override
@@ -227,7 +249,7 @@ public abstract class ApplicationWrapper extends Application implements FacesWra
      * <p class="changed_added_2_0">The default behavior of this method
      * is to call {@link Application#setPropertyResolver(javax.faces.el.PropertyResolver)} on the
      * wrapped {@link Application} object.</p>
-     * 
+     *
      * @deprecated See superclass for alternative.
      */
     @Override
@@ -240,7 +262,7 @@ public abstract class ApplicationWrapper extends Application implements FacesWra
      * <p class="changed_added_2_0">The default behavior of this method
      * is to call {@link Application#getVariableResolver} on the
      * wrapped {@link Application} object.</p>
-     * 
+     *
      * @deprecated See superclass for alternative.
      */
     @Override
@@ -253,7 +275,7 @@ public abstract class ApplicationWrapper extends Application implements FacesWra
      * <p class="changed_added_2_0">The default behavior of this method
      * is to call {@link Application#setVariableResolver(javax.faces.el.VariableResolver)} on the
      * wrapped {@link Application} object.</p>
-     * 
+     *
      * @deprecated See superclass for alternative.
      */
     @Override
@@ -276,7 +298,7 @@ public abstract class ApplicationWrapper extends Application implements FacesWra
      * <p class="changed_added_2_0"><span class="changed_modified_2_2">The</span> default behavior of this method
      * is to call {@link Application#setViewHandler(ViewHandler)} on the
      * wrapped {@link Application} object.</p>
-     * 
+     *
      * @throws IllegalStateException <span class="changed_modified_2_2">if this method is called after
      * at least one request has been processed by the
      * <code>Lifecycle</code> instance for this application.
@@ -302,7 +324,7 @@ public abstract class ApplicationWrapper extends Application implements FacesWra
      * <p class="changed_added_2_0"><span class="changed_modified_2_2">The</span> default behavior of this method
      * is to call {@link Application#setStateManager(StateManager)} on the
      * wrapped {@link Application} object.</p>
-     * 
+     *
      * @throws IllegalStateException <span class="changed_added_2_2">if this method is called after
      * at least one request has been processed by the
      * <code>Lifecycle</code> instance for this application.
@@ -339,7 +361,7 @@ public abstract class ApplicationWrapper extends Application implements FacesWra
      * <p class="changed_added_2_0">The default behavior of this method
      * is to call {@link Application#createComponent(javax.faces.el.ValueBinding, javax.faces.context.FacesContext, String)}
      * on the wrapped {@link Application} object.</p>
-     * 
+     *
      * @deprecated See superclass for alternative.
      */
     @Override
@@ -427,7 +449,7 @@ public abstract class ApplicationWrapper extends Application implements FacesWra
      * <p class="changed_added_2_0">The default behavior of this method
      * is to call {@link Application#createMethodBinding(String, Class[])} on the
      * wrapped {@link Application} object.</p>
-     * 
+     *
      * @deprecated See superclass for alternative.
      */
     @Override
@@ -542,7 +564,7 @@ public abstract class ApplicationWrapper extends Application implements FacesWra
      * <p class="changed_added_2_0"><span class="changed_modified_2_2">The</span> default behavior of this method
      * is to call {@link Application#setResourceHandler(ResourceHandler)} on the
      * wrapped {@link Application} object.</p>
-     * 
+     *
      * @throws IllegalStateException <span class="changed_added_2_2">if this method is called after
      * at least one request has been processed by the
      * <code>Lifecycle</code> instance for this application.
@@ -578,7 +600,7 @@ public abstract class ApplicationWrapper extends Application implements FacesWra
      * <p class="changed_added_2_0"><span class="changed_modified_2_2">The</span> default behavior of this method
      * is to call {@link Application#addELResolver(javax.el.ELResolver)} on the
      * wrapped {@link Application} object.</p>
-     * 
+     *
      * @throws IllegalStateException <span
      * class="changed_added_2_2">if called after the first
      * request to the {@link javax.faces.webapp.FacesServlet} has been
@@ -667,12 +689,12 @@ public abstract class ApplicationWrapper extends Application implements FacesWra
     public void setFlowHandler(FlowHandler newHandler) {
         super.setFlowHandler(newHandler);
     }
-    
+
     /**
      * <p class="changed_added_2_0">The default behavior of this method
      * is to call {@link Application#evaluateExpressionGet(javax.faces.context.FacesContext, String, Class)}
      * on the wrapped {@link Application} object.</p>
-     * 
+     *
      * @deprecated See superclass for alternative.
      */
     @Override
@@ -786,5 +808,25 @@ public abstract class ApplicationWrapper extends Application implements FacesWra
     public void unsubscribeFromEvent(Class<? extends SystemEvent> systemEventClass,
                                      SystemEventListener listener) {
         getWrapped().unsubscribeFromEvent(systemEventClass, listener);
+    }
+
+    @Override
+    public SearchExpressionHandler getSearchExpressionHandler() {
+        return getWrapped().getSearchExpressionHandler();
+    }
+    
+    @Override
+    public void setSearchExpressionHandler(SearchExpressionHandler searchExpressionHandler) {
+        getWrapped().setSearchExpressionHandler(searchExpressionHandler);
+    }
+ 
+    @Override
+    public void addSearchKeywordResolver(SearchKeywordResolver resolver) {
+        getWrapped().addSearchKeywordResolver(resolver);
+    }
+    
+    @Override
+    public SearchKeywordResolver getSearchKeywordResolver() {
+        return getWrapped().getSearchKeywordResolver();
     }
 }

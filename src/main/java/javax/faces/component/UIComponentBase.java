@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -85,7 +85,7 @@ import java.util.logging.Logger;
  * <p><strong class="changed_modified_2_0 changed_modified_2_0_rev_a changed_added_2_1">UIComponentBase</strong> is a
  * convenience base class that implements the default concrete behavior
  * of all methods defined by {@link UIComponent}.</p>
- * <p/>
+ * 
  * <p>By default, this class defines <code>getRendersChildren()</code>
  * to find the renderer for this component and call its
  * <code>getRendersChildren()</code> method.  The default implementation
@@ -149,7 +149,7 @@ public abstract class UIComponentBase extends UIComponent {
             
             if (!applicationMap.containsKey("com.sun.faces.compnent.COMPONENT_DESCRIPTORS_MAP")) {
                 applicationMap.put("com.sun.faces.compnent.COMPONENT_DESCRIPTORS_MAP", 
-                        new ConcurrentHashMap<Class<?>, Map<String, PropertyDescriptor>>());
+                        new ConcurrentHashMap<>());
             }
             
             descriptors = (Map<Class<?>, Map<String, PropertyDescriptor>>) applicationMap.get("com.sun.faces.compnent.COMPONENT_DESCRIPTORS_MAP");
@@ -163,7 +163,7 @@ public abstract class UIComponentBase extends UIComponent {
              */
             PropertyDescriptor pd[] = getPropertyDescriptors();
             if (pd != null) {
-                pdMap = new HashMap<String, PropertyDescriptor>(pd.length, 1.0f);
+                pdMap = new HashMap<>(pd.length, 1.0f);
                 for (PropertyDescriptor aPd : pd) {
                     pdMap.put(aPd.getName(), aPd);
                 }
@@ -206,6 +206,7 @@ public abstract class UIComponentBase extends UIComponent {
     private AttributesMap attributes = null;
 
 
+    @Override
     public Map<String, Object> getAttributes() {
 
         if (attributes == null) {
@@ -221,7 +222,7 @@ public abstract class UIComponentBase extends UIComponent {
                 this.getStateHelper().get(PropertyKeys.passThroughAttributes);
         if (null == result) {
             if (create) {
-                result = new PassThroughAttributesMap<String, Object>();
+                result = new PassThroughAttributesMap<>();
                 this.getStateHelper().put(PropertyKeys.passThroughAttributes, 
                         result);
             }
@@ -232,6 +233,9 @@ public abstract class UIComponentBase extends UIComponent {
     }
 
     private static class PassThroughAttributesMap<K, V> extends ConcurrentHashMap<String, Object> implements Serializable {
+
+        private static final long serialVersionUID = 4230540513272170861L;
+
         @Override
         public Object put(String key, Object value) {
             if (null == key || null == value) {
@@ -267,6 +271,7 @@ public abstract class UIComponentBase extends UIComponent {
      * @throws NullPointerException {@inheritDoc}
      * @deprecated This has been replaced by {@link #getValueExpression}.
      */
+    @Override
     public ValueBinding getValueBinding(String name) {
 
         if (name == null) {
@@ -297,6 +302,7 @@ public abstract class UIComponentBase extends UIComponent {
      * @throws NullPointerException     {@inheritDoc}
      * @deprecated This has been replaced by {@link #setValueExpression}.
      */
+    @Override
     public void setValueBinding(String name, ValueBinding binding) {
         if (name == null) {
             throw new NullPointerException();
@@ -324,6 +330,7 @@ public abstract class UIComponentBase extends UIComponent {
     /**
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public String getClientId(FacesContext context) {
 
         if (context == null) {
@@ -382,6 +389,7 @@ public abstract class UIComponentBase extends UIComponent {
     private String id = null;
 
 
+    @Override
     public String getId() {
 
         return (id);
@@ -404,6 +412,7 @@ public abstract class UIComponentBase extends UIComponent {
      * @throws IllegalArgumentException {@inheritDoc}
      * @throws IllegalStateException    {@inheritDoc}
      */
+    @Override
     public void setId(String id) {
 
         // if the current ID is not null, and the passed
@@ -425,10 +434,12 @@ public abstract class UIComponentBase extends UIComponent {
     private UIComponent parent = null;
 
 
+    @Override
     public UIComponent getParent() {
         return (this.parent);
     }
 
+    @Override
     public void setParent(UIComponent parent) {
 
         if (parent == null) {
@@ -453,17 +464,20 @@ public abstract class UIComponentBase extends UIComponent {
         }
     }            
 
+    @Override
     public boolean isRendered() {
         
 	return Boolean.valueOf(getStateHelper().eval(PropertyKeys.rendered, Boolean.TRUE).toString());        
     }
 
 
+    @Override
     public void setRendered(boolean rendered) {
         getStateHelper().put(PropertyKeys.rendered, rendered);
     }
 
 
+    @Override
     public String getRendererType() {
 
         return (String) getStateHelper().eval(PropertyKeys.rendererType);
@@ -471,6 +485,7 @@ public abstract class UIComponentBase extends UIComponent {
     }
 
 
+    @Override
     public void setRendererType(String rendererType) {
 
         getStateHelper().put(PropertyKeys.rendererType, rendererType);
@@ -478,6 +493,7 @@ public abstract class UIComponentBase extends UIComponent {
     }
 
 
+    @Override
     public boolean getRendersChildren() {
         boolean result = false;
 
@@ -501,6 +517,7 @@ public abstract class UIComponentBase extends UIComponent {
     private List<UIComponent> children = null;
 
 
+    @Override
     public List<UIComponent> getChildren() {
 
         if (children == null) {
@@ -512,6 +529,7 @@ public abstract class UIComponentBase extends UIComponent {
 
 
     // Do not allocate the children List to answer this question
+    @Override
     public int getChildCount() {
 
         if (children != null) {
@@ -601,6 +619,7 @@ public abstract class UIComponentBase extends UIComponent {
     /**
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public UIComponent findComponent(String expr) {
         if (expr == null) {
             throw new NullPointerException();
@@ -708,6 +727,7 @@ public abstract class UIComponentBase extends UIComponent {
      * @throws FacesException       {@inheritDoc}
      * @since 1.2
      */
+    @Override
     public boolean invokeOnComponent(FacesContext context, String clientId,
                                      ContextCallback callback)
             throws FacesException {
@@ -724,6 +744,7 @@ public abstract class UIComponentBase extends UIComponent {
     private Map<String, UIComponent> facets = null;
 
 
+    @Override
     public Map<String, UIComponent> getFacets() {
 
         if (facets == null) {
@@ -734,6 +755,7 @@ public abstract class UIComponentBase extends UIComponent {
     }
 
     // Do not allocate the children List to answer this question
+    @Override
     public int getFacetCount() {
 
         if (facets != null) {
@@ -746,6 +768,7 @@ public abstract class UIComponentBase extends UIComponent {
 
 
     // Do not allocate the facets Map to answer this question
+    @Override
     public UIComponent getFacet(String name) {
 
         if (facets != null) {
@@ -757,6 +780,7 @@ public abstract class UIComponentBase extends UIComponent {
     }
 
 
+    @Override
     public Iterator<UIComponent> getFacetsAndChildren() {
 
         Iterator<UIComponent> result;
@@ -793,6 +817,7 @@ public abstract class UIComponentBase extends UIComponent {
      * @throws IllegalStateException    {@inheritDoc}
      * @throws NullPointerException     {@inheritDoc}
      */
+    @Override
     public void broadcast(FacesEvent event)
         throws AbortProcessingException {
 
@@ -820,6 +845,7 @@ public abstract class UIComponentBase extends UIComponent {
     /**
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void decode(FacesContext context) {
 
         if (context == null) {
@@ -842,6 +868,7 @@ public abstract class UIComponentBase extends UIComponent {
     /**
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void encodeBegin(FacesContext context) throws IOException {
 
         if (context == null) {
@@ -875,6 +902,7 @@ public abstract class UIComponentBase extends UIComponent {
     /**
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void encodeChildren(FacesContext context) throws IOException {
 
         if (context == null) {
@@ -904,6 +932,7 @@ public abstract class UIComponentBase extends UIComponent {
      * @throws IOException          {@inheritDoc}
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void encodeEnd(FacesContext context) throws IOException {
 
         if (context == null) {
@@ -948,11 +977,11 @@ public abstract class UIComponentBase extends UIComponent {
      *   }
      *   ...
      * }
-     * <p/>
+     * 
      * public interface FooListener extends FacesListener {
      *   public void processFoo(FooEvent event);
      * }
-     * <p/>
+     * 
      * public class FooComponent extends UIComponentBase {
      *   ...
      *   public void addFooListener(FooListener listener) {
@@ -969,6 +998,7 @@ public abstract class UIComponentBase extends UIComponent {
      * @throws NullPointerException if <code>listener</code>
      *                              is <code>null</code>
      */
+    @Override
     protected void addFacesListener(FacesListener listener) {
 
         if (listener == null) {
@@ -976,7 +1006,7 @@ public abstract class UIComponentBase extends UIComponent {
         }
 
         if (listeners == null) {
-            listeners = new AttachedObjectListHolder<FacesListener>();
+            listeners = new AttachedObjectListHolder<>();
         }
 
         listeners.add(listener);
@@ -988,6 +1018,7 @@ public abstract class UIComponentBase extends UIComponent {
      * @throws IllegalArgumentException {@inheritDoc}
      * @throws NullPointerException     {@inheritDoc}
      */
+    @Override
     protected FacesListener[] getFacesListeners(Class clazz) {
 
         if (clazz == null) {
@@ -1005,7 +1036,7 @@ public abstract class UIComponentBase extends UIComponent {
             return (FacesListener[]) Array.newInstance(clazz, 0);
         }
 
-        List<FacesListener> results = new ArrayList<FacesListener>(listeners.length);
+        List<FacesListener> results = new ArrayList<>(listeners.length);
         for (FacesListener listener : listeners) {
             if (((Class<?>) clazz).isAssignableFrom(listener.getClass())) {
                 results.add(listener);
@@ -1027,6 +1058,7 @@ public abstract class UIComponentBase extends UIComponent {
      * @throws NullPointerException if <code>listener</code>
      *                              is <code>null</code>
      */
+    @Override
     protected void removeFacesListener(FacesListener listener) {
 
         if (listener == null) {
@@ -1043,6 +1075,7 @@ public abstract class UIComponentBase extends UIComponent {
      * @throws IllegalStateException {@inheritDoc}
      * @throws NullPointerException  {@inheritDoc}
      */
+    @Override
     public void queueEvent(FacesEvent event) {
 
         if (event == null) {
@@ -1080,11 +1113,12 @@ public abstract class UIComponentBase extends UIComponent {
      * javax.faces.event.ComponentSystemEventListener#processEvent} method must be called
      * when events of type <code>facesEventClass</code> are fired.
      *
-     * @throws <code>NullPointerException</code> if any of the
+     * @throws NullPointerException if any of the
      * arguments are <code>null</code>.
      *
      * @since 2.1
      */
+    @Override
     public void subscribeToEvent(Class<? extends SystemEvent> eventClass,
                                  ComponentSystemEventListener componentListener) {
 
@@ -1099,15 +1133,14 @@ public abstract class UIComponentBase extends UIComponent {
             initialState = false;
         }
         if (null == listenersByEventClass) {
-            listenersByEventClass = new HashMap<Class<? extends SystemEvent>,
-                                                List<SystemEventListener>>(3, 1.0f);
+            listenersByEventClass = new HashMap<>(3, 1.0f);
         }
         SystemEventListener facesLifecycleListener =
               new ComponentSystemEventListenerAdapter(componentListener, this);
         List<SystemEventListener> listenersForEventClass =
               listenersByEventClass.get(eventClass);
         if (listenersForEventClass == null) {
-            listenersForEventClass = new ArrayList<SystemEventListener>(3);
+            listenersForEventClass = new ArrayList<>(3);
             listenersByEventClass.put(eventClass, listenersForEventClass);
         }
         if (!listenersForEventClass.contains(facesLifecycleListener)) {
@@ -1136,11 +1169,12 @@ public abstract class UIComponentBase extends UIComponent {
      * ComponentSystemEventListener#processEvent} method must no longer be called
      * when events of type <code>eventClass</code> are fired.
      *
-     * @throws <code>NullPointerException</code> if any of the
+     * @throws NullPointerException if any of the
      * arguments are <code>null</code>.
      *
      * @since 2.1
      */
+    @Override
     public void unsubscribeFromEvent(Class<? extends SystemEvent> eventClass,
                                      ComponentSystemEventListener componentListener) {
 
@@ -1181,6 +1215,7 @@ public abstract class UIComponentBase extends UIComponent {
      *
      * @since 2.1
      */
+    @Override
     public List<SystemEventListener> getListenersForEventClass(Class<? extends SystemEvent> eventClass) {
 
         if (eventClass == null) {
@@ -1201,6 +1236,7 @@ public abstract class UIComponentBase extends UIComponent {
     /**
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void processDecodes(FacesContext context) {
 
         if (context == null) {
@@ -1238,6 +1274,7 @@ public abstract class UIComponentBase extends UIComponent {
     /**
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void processValidators(FacesContext context) {
 
         if (context == null) {
@@ -1270,6 +1307,7 @@ public abstract class UIComponentBase extends UIComponent {
     /**
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void processUpdates(FacesContext context) {
 
         if (context == null) {
@@ -1302,6 +1340,7 @@ public abstract class UIComponentBase extends UIComponent {
     /**
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public Object processSaveState(FacesContext context) {
 
         if (context == null) {
@@ -1324,7 +1363,7 @@ public abstract class UIComponentBase extends UIComponent {
             if (count > 0) {
 
                 // this arraylist will store state
-                List<Object> stateList = new ArrayList<Object>(count);
+                List<Object> stateList = new ArrayList<>(count);
 
                 // if we have children, add them to the stateList
                 if (this.getChildCount() > 0) {
@@ -1373,6 +1412,7 @@ public abstract class UIComponentBase extends UIComponent {
     /**
      * @throws NullPointerException {@inheritDoc}
      */
+    @Override
     public void processRestoreState(FacesContext context,
                                     Object state) {
         if (context == null) {
@@ -1429,6 +1469,7 @@ public abstract class UIComponentBase extends UIComponent {
 
     // ------------------------------------------------------- Protected Methods
 
+    @Override
     protected FacesContext getFacesContext() {
 
         // PENDING(edburns): we can't use the cache ivar because we
@@ -1446,6 +1487,7 @@ public abstract class UIComponentBase extends UIComponent {
     }
 
 
+    @Override
     protected Renderer getRenderer(FacesContext context) {
 
         String rendererType = getRendererType();
@@ -1534,6 +1576,7 @@ public abstract class UIComponentBase extends UIComponent {
     }
 
 
+    @Override
     public Object saveState(FacesContext context) {
         Object[] values = null;
         if (context == null) {
@@ -1594,6 +1637,7 @@ public abstract class UIComponentBase extends UIComponent {
     }
 
 
+    @Override
     public void restoreState(FacesContext context, Object state) {
 
         if (context == null) {
@@ -1607,7 +1651,7 @@ public abstract class UIComponentBase extends UIComponent {
 
         if (values[0] != null) {
             if (listeners == null) {
-                listeners = new AttachedObjectListHolder<FacesListener>();
+                listeners = new AttachedObjectListHolder<>();
             }
             listeners.restoreState(context, values[0]);
         }
@@ -1644,6 +1688,7 @@ public abstract class UIComponentBase extends UIComponent {
      */
     private boolean transientFlag = false;
 
+    @Override
     public boolean isTransient() {
 
         return (this.transientFlag);
@@ -1651,6 +1696,7 @@ public abstract class UIComponentBase extends UIComponent {
     }
 
 
+    @Override
     public void setTransient(boolean transientFlag) {
 
         this.transientFlag = transientFlag;
@@ -1669,7 +1715,7 @@ public abstract class UIComponentBase extends UIComponent {
      * StateHolder} interface.  Using this method implies the use of
      * {@link #restoreAttachedState} to restore the attached
      * objects.</p>
-     * <p/>
+     * 
      * <p>This method supports saving attached objects of the following
      * type: <code>Object</code>s, <code>null</code> values, and <code
      * class="changed_modified_2_0">Collection</code>s of these objects.
@@ -1684,6 +1730,8 @@ public abstract class UIComponentBase extends UIComponent {
      *                       <code>List</code> instance, or an Object.  The
      *                       <code>attachedObject</code> (or the elements that comprise
      *                       <code>attachedObject</code> may implement {@link StateHolder}.
+     *                       
+     * @return The state object to be saved.
      * @throws NullPointerException if the context argument is null.
      */
 
@@ -1719,7 +1767,7 @@ public abstract class UIComponentBase extends UIComponent {
                         continue;
                     }
                     if (resultList == null) {
-                        resultList = new ArrayList<StateHolderSaver>(attachedCollection.size() + 1);
+                        resultList = new ArrayList<>(attachedCollection.size() + 1);
                         resultList.add(new StateHolderSaver(context, mapOrCollectionClass));
                     }
                     resultList.add(new StateHolderSaver(context, item));
@@ -1740,7 +1788,7 @@ public abstract class UIComponentBase extends UIComponent {
                     continue;
                 }
                 if (resultList == null) {
-                    resultList = new ArrayList<StateHolderSaver>(attachedMap.size()*2 + 1);
+                    resultList = new ArrayList<>(attachedMap.size()*2 + 1);
                     resultList.add(new StateHolderSaver(context, mapOrCollectionClass));
                 }
                 resultList.add(new StateHolderSaver(context, key));
@@ -1759,13 +1807,16 @@ public abstract class UIComponentBase extends UIComponent {
      * need to restore the objects they saved using {@link
      * #saveAttachedState}.  This method is tightly coupled with {@link
      * #saveAttachedState}.</p>
-     * <p/>
+     * 
      * <p>This method supports restoring all attached objects types
      * supported by {@link #saveAttachedState}.</p>
      *
      * @param context  the {@link FacesContext} for this request
      * @param stateObj the opaque object returned from {@link
      *                 #saveAttachedState}
+     *                 
+     * @return the object restored from <code>stateObj</code>.
+     * 
      * @throws NullPointerException  if context is null.
      * @throws IllegalStateException if the object is not
      *                               previously returned by {@link #saveAttachedState}.
@@ -1790,7 +1841,7 @@ public abstract class UIComponentBase extends UIComponent {
                 Collection<Object> retCollection = null;
                 try {
                     retCollection = (Collection<Object>) mapOrCollection.newInstance();
-                } catch (Exception e) {
+                } catch (InstantiationException | IllegalAccessException e) {
                     if (LOGGER.isLoggable(Level.SEVERE)) {
                         LOGGER.log(Level.SEVERE, e.toString(), e);
                     }
@@ -1812,7 +1863,7 @@ public abstract class UIComponentBase extends UIComponent {
                 Map<Object, Object> retMap = null;
                 try {
                     retMap = (Map<Object,Object>) mapOrCollection.newInstance();
-                } catch (Exception e) {
+                } catch (InstantiationException | IllegalAccessException e) {
                     if (LOGGER.isLoggable(Level.SEVERE)) {
                         LOGGER.log(Level.SEVERE, e.toString(), e);
                     }
@@ -1849,7 +1900,7 @@ public abstract class UIComponentBase extends UIComponent {
         Object values[] = (Object[]) state;
         String names[] = (String[]) values[0];
         Object states[] = (Object[]) values[1];
-        Map<String, ValueExpression> bindings = new HashMap<String, ValueExpression>(names.length);
+        Map<String, ValueExpression> bindings = new HashMap<>(names.length);
         for (int i = 0; i < names.length; i++) {
             bindings.put(names[i],
                     (ValueExpression) restoreAttachedState(context, states[i]));
@@ -1913,7 +1964,7 @@ public abstract class UIComponentBase extends UIComponent {
 
         Object[][] listeners = (Object[][]) state;
         Map<Class<? extends SystemEvent>, List<SystemEventListener>> m =
-                new HashMap<Class<? extends SystemEvent>, List<SystemEventListener>>(listeners.length, 1.0f);
+                new HashMap<>(listeners.length, 1.0f);
         for (int i = 0, len = listeners.length; i < len; i++) {
             Object[] source = listeners[i];
             m.put((Class<? extends SystemEvent>) source[0],
@@ -2015,7 +2066,7 @@ public abstract class UIComponentBase extends UIComponent {
                 // any component - in most cases only 1.  Using a very small
                 // initial capacity so that we keep the footprint to a minimum.
                 Map<String, List<ClientBehavior>> modifiableMap =
-                    new HashMap<String, List<ClientBehavior>>(5,1.0f);
+                    new HashMap<>(5,1.0f);
                 behaviors = new BehaviorsMap(modifiableMap);
             }
 
@@ -2024,7 +2075,7 @@ public abstract class UIComponentBase extends UIComponent {
             if (null == eventBehaviours) {
                 // Again using small initial capacity - we typically
                 // only have 1 Behavior per event type.
-                eventBehaviours = new ArrayList<ClientBehavior>(3);
+                eventBehaviours = new ArrayList<>(3);
                 behaviors.getModifiableMap().put(eventName, eventBehaviours);
             }
 
@@ -2046,6 +2097,7 @@ public abstract class UIComponentBase extends UIComponent {
      * override this method to return a non-Empty <code>Collection</code>
      * of the client event names that the component supports.</p>
      *
+     * @return the collection of event names.
      * @since 2.0
      */
     public Collection<String> getEventNames() {
@@ -2071,7 +2123,8 @@ public abstract class UIComponentBase extends UIComponent {
      * {@link javax.faces.component.behavior.ClientBehaviorHolder}, and must add
      * an implementation of
      * {@link javax.faces.component.behavior.ClientBehaviorHolder#getEventNames}.</p>
-     *
+     * 
+     * @return behaviors associated with this component.
      * @since 2.0
      */
     public Map<String, List<ClientBehavior>> getClientBehaviors() {
@@ -2095,6 +2148,8 @@ public abstract class UIComponentBase extends UIComponent {
      * {@link javax.faces.component.behavior.ClientBehaviorHolder}, and must
      * provide an implementation of
      * {@link javax.faces.component.behavior.ClientBehaviorHolder#getEventNames}.</p>
+     * 
+     * @return the default event name.
      */
     public String getDefaultEventName() {
         assertClientBehaviorHolder();
@@ -2177,13 +2232,13 @@ public abstract class UIComponentBase extends UIComponent {
             // restoreAttachedState(), otherwise, call restoreState() on the
             // behaviors directly.
             if (!initialStateMarked()) {
-                Map<String, List<ClientBehavior>> modifiableMap = new HashMap<String, List<ClientBehavior>>(
+                Map<String, List<ClientBehavior>> modifiableMap = new HashMap<>(
                       names.length,
                       1.0f);
                 for (int i = 0; i < attachedBehaviors.length; i++) {
                     Object[] attachedEventBehaviors = (Object[]) attachedBehaviors[i];
                     ArrayList<ClientBehavior> eventBehaviors =
-                          new ArrayList<ClientBehavior>(attachedBehaviors.length);
+                          new ArrayList<>(attachedBehaviors.length);
                     for (int j = 0; j < attachedEventBehaviors.length; j++) {
                         eventBehaviors.add((ClientBehavior) restoreAttachedState(context,
                                                                                  attachedEventBehaviors[j]));
@@ -2254,7 +2309,7 @@ public abstract class UIComponentBase extends UIComponent {
             application.publishEvent(context, PostAddToViewEvent.class, component);
             if (component.getChildCount() > 0) {
                 Collection<UIComponent> clist =
-                      new ArrayList<UIComponent>(component.getChildren());
+                      new ArrayList<>(component.getChildren());
                 for (UIComponent c : clist) {
                     publishAfterViewEvents(context, application, c);
                 }
@@ -2262,7 +2317,7 @@ public abstract class UIComponentBase extends UIComponent {
 
             if (component.getFacetCount() > 0) {
                 Collection<UIComponent> clist =
-                      new ArrayList<UIComponent>(component.getFacets().values());
+                      new ArrayList<>(component.getFacets().values());
                 for (UIComponent c : clist) {
                     publishAfterViewEvents(context, application, c);
                 }
@@ -2307,14 +2362,17 @@ public abstract class UIComponentBase extends UIComponent {
     // Empty iterator for short circuiting operations
     private final static Iterator<UIComponent> EMPTY_ITERATOR = new Iterator<UIComponent>() {
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public UIComponent next() {
             throw new NoSuchElementException("Empty Iterator");
         }
 
+        @Override
         public boolean hasNext() {
             return false;
         }
@@ -2354,6 +2412,7 @@ public abstract class UIComponentBase extends UIComponent {
             this.pdMap = ((UIComponentBase) component).getDescriptorMap();
         }
 
+        @Override
         public boolean containsKey(Object keyObj) {
             if (ATTRIBUTES_THAT_ARE_SET_KEY.equals(keyObj)) {
                 return true;
@@ -2374,6 +2433,7 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public Object get(Object keyObj) {
             String key = (String) keyObj;
             Object result = null;
@@ -2391,7 +2451,7 @@ public abstract class UIComponentBase extends UIComponent {
                 if (pd != null) {
                     try {
                         if (null == readMap){
-                            readMap = new ConcurrentHashMap<String, Method>();
+                            readMap = new ConcurrentHashMap<>();
                         }
                         Method readMethod = readMap.get(key);
                         if (null == readMethod) {
@@ -2434,6 +2494,7 @@ public abstract class UIComponentBase extends UIComponent {
             return result;
         }
 
+        @Override
         public Object put(String keyValue, Object value) {
             if (keyValue == null) {
                 throw new NullPointerException();
@@ -2490,6 +2551,7 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public void putAll(Map<? extends String, ?> map) {
             if (map == null) {
                 throw new NullPointerException();
@@ -2500,6 +2562,7 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public Object remove(Object keyObj) {
             String key = (String) keyObj;
             if (key == null) {
@@ -2526,26 +2589,31 @@ public abstract class UIComponentBase extends UIComponent {
         }
 
 
+        @Override
         public int size() {
             Map attributes = getAttributes();
             return (attributes != null ? attributes.size() : 0);
         }
 
+        @Override
         public boolean isEmpty() {
             Map attributes = getAttributes();
             return (attributes == null || attributes.isEmpty());
         }
 
+        @Override
         public boolean containsValue(java.lang.Object value) {
             Map attributes= getAttributes();
             return (attributes != null && attributes.containsValue(value));
         }
 
+        @Override
         public void clear() {
             component.getStateHelper().remove(PropertyKeys.attributes);
             component.getStateHelper().remove(PropertyKeysPrivate.attributesThatAreSet);
         }
 
+        @Override
         public Set<String> keySet() {
             Map<String,Object> attributes = getAttributes();
             if (attributes != null)
@@ -2553,6 +2621,7 @@ public abstract class UIComponentBase extends UIComponent {
             return Collections.emptySet();
         }
 
+        @Override
         public Collection<Object> values() {
             Map<String,Object> attributes = getAttributes();
             if (attributes != null)
@@ -2560,6 +2629,7 @@ public abstract class UIComponentBase extends UIComponent {
             return Collections.emptyList();
         }
 
+        @Override
         public Set<Entry<String, Object>> entrySet() {
             Map<String,Object> attributes = getAttributes();
             if (attributes != null)
@@ -2567,6 +2637,7 @@ public abstract class UIComponentBase extends UIComponent {
             return Collections.emptySet();
         }
 
+        @Override
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
@@ -2595,9 +2666,7 @@ public abstract class UIComponentBase extends UIComponent {
                         }
                     }
                 }
-            } catch (ClassCastException unused) {
-                return false;
-            } catch (NullPointerException unused) {
+            } catch (ClassCastException | NullPointerException unused) {
                 return false;
             }
 
@@ -2605,6 +2674,7 @@ public abstract class UIComponentBase extends UIComponent {
         }
 
 
+        @Override
         public int hashCode() {
             int h = 0;
             for (Object o : entrySet()) {
@@ -2659,7 +2729,7 @@ public abstract class UIComponentBase extends UIComponent {
             Class clazz = (Class) in.readObject();
             try {
                 component = (UIComponent) clazz.newInstance();
-            } catch (Exception e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
             component.restoreState(FacesContext.getCurrentInstance(), in.readObject());
@@ -2678,6 +2748,7 @@ public abstract class UIComponentBase extends UIComponent {
             this.component = component;
         }
 
+        @Override
         public void add(int index, UIComponent element) {
             if (element == null) {
                 throw new NullPointerException();
@@ -2691,6 +2762,7 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public boolean add(UIComponent element) {
             if (element == null) {
                 throw new NullPointerException();
@@ -2702,6 +2774,7 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public boolean addAll(Collection<? extends UIComponent> collection) {
             Iterator<UIComponent> elements =
                     (new ArrayList<UIComponent>(collection)).iterator();
@@ -2718,6 +2791,7 @@ public abstract class UIComponentBase extends UIComponent {
             return (changed);
         }
 
+        @Override
         public boolean addAll(int index, Collection<? extends UIComponent> collection) {
             Iterator<UIComponent> elements =
                     (new ArrayList<UIComponent>(collection)).iterator();
@@ -2734,6 +2808,7 @@ public abstract class UIComponentBase extends UIComponent {
             return (changed);
         }
 
+        @Override
         public void clear() {
             int n = size();
             if (n < 1) {
@@ -2746,18 +2821,22 @@ public abstract class UIComponentBase extends UIComponent {
             super.clear();
         }
 
+        @Override
         public Iterator<UIComponent> iterator() {
             return (new ChildrenListIterator(this));
         }
 
+        @Override
         public ListIterator<UIComponent> listIterator() {
             return (new ChildrenListIterator(this));
         }
 
+        @Override
         public ListIterator<UIComponent> listIterator(int index) {
             return (new ChildrenListIterator(this, index));
         }
 
+        @Override
         public UIComponent remove(int index) {
             UIComponent child = get(index);
             child.setParent(null);
@@ -2765,6 +2844,7 @@ public abstract class UIComponentBase extends UIComponent {
             return (child);
         }
 
+        @Override
         public boolean remove(Object elementObj) {
             UIComponent element = (UIComponent) elementObj;
             if (element == null) {
@@ -2781,6 +2861,7 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public boolean removeAll(Collection<?> collection) {
             boolean result = false;
             for (Object elements : collection) {
@@ -2791,6 +2872,7 @@ public abstract class UIComponentBase extends UIComponent {
             return (result);
         }
 
+        @Override
         public boolean retainAll(Collection<?> collection) {
             boolean modified = false;
             Iterator<?> items = iterator();
@@ -2803,6 +2885,7 @@ public abstract class UIComponentBase extends UIComponent {
             return (modified);
         }
 
+        @Override
         public UIComponent set(int index, UIComponent element) {
             if (element == null) {
                 throw new NullPointerException();
@@ -2845,10 +2928,12 @@ public abstract class UIComponentBase extends UIComponent {
 
         // Iterator methods
 
+        @Override
         public boolean hasNext() {
             return (index < list.size());
         }
 
+        @Override
         public UIComponent next() {
             try {
                 UIComponent o = list.get(index);
@@ -2859,6 +2944,7 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public void remove() {
             if (last == -1) {
                 throw new IllegalStateException();
@@ -2872,19 +2958,23 @@ public abstract class UIComponentBase extends UIComponent {
 
         // ListIterator methods
 
+        @Override
         public void add(UIComponent o) {
             last = -1;
             list.add(index++, o);
         }
 
+        @Override
         public boolean hasPrevious() {
             return (index > 1);
         }
 
+        @Override
         public int nextIndex() {
             return (index);
         }
 
+        @Override
         public UIComponent previous() {
             try {
                 int current = index - 1;
@@ -2897,10 +2987,12 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public int previousIndex() {
             return (index - 1);
         }
 
+        @Override
         public void set(UIComponent o) {
             if (last == -1) {
                 throw new IllegalStateException();
@@ -2944,16 +3036,19 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public boolean hasNext() {
             this.update();
             return this.iterator.hasNext();
         }
 
+        @Override
         public UIComponent next() {
             this.update();
             return this.iterator.next();
         }
 
+        @Override
         public void remove() {
             throw new UnsupportedOperationException();
         }
@@ -2972,6 +3067,7 @@ public abstract class UIComponentBase extends UIComponent {
             this.component = component;
         }
 
+        @Override
         public void clear() {
             Iterator<String> keys = keySet().iterator();
             while (keys.hasNext()) {
@@ -2981,14 +3077,17 @@ public abstract class UIComponentBase extends UIComponent {
             super.clear();
         }
 
+        @Override
         public Set<Map.Entry<String, UIComponent>> entrySet() {
             return (new FacetsMapEntrySet(this));
         }
 
+        @Override
         public Set<String> keySet() {
             return (new FacetsMapKeySet(this));
         }
 
+        @Override
         public UIComponent put(String key, UIComponent value) {
             if ((key == null) || (value == null)) {
                 throw new NullPointerException();
@@ -3008,6 +3107,7 @@ public abstract class UIComponentBase extends UIComponent {
             return (result);
         }
 
+        @Override
         public void putAll(Map<? extends String, ? extends UIComponent> map) {
             if (map == null) {
                 throw new NullPointerException();
@@ -3017,6 +3117,7 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public UIComponent remove(Object key) {
             UIComponent previous = get(key);
             if (previous != null) {
@@ -3026,12 +3127,13 @@ public abstract class UIComponentBase extends UIComponent {
             return (previous);
         }
 
+        @Override
         public Collection<UIComponent> values() {
             return (new FacetsMapValues(this));
         }
 
         Iterator<String> keySetIterator() {
-            return ((new ArrayList<String>(super.keySet())).iterator());
+            return ((new ArrayList<>(super.keySet())).iterator());
         }
 
     }
@@ -3046,18 +3148,22 @@ public abstract class UIComponentBase extends UIComponent {
 
         private FacetsMap map = null;
 
+        @Override
         public boolean add(Map.Entry<String, UIComponent> o) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean addAll(Collection<? extends Map.Entry<String, UIComponent>> c) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void clear() {
             map.clear();
         }
 
+        @Override
         public boolean contains(Object o) {
             if (o == null) {
                 throw new NullPointerException();
@@ -3078,14 +3184,17 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public boolean isEmpty() {
             return (map.isEmpty());
         }
 
+        @Override
         public Iterator<Map.Entry<String, UIComponent>> iterator() {
             return (new FacetsMapEntrySetIterator(map));
         }
 
+        @Override
         public boolean remove(Object o) {
             if (o == null) {
                 throw new NullPointerException();
@@ -3102,6 +3211,7 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public boolean removeAll(Collection c) {
             boolean result = false;
             for (Object element : c) {
@@ -3112,6 +3222,7 @@ public abstract class UIComponentBase extends UIComponent {
             return (result);
         }
 
+        @Override
         public boolean retainAll(Collection c) {
             boolean result = false;
             Iterator v = iterator();
@@ -3124,6 +3235,7 @@ public abstract class UIComponentBase extends UIComponent {
             return (result);
         }
 
+        @Override
         public int size() {
             return (map.size());
         }
@@ -3142,6 +3254,7 @@ public abstract class UIComponentBase extends UIComponent {
         private FacetsMap map;
         private String key;
 
+        @Override
         public boolean equals(Object o) {
             if (o == null) {
                 return (false);
@@ -3172,20 +3285,24 @@ public abstract class UIComponentBase extends UIComponent {
             return (true);
         }
 
+        @Override
         public String getKey() {
             return (key);
         }
 
+        @Override
         public UIComponent getValue() {
             return (map.get(key));
         }
 
+        @Override
         public int hashCode() {
             Object value = map.get(key);
             return (((key == null) ? 0 : key.hashCode()) ^
                     ((value == null) ? 0 : value.hashCode()));
         }
 
+        @Override
         public UIComponent setValue(UIComponent value) {
             UIComponent previous = map.get(key);
             map.put(key, value);
@@ -3207,15 +3324,18 @@ public abstract class UIComponentBase extends UIComponent {
         private Iterator<String> iterator = null;
         private Map.Entry<String, UIComponent> last = null;
 
+        @Override
         public boolean hasNext() {
             return (iterator.hasNext());
         }
 
+        @Override
         public Map.Entry<String, UIComponent> next() {
             last = new FacetsMapEntrySetEntry(map, iterator.next());
             return (last);
         }
 
+        @Override
         public void remove() {
             if (last == null) {
                 throw new IllegalStateException();
@@ -3240,18 +3360,22 @@ public abstract class UIComponentBase extends UIComponent {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean addAll(Collection<? extends String> c) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void clear() {
             map.clear();
         }
 
+        @Override
         public boolean contains(Object o) {
             return (map.containsKey(o));
         }
 
+        @Override
         public boolean containsAll(Collection c) {
             for (Object item : c) {
                 if (!map.containsKey(item)) {
@@ -3261,14 +3385,17 @@ public abstract class UIComponentBase extends UIComponent {
             return (true);
         }
 
+        @Override
         public boolean isEmpty() {
             return (map.isEmpty());
         }
 
+        @Override
         public Iterator<String> iterator() {
             return (new FacetsMapKeySetIterator(map));
         }
 
+        @Override
         public boolean remove(Object o) {
             if (map.containsKey(o)) {
                 map.remove(o);
@@ -3278,6 +3405,7 @@ public abstract class UIComponentBase extends UIComponent {
             }
         }
 
+        @Override
         public boolean removeAll(Collection c) {
             boolean result = false;
             for (Object item : c) {
@@ -3289,6 +3417,7 @@ public abstract class UIComponentBase extends UIComponent {
             return (result);
         }
 
+        @Override
         public boolean retainAll(Collection c) {
             boolean result = false;
             Iterator v = iterator();
@@ -3301,6 +3430,7 @@ public abstract class UIComponentBase extends UIComponent {
             return (result);
         }
 
+        @Override
         public int size() {
             return (map.size());
         }
@@ -3320,15 +3450,18 @@ public abstract class UIComponentBase extends UIComponent {
         private Iterator<String> iterator = null;
         private String last = null;
 
+        @Override
         public boolean hasNext() {
             return (iterator.hasNext());
         }
 
+        @Override
         public String next() {
             last = iterator.next();
             return (last);
         }
 
+        @Override
         public void remove() {
             if (last == null) {
                 throw new IllegalStateException();
@@ -3349,26 +3482,32 @@ public abstract class UIComponentBase extends UIComponent {
 
         private FacetsMap map;
 
+        @Override
         public boolean add(UIComponent o) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public boolean addAll(Collection c) {
             throw new UnsupportedOperationException();
         }
 
+        @Override
         public void clear() {
             map.clear();
         }
 
+        @Override
         public boolean isEmpty() {
             return (map.isEmpty());
         }
 
+        @Override
         public Iterator<UIComponent> iterator() {
             return (new FacetsMapValuesIterator(map));
         }
 
+        @Override
         public int size() {
             return (map.size());
         }
@@ -3389,15 +3528,18 @@ public abstract class UIComponentBase extends UIComponent {
         private Iterator<String> iterator = null;
         private Object last = null;
 
+        @Override
         public boolean hasNext() {
             return (iterator.hasNext());
         }
 
+        @Override
         public UIComponent next() {
             last = iterator.next();
             return (map.get(last));
         }
 
+        @Override
         public void remove() {
             if (last == null) {
                 throw new IllegalStateException();
@@ -3423,6 +3565,7 @@ public abstract class UIComponentBase extends UIComponent {
             this.unmodifiableMap = Collections.unmodifiableMap(modifiableMap);
         }
 
+        @Override
         public Set<Entry<String, List<ClientBehavior>>> entrySet() {
             return unmodifiableMap.entrySet();
         }

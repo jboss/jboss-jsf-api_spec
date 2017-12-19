@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -90,6 +90,7 @@ public final class CompositeFaceletHandler implements FaceletHandler {
      * component represented by this element instance.
      * @since 2.0
      */
+    @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
         for (int i = 0; i < len; i++) {
             this.children[i].apply(ctx, parent);
@@ -99,6 +100,8 @@ public final class CompositeFaceletHandler implements FaceletHandler {
     /**
      * <p class="changed_added_2_0">Returns the array of child
      * handlers contained by this handler.</p>
+     * 
+     * @return Returns the array of child handlers contained by this handler.
      */
     public FaceletHandler[] getHandlers() {
         return this.children;

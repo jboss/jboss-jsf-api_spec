@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -111,6 +111,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>dir</code> property.</p>
+     * @return the property value
      * <p>Contents: Direction indication for text that does not inherit directionality.
      * Valid values are "LTR" (left-to-right) and "RTL" (right-to-left).
      * These attributes are case sensitive when rendering to XHTML, so
@@ -123,6 +124,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>dir</code> property.</p>
+     * @param dir the new property value
      */
     public void setDir(java.lang.String dir) {
         getStateHelper().put(PropertyKeys.dir, dir);
@@ -132,6 +134,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>lang</code> property.</p>
+     * @return the property value
      * <p>Contents: Code describing the language used in the generated markup
      * for this component.
      */
@@ -142,6 +145,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>lang</code> property.</p>
+     * @param lang the new property value
      */
     public void setLang(java.lang.String lang) {
         getStateHelper().put(PropertyKeys.lang, lang);
@@ -151,6 +155,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>onclick</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * clicked over this element.
      */
@@ -161,6 +166,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>onclick</code> property.</p>
+     * @param onclick the new property value
      */
     public void setOnclick(java.lang.String onclick) {
         getStateHelper().put(PropertyKeys.onclick, onclick);
@@ -170,6 +176,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>ondblclick</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * double clicked over this element.
      */
@@ -180,6 +187,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>ondblclick</code> property.</p>
+     * @param ondblclick the new property value
      */
     public void setOndblclick(java.lang.String ondblclick) {
         getStateHelper().put(PropertyKeys.ondblclick, ondblclick);
@@ -189,6 +197,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>onkeydown</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * pressed down over this element.
      */
@@ -199,6 +208,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>onkeydown</code> property.</p>
+     * @param onkeydown the new property value
      */
     public void setOnkeydown(java.lang.String onkeydown) {
         getStateHelper().put(PropertyKeys.onkeydown, onkeydown);
@@ -208,6 +218,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>onkeypress</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * pressed and released over this element.
      */
@@ -218,6 +229,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>onkeypress</code> property.</p>
+     * @param onkeypress the new property value
      */
     public void setOnkeypress(java.lang.String onkeypress) {
         getStateHelper().put(PropertyKeys.onkeypress, onkeypress);
@@ -227,6 +239,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>onkeyup</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a key is
      * released over this element.
      */
@@ -237,6 +250,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>onkeyup</code> property.</p>
+     * @param onkeyup the new property value
      */
     public void setOnkeyup(java.lang.String onkeyup) {
         getStateHelper().put(PropertyKeys.onkeyup, onkeyup);
@@ -246,6 +260,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>onload</code> property.</p>
+     * @return the property value
      */
     public java.lang.String getOnload() {
         return (java.lang.String) getStateHelper().eval(PropertyKeys.onload);
@@ -254,6 +269,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>onload</code> property.</p>
+     * @param onload the new property value
      */
     public void setOnload(java.lang.String onload) {
         getStateHelper().put(PropertyKeys.onload, onload);
@@ -263,6 +279,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>onmousedown</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * pressed down over this element.
      */
@@ -273,6 +290,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>onmousedown</code> property.</p>
+     * @param onmousedown the new property value
      */
     public void setOnmousedown(java.lang.String onmousedown) {
         getStateHelper().put(PropertyKeys.onmousedown, onmousedown);
@@ -282,6 +300,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>onmousemove</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved within this element.
      */
@@ -292,6 +311,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>onmousemove</code> property.</p>
+     * @param onmousemove the new property value
      */
     public void setOnmousemove(java.lang.String onmousemove) {
         getStateHelper().put(PropertyKeys.onmousemove, onmousemove);
@@ -301,6 +321,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>onmouseout</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved away from this element.
      */
@@ -311,6 +332,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>onmouseout</code> property.</p>
+     * @param onmouseout the new property value
      */
     public void setOnmouseout(java.lang.String onmouseout) {
         getStateHelper().put(PropertyKeys.onmouseout, onmouseout);
@@ -320,6 +342,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>onmouseover</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * moved onto this element.
      */
@@ -330,6 +353,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>onmouseover</code> property.</p>
+     * @param onmouseover the new property value
      */
     public void setOnmouseover(java.lang.String onmouseover) {
         getStateHelper().put(PropertyKeys.onmouseover, onmouseover);
@@ -339,6 +363,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>onmouseup</code> property.</p>
+     * @return the property value
      * <p>Contents: Javascript code executed when a pointer button is
      * released over this element.
      */
@@ -349,6 +374,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>onmouseup</code> property.</p>
+     * @param onmouseup the new property value
      */
     public void setOnmouseup(java.lang.String onmouseup) {
         getStateHelper().put(PropertyKeys.onmouseup, onmouseup);
@@ -358,6 +384,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>onunload</code> property.</p>
+     * @return the property value
      */
     public java.lang.String getOnunload() {
         return (java.lang.String) getStateHelper().eval(PropertyKeys.onunload);
@@ -366,6 +393,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>onunload</code> property.</p>
+     * @param onunload the new property value
      */
     public void setOnunload(java.lang.String onunload) {
         getStateHelper().put(PropertyKeys.onunload, onunload);
@@ -375,6 +403,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>role</code> property.</p>
+     * @return the property value
      * <p>Contents: <p class="changed_added_2_2">Per the WAI-ARIA spec and its
      * relationship to HTML5 (Section title ARIA Role Attriubute),
      * every HTML element may have a "role" attribute whose value
@@ -397,6 +426,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>role</code> property.</p>
+     * @param role the new property value
      */
     public void setRole(java.lang.String role) {
         getStateHelper().put(PropertyKeys.role, role);
@@ -406,6 +436,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>style</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style(s) to be applied when this component is rendered.
      */
     public java.lang.String getStyle() {
@@ -415,6 +446,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>style</code> property.</p>
+     * @param style the new property value
      */
     public void setStyle(java.lang.String style) {
         getStateHelper().put(PropertyKeys.style, style);
@@ -424,6 +456,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>styleClass</code> property.</p>
+     * @return the property value
      * <p>Contents: Space-separated list of CSS style class(es) to be applied when
      * this element is rendered.  This value must be passed through
      * as the "class" attribute on generated markup.
@@ -435,6 +468,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>styleClass</code> property.</p>
+     * @param styleClass the new property value
      */
     public void setStyleClass(java.lang.String styleClass) {
         getStateHelper().put(PropertyKeys.styleClass, styleClass);
@@ -443,6 +477,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>title</code> property.</p>
+     * @return the property value
      * <p>Contents: Advisory title information about markup elements generated
      * for this component.
      */
@@ -453,6 +488,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>title</code> property.</p>
+     * @param title the new property value
      */
     public void setTitle(java.lang.String title) {
         getStateHelper().put(PropertyKeys.title, title);
@@ -462,6 +498,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Return the value of the <code>xmlns</code> property.</p>
+     * @return the property value
      * <p>Contents: <div class="changed_added_2_1">
      * An XML Namespace to be passed through to the rendered element
      * </div>
@@ -473,6 +510,7 @@ public class HtmlBody extends javax.faces.component.UIOutput implements ClientBe
 
     /**
      * <p>Set the value of the <code>xmlns</code> property.</p>
+     * @param xmlns the new property value
      */
     public void setXmlns(java.lang.String xmlns) {
         getStateHelper().put(PropertyKeys.xmlns, xmlns);

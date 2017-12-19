@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -48,6 +48,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.MessageFormat;
@@ -91,7 +92,7 @@ final class FactoryFinderInstance {
     static {
         
         Map<String, Class> buildUpFactoryClasses; 
-        buildUpFactoryClasses = new HashMap<String, Class>();
+        buildUpFactoryClasses = new HashMap<>();
         buildUpFactoryClasses.put(FactoryFinder.APPLICATION_FACTORY,
                  javax.faces.application.ApplicationFactory.class);
         buildUpFactoryClasses.put(FactoryFinder.VISIT_CONTEXT_FACTORY,
@@ -120,6 +121,8 @@ final class FactoryFinderInstance {
                  javax.faces.view.facelets.TagHandlerDelegateFactory.class);
         buildUpFactoryClasses.put(FactoryFinder.FLOW_HANDLER_FACTORY,
                  javax.faces.flow.FlowHandlerFactory.class);
+        buildUpFactoryClasses.put(FactoryFinder.SEARCH_EXPRESSION_CONTEXT_FACTORY,
+                 javax.faces.component.search.SearchExpressionContextFactory.class);
         FACTORY_CLASSES = Collections.unmodifiableMap(buildUpFactoryClasses);
 
         FACTORY_NAMES = new String [] {
@@ -136,7 +139,8 @@ final class FactoryFinderInstance {
             FactoryFinder.RENDER_KIT_FACTORY,
             FactoryFinder.VIEW_DECLARATION_LANGUAGE_FACTORY,
             FactoryFinder.FACELET_CACHE_FACTORY,
-            FactoryFinder.TAG_HANDLER_DELEGATE_FACTORY
+            FactoryFinder.TAG_HANDLER_DELEGATE_FACTORY,
+            FactoryFinder.SEARCH_EXPRESSION_CONTEXT_FACTORY
         };
 
         // Optimize performance of validateFactoryName
@@ -149,8 +153,8 @@ final class FactoryFinderInstance {
     // -------------------------------------------------------- Consturctors
     FactoryFinderInstance() {
         lock = new ReentrantReadWriteLock(true);
-        factories = new HashMap<String, Object>();
-        savedFactoryNames = new HashMap<String, List<String>>();
+        factories = new HashMap<>();
+        savedFactoryNames = new HashMap<>();
         for (String name : FACTORY_NAMES) {
             factories.put(name, new ArrayList(4));  // NOPMD
         }
@@ -160,8 +164,8 @@ final class FactoryFinderInstance {
 
     FactoryFinderInstance(FactoryFinderInstance toCopy) {
         lock = new ReentrantReadWriteLock(true);
-        factories = new HashMap<String, Object>();
-        savedFactoryNames = new HashMap<String, List<String>>();
+        factories = new HashMap<>();
+        savedFactoryNames = new HashMap<>();
         factories.putAll(toCopy.savedFactoryNames);
         copyInjectionProviderFromFacesContext();
         servletContextFinder = new ServletContextFacesContextFactory();
@@ -287,53 +291,35 @@ final class FactoryFinderInstance {
         // Check for a services definition
         List<String> result = null;
         String resourceName = "META-INF/services/" + factoryName;
-        InputStream stream;
-        BufferedReader reader = null;
         try {
             Enumeration<URL> e = classLoader.getResources(resourceName);
             while (e.hasMoreElements()) {
                 URL url = e.nextElement();
                 URLConnection conn = url.openConnection();
                 conn.setUseCaches(false);
-                stream = conn.getInputStream();
-                if (stream != null) {
-                    // Deal with systems whose native encoding is possibly
-                    // different from the way that the services entry was created
-                    try {
-                        reader =
-                              new BufferedReader(new InputStreamReader(stream,
-                                                                       "UTF-8"));
+                try (InputStream stream = conn.getInputStream()) {
+                    if (stream != null) {
                         if (result == null) {
-                            result = new ArrayList<String>(3);
+                            result = new ArrayList<>(3);
                         }
-                        result.add(reader.readLine());
-                    } catch (UnsupportedEncodingException uee) {
-                        // The DM_DEFAULT_ENCODING warning is acceptable here
-                        // because we explicitly *want* to use the Java runtime's
-                        // default encoding.
-                        reader =
-                              new BufferedReader(new InputStreamReader(stream));
-                    } finally {
-                        if (reader != null) {
-                            reader.close();
-                            reader = null;
-                        }
-                        if (stream != null) {
-                            stream.close();
-                            //noinspection UnusedAssignment
-                            stream = null;
-                        }
+                        // Deal with systems whose native encoding is possibly
+                        // different from the way that the services entry was created
+                        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream,
+                                "UTF-8"))) {
+                            result.add(reader.readLine());
+                        } catch (UnsupportedEncodingException uee) {
+                            // The DM_DEFAULT_ENCODING warning is acceptable here
+                            // because we explicitly *want* to use the Java runtime's
+                            // default encoding.
+                            try (BufferedReader reader =
+                                    new BufferedReader(new InputStreamReader(stream))) {
+                                result.add(reader.readLine());
+                            }
+                        } 
                     }
-
                 }
             }
-        } catch (IOException e) {
-            if (LOGGER.isLoggable(Level.SEVERE)) {
-                LOGGER.log(Level.SEVERE,
-                           e.toString(),
-                           e);
-            }
-        } catch (SecurityException e) {
+        } catch (IOException | SecurityException e) {
             if (LOGGER.isLoggable(Level.SEVERE)) {
                 LOGGER.log(Level.SEVERE,
                            e.toString(),
@@ -390,7 +376,7 @@ final class FactoryFinderInstance {
                 // fall through to "zero-arg-ctor" case
                 factoryClass = null;
             }
-            catch (Exception e) {
+            catch (ClassNotFoundException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 throw new FacesException(implName, e);
             }
         }
@@ -403,7 +389,7 @@ final class FactoryFinderInstance {
                 // there is no preceding implementation, so don't bother
                 // with a non-zero-arg ctor.
                 result = clazz.newInstance();
-            } catch (Exception e) {
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
                 throw new FacesException(implName, e);
             }
         }

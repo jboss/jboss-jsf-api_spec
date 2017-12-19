@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -102,6 +102,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>dir</code> property.</p>
+     * @return the property value
      * <p>Contents: Direction indication for text that does not inherit directionality.
      * Valid values are "LTR" (left-to-right) and "RTL" (right-to-left).
      * These attributes are case sensitive when rendering to XHTML, so
@@ -114,6 +115,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>dir</code> property.</p>
+     * @param dir the new property value
      */
     public void setDir(java.lang.String dir) {
         getStateHelper().put(PropertyKeys.dir, dir);
@@ -123,6 +125,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>escape</code> property.</p>
+     * @return the property value
      * <p>Contents: Flag indicating that characters that are sensitive
      * in HTML and XML markup must be escaped.  This flag
      * is set to "true" by default.
@@ -134,6 +137,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>escape</code> property.</p>
+     * @param escape the new property value
      */
     public void setEscape(boolean escape) {
         getStateHelper().put(PropertyKeys.escape, escape);
@@ -142,6 +146,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>lang</code> property.</p>
+     * @return the property value
      * <p>Contents: Code describing the language used in the generated markup
      * for this component.
      */
@@ -152,6 +157,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>lang</code> property.</p>
+     * @param lang the new property value
      */
     public void setLang(java.lang.String lang) {
         getStateHelper().put(PropertyKeys.lang, lang);
@@ -161,6 +167,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>role</code> property.</p>
+     * @return the property value
      * <p>Contents: <p class="changed_added_2_2">Per the WAI-ARIA spec and its
      * relationship to HTML5 (Section title ARIA Role Attriubute),
      * every HTML element may have a "role" attribute whose value
@@ -183,6 +190,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>role</code> property.</p>
+     * @param role the new property value
      */
     public void setRole(java.lang.String role) {
         getStateHelper().put(PropertyKeys.role, role);
@@ -192,6 +200,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>style</code> property.</p>
+     * @return the property value
      * <p>Contents: CSS style(s) to be applied when this component is rendered.
      */
     public java.lang.String getStyle() {
@@ -201,6 +210,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>style</code> property.</p>
+     * @param style the new property value
      */
     public void setStyle(java.lang.String style) {
         getStateHelper().put(PropertyKeys.style, style);
@@ -210,6 +220,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>styleClass</code> property.</p>
+     * @return the property value
      * <p>Contents: Space-separated list of CSS style class(es) to be applied when
      * this element is rendered.  This value must be passed through
      * as the "class" attribute on generated markup.
@@ -221,6 +232,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>styleClass</code> property.</p>
+     * @param styleClass the new property value
      */
     public void setStyleClass(java.lang.String styleClass) {
         getStateHelper().put(PropertyKeys.styleClass, styleClass);
@@ -229,6 +241,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>title</code> property.</p>
+     * @return the property value
      * <p>Contents: Advisory title information about markup elements generated
      * for this component.
      */
@@ -239,6 +252,7 @@ public class HtmlOutputFormat extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>title</code> property.</p>
+     * @param title the new property value
      */
     public void setTitle(java.lang.String title) {
         getStateHelper().put(PropertyKeys.title, title);

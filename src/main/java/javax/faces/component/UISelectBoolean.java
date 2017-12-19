@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -90,6 +90,7 @@ public class UISelectBoolean extends UIInput {
     // -------------------------------------------------------------- Properties
 
 
+    @Override
     public String getFamily() {
 
         return (COMPONENT_FAMILY);
@@ -100,6 +101,8 @@ public class UISelectBoolean extends UIInput {
     /**
      * <p>Return the local value of the selected state of this component.
      * This method is a typesafe alias for <code>getValue()</code>.</p>
+     * 
+     * @return true if selected, false otherwise.
      */
     public boolean isSelected() {
 
@@ -150,6 +153,7 @@ public class UISelectBoolean extends UIInput {
      * @deprecated This has been replaced by {@link
      * #getValueExpression}.
      */
+    @Override
     public ValueBinding getValueBinding(String name) {
 
         if ("selected".equals(name)) {
@@ -179,6 +183,7 @@ public class UISelectBoolean extends UIInput {
      *
      * @deprecated This has been replaced by {@link #setValueExpression}.
      */
+    @Override
     public void setValueBinding(String name, ValueBinding binding) {
 
         if ("selected".equals(name)) {
@@ -202,6 +207,7 @@ public class UISelectBoolean extends UIInput {
      *  is <code>null</code>
      * @since 1.2
      */
+    @Override
     public ValueExpression getValueExpression(String name) {
 
         if ("selected".equals(name)) {
@@ -226,6 +232,7 @@ public class UISelectBoolean extends UIInput {
      *  is <code>null</code>
      * @since 1.2
      */
+    @Override
     public void setValueExpression(String name, ValueExpression binding) {
 
         if ("selected".equals(name)) {

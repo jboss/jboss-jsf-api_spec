@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -92,6 +92,7 @@ public class HtmlDoctype extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>public</code> property.</p>
+     * @return the property value
      * <p>Contents: <div class="changed_added_2_1">
      * Will be output as the public part of the DOCTYPE
      * </div>
@@ -103,6 +104,7 @@ public class HtmlDoctype extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>public</code> property.</p>
+     * @param _public the new property value
      */
     public void setPublic(java.lang.String _public) {
         getStateHelper().put(PropertyKeys.publicVal, _public);
@@ -112,6 +114,7 @@ public class HtmlDoctype extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>rootElement</code> property.</p>
+     * @return the property value
      * <p>Contents: <div class="changed_added_2_1">
      * The root XML element
      * </div>
@@ -123,6 +126,7 @@ public class HtmlDoctype extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>rootElement</code> property.</p>
+     * @param rootElement the new property value
      */
     public void setRootElement(java.lang.String rootElement) {
         getStateHelper().put(PropertyKeys.rootElement, rootElement);
@@ -132,6 +136,7 @@ public class HtmlDoctype extends javax.faces.component.UIOutput {
 
     /**
      * <p>Return the value of the <code>system</code> property.</p>
+     * @return the property value
      * <p>Contents: <div class="changed_added_2_1">
      * Will be output as the system part of the DOCTYPE
      * </div>
@@ -143,6 +148,7 @@ public class HtmlDoctype extends javax.faces.component.UIOutput {
 
     /**
      * <p>Set the value of the <code>system</code> property.</p>
+     * @param system the new property value
      */
     public void setSystem(java.lang.String system) {
         getStateHelper().put(PropertyKeys.system, system);

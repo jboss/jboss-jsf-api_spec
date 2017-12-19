@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -55,6 +55,7 @@ public class ViewExpiredException extends FacesException {
 
     // ----------------------------------------------------------- Constructors
 
+    private static final long serialVersionUID = 5175808310270035833L;
 
     /**
      * <p>Construct a new exception with no detail message or root cause.</p>
@@ -137,6 +138,8 @@ public class ViewExpiredException extends FacesException {
     /**
      * <p>Return the view identifier of this exception, or <code>null</code> if the
      * view identifier is nonexistent or unknown.</p>
+     * 
+     * @return the view id, or <code>null</code>.
      */
     public String getViewId() {
 
@@ -148,7 +151,10 @@ public class ViewExpiredException extends FacesException {
      * <p>Return the message for this exception prepended with the view identifier
      * if the view identifier is not <code>null</code>, otherwise, return the 
      * message.</p>
+     * 
+     * @return the message.
      */
+    @Override
     public String getMessage() {
 
         if (viewId != null) {

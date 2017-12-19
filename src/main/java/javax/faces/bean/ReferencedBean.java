@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -37,9 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package javax.faces.bean;
-
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -48,22 +46,27 @@ import java.lang.annotation.Target;
 import java.lang.annotation.Inherited;
 
 /**
- * <p class="changed_added_2_0">The presence of this annotation on a
- * class is equivalent to the <em>referenced-bean</em> element
- * in the application configuration resources.</p>
+ * <p class="changed_added_2_0">The presence of this annotation on a class is
+ * equivalent to the <em>referenced-bean</em> element in the application
+ * configuration resources.</p>
  *
  * @since 2.0
+ * @deprecated The referenced-bean concept was used for a design time promise
+ * which however did not achieve widespread adoption. There is no direct 
+ * replacement for this other than using the XML variant in faces-config.xml.
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 @Inherited
+@Deprecated
 public @interface ReferencedBean {
 
-    /** <p class="changed_added_2_0">Taken to be the
-     * <code>referenced-bean-name</code>.  See class documentation for
+    /**
+     * <p class="changed_added_2_0">Taken to be the
+     * <code>referenced-bean-name</code>. See class documentation for
      * {@link ManagedBean} for details.</p>
+     *
+     * @return the referenced bean name.
      */
-
     String name() default "";
-
 }

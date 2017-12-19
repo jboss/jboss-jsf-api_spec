@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -86,6 +86,7 @@ class MethodBindingValueChangeListener extends MethodBindingAdapterBase implemen
      * @throws NullPointerException {@inheritDoc}     
      * @throws AbortProcessingException {@inheritDoc}     
      */ 
+    @Override
     public void processValueChange(ValueChangeEvent actionEvent) throws AbortProcessingException {
                          
         if (actionEvent == null) {
@@ -114,6 +115,7 @@ class MethodBindingValueChangeListener extends MethodBindingAdapterBase implemen
 
     
 
+    @Override
     public Object saveState(FacesContext context) {
         if (context == null) {
             throw new NullPointerException();
@@ -138,6 +140,7 @@ class MethodBindingValueChangeListener extends MethodBindingAdapterBase implemen
 	return result;
     }
 
+    @Override
     public void restoreState(FacesContext context, Object state) {
         if (context == null) {
             throw new NullPointerException();
@@ -167,11 +170,8 @@ class MethodBindingValueChangeListener extends MethodBindingAdapterBase implemen
 			result = 
 			    (MethodBinding) toRestoreClass.newInstance();
 		    }
-		    catch (InstantiationException e) {
+		    catch (InstantiationException | IllegalAccessException e) {
 			throw new IllegalStateException(e);
-		    }
-		    catch (IllegalAccessException a) {
-			throw new IllegalStateException(a);
 		    }
 		}
 		
@@ -190,10 +190,12 @@ class MethodBindingValueChangeListener extends MethodBindingAdapterBase implemen
 
     private boolean tranzient = false;
 
+    @Override
     public boolean isTransient() {
 	return tranzient;
     }
 
+    @Override
     public void setTransient(boolean newTransientValue) {
 	tranzient = newTransientValue;
     }

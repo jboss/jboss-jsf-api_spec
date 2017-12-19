@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  * 
@@ -61,6 +61,8 @@ public abstract class SwitchNode extends FlowNode {
      * <p class="changed_added_2_2">Return the cases in this switch.</p>
      * 
      * @since 2.2
+     * 
+     * @return the cases in this switch
      */
     public abstract List<SwitchCase> getCases();
 
@@ -68,6 +70,10 @@ public abstract class SwitchNode extends FlowNode {
      * <p class="changed_added_2_2">Return the default outcome in this switch.</p>
      * 
      * @since 2.2
+     * 
+     * @param context the {@link FacesContext} for this request
+     * 
+     * @return the default outcome in this switch
      */
     public abstract String getDefaultOutcome(FacesContext context);
     

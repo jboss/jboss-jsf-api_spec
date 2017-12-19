@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -48,8 +48,8 @@ import javax.faces.convert.Converter;
 
 /**
  * <p><strong
- * class="changed_modified_2_0_rev_a">DoubleRangeValidator</strong> is a
- * {@link Validator} that checks the value of the corresponding
+ * class="changed_modified_2_0_rev_a changed_modified_2_3">DoubleRangeValidator</strong> 
+ * is a {@link Validator} that checks the value of the corresponding
  * component against specified minimum and maximum values.  The
  * following algorithm is implemented:</p>
 
@@ -75,7 +75,7 @@ import javax.faces.convert.Converter;
  * specified minimum, throw a {@link ValidatorException} containing a
  * MINIMUM_MESSAGE_ID message.</li>
  * </ul>
- * <p/>
+ * 
  * <p>For all of the above cases that cause a {@link ValidatorException}
  * to be thrown, if there are parameters to the message that match up
  * with validator parameters, the values of these parameters must be
@@ -105,7 +105,7 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
      * <li><code>{0}</code> replaced by the configured maximum value.</li>
      * <li><code>{1}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String MAXIMUM_MESSAGE_ID =
          "javax.faces.validator.DoubleRangeValidator.MAXIMUM";
@@ -119,7 +119,7 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
      * <li><code>{0}</code> replaced by the configured minimum value.</li>
      * <li><code>{1}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String MINIMUM_MESSAGE_ID =
          "javax.faces.validator.DoubleRangeValidator.MINIMUM";
@@ -135,7 +135,7 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
      * <li><code>{1}</code> replaced by the configured maximum value.</li>
      * <li><code>{2}</code> replaced by a <code>String</code> whose value
      * is the label of the input component that produced this message.</li>
-     * </ul></p>
+     * </ul>
      */
     public static final String NOT_IN_RANGE_MESSAGE_ID =
          "javax.faces.validator.DoubleRangeValidator.NOT_IN_RANGE";
@@ -202,6 +202,8 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
      * <p>Return the maximum value to be enforced by this {@link
      * Validator} or <code>Double.MAX_VALUE</code> if it has not been
      * set.</p>
+     *
+     * @return the maximum
      */
     public double getMaximum() {
 
@@ -230,6 +232,8 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
      * <p>Return the minimum value to be enforced by this {@link
      * Validator}, or <code>Double.MIN_VALUE</code> if it has not been
      * set.</p>
+     *
+     * @return the minimum value
      */
     public double getMinimum() {
 
@@ -256,6 +260,7 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
      * @throws NullPointerException {@inheritDoc}
      * @throws ValidatorException   {@inheritDoc}
      */
+    @Override
     public void validate(FacesContext context,
                          UIComponent component,
                          Object value) throws ValidatorException {
@@ -310,7 +315,16 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
 
     }
 
-
+    /**
+     * <p class="changed_modified_2_3">
+     *  Overrides the default equals method to take the minimum and maximum 
+     *  into account when comparing DoubleRangeValidator instances.
+     * </p>
+     * 
+     * @param otherObj the object to compare against.
+     * @return true if equal, false otherwise.
+     */
+    @Override
     public boolean equals(Object otherObj) {
 
         if (!(otherObj instanceof DoubleRangeValidator)) {
@@ -324,7 +338,15 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
 
     }
 
-
+    /**
+     * <p class="changed_modified_2_3">
+     *  Overrides the default hash code method to take the minimum and maximum 
+     *  into account when generating the hash code.
+     * </p>
+     * 
+     * @return the hash code.
+     */
+    @Override
     public int hashCode() {
 
         int hashCode = (Double.valueOf(this.getMinimum()).hashCode()
@@ -381,6 +403,7 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
     // ----------------------------------------------------- StateHolder Methods
 
 
+    @Override
     public Object saveState(FacesContext context) {
 
         if (context == null) {
@@ -397,6 +420,7 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
     }
 
 
+    @Override
     public void restoreState(FacesContext context, Object state) {
 
         if (context == null) {
@@ -411,9 +435,10 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
     }
 
 
-    private boolean transientValue = false;
+    private boolean transientValue;
 
 
+    @Override
     public boolean isTransient() {
 
         return (this.transientValue);
@@ -421,6 +446,7 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
     }
 
 
+    @Override
     public void setTransient(boolean transientValue) {
 
         this.transientValue = transientValue;
@@ -429,14 +455,17 @@ public class DoubleRangeValidator implements Validator, PartialStateHolder {
 
     private boolean initialState;
 
+    @Override
     public void markInitialState() {
         initialState = true;
     }
 
+    @Override
     public boolean initialStateMarked() {
         return initialState;
     }
 
+    @Override
     public void clearInitialState() {
         initialState = false;
     }

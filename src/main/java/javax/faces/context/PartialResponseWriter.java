@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -42,6 +42,9 @@ package javax.faces.context;
 
 import java.io.IOException;
 import java.util.Map;
+
+import javax.faces.component.NamingContainer;
+import javax.faces.component.UIViewRoot;
 import javax.faces.render.ResponseStateManager;
 
 /**
@@ -71,8 +74,6 @@ public class PartialResponseWriter extends ResponseWriterWrapper {
     //
     private boolean inUpdate = false;
 
-    ResponseWriter writer;
-
     /**
      * <p class="changed_added_2_0">Reserved ID value to indicate
      * entire ViewRoot.</p>
@@ -96,26 +97,20 @@ public class PartialResponseWriter extends ResponseWriterWrapper {
      * @since 2.0
      */
     public PartialResponseWriter(ResponseWriter writer) {
-        this.writer = writer;
-    }
-
-    /**
-     * <p class="changed_added_2_0">Return the wrapped
-     * {@link ResponseWriter} instance.</p>
-     *
-     * @see ResponseWriterWrapper#getWrapped()
-     * @since 2.0
-     */
-    public ResponseWriter getWrapped() {
-        return writer;
+        super(writer);
     }
 
     /**
      * <p class="changed_added_2_0">Write the start of a partial response.</p>
+     * <p class="changed_added_2_3">If {@link UIViewRoot} is an instance of
+     * {@link NamingContainer}, then write
+     * {@link UIViewRoot#getContainerClientId(FacesContext)} as value of the
+     * <code>id</code> attribute of the root element.</p>
      *
      * @throws IOException if an input/output error occurs
      * @since 2.0
      */
+    @Override
     public void startDocument() throws IOException {
         ResponseWriter writer = getWrapped();
         String encoding = writer.getCharacterEncoding( );
@@ -125,7 +120,7 @@ public class PartialResponseWriter extends ResponseWriterWrapper {
         writer.writePreamble("<?xml version='1.0' encoding='" + encoding + "'?>\n");
         writer.startElement("partial-response", null);
         FacesContext ctx = FacesContext.getCurrentInstance();
-        if (null != ctx && null != ctx.getViewRoot()) {
+        if (null != ctx && ctx.getViewRoot() instanceof NamingContainer) {
             String id = ctx.getViewRoot().getContainerClientId(ctx);
             writer.writeAttribute("id", id, "id");
         }
@@ -137,6 +132,7 @@ public class PartialResponseWriter extends ResponseWriterWrapper {
      * @throws IOException if an input/output error occurs
      * @since 2.0
      */
+    @Override
     public void endDocument() throws IOException {
         endChangesIfNecessary();
         ResponseWriter writer = getWrapped();

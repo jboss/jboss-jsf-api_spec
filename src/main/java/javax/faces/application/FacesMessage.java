@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -63,7 +63,7 @@ import java.util.HashMap;
  * <p>The implementation must take the following steps when creating
  * <code>FacesMessage</code> instances given a <code>messageId</code>:</p>
  *
- * <ul>
+ * <blockquote>
  *
  * <p>Call {@link Application#getMessageBundle}.  If
  * non-<code>null</code>, locate the named <code>ResourceBundle</code>,
@@ -88,7 +88,7 @@ import java.util.HashMap;
  * <code>summary</code> and <code>detail</code> of the
  * <code>FacesMessage</code>.</p>
  *
- * </ul>
+ * </blockquote>
  *
  */
 
@@ -166,7 +166,7 @@ public class FacesMessage implements Serializable {
 	Collections.unmodifiableList(Arrays.asList(values));
 
     private static Map<String,Severity> _MODIFIABLE_MAP =
-         new HashMap<String,Severity>(4, 1.0f);
+         new HashMap<>(4, 1.0f);
     
     static {
 	for (int i = 0, len = values.length; i < len; i++) {
@@ -202,6 +202,8 @@ public class FacesMessage implements Serializable {
      * <p>Construct a new {@link javax.faces.application.FacesMessage} with just a summary.  The
      * detail is <code>null</code>, the severity is set to
      * <code>Severity.INFO</code>.</p>
+     * 
+     * @param summary the summary.
      */
     public FacesMessage(String summary) {
 
@@ -269,6 +271,8 @@ public class FacesMessage implements Serializable {
      * <p>Return the localized detail text.  If no localized detail text has
      * been defined for this message, return the localized summary text
      * instead.</p>
+     * 
+     * @return the localized detail text.
      */
     public String getDetail() {
 
@@ -295,6 +299,8 @@ public class FacesMessage implements Serializable {
 
     /**
      * <p>Return the severity level.</p>
+     * 
+     * @return the severity level.
      */
     public Severity getSeverity() {
 
@@ -324,6 +330,8 @@ public class FacesMessage implements Serializable {
 
     /**
      * <p>Return the localized summary text.</p>
+     * 
+     * @return the localized summary text.
      */
     public String getSummary() {
 
@@ -371,6 +379,10 @@ public class FacesMessage implements Serializable {
     /**
      * <p>Persist {@link javax.faces.application.FacesMessage} artifacts,
      * including the non serializable <code>Severity</code>.</p>
+     * 
+     * @param out The target stream to which the object will be written.
+     * 
+     * @throws IOException Any of the usual Input/Output related exceptions.
      */
     private void writeObject(ObjectOutputStream out) throws IOException {
         out.defaultWriteObject();
@@ -383,6 +395,12 @@ public class FacesMessage implements Serializable {
     /**
      * <p>Reconstruct {@link javax.faces.application.FacesMessage} from
      * serialized artifacts.</p>
+     * 
+     * @param in The binary input of the object to be read
+     * 
+     * @throws IOException Any of the usual Input/Output related exceptions.
+     * @throws ClassNotFoundException Class of a serialized object cannot be found.
+     * 
      */
     private void readObject(ObjectInputStream in)
         throws IOException, ClassNotFoundException {
@@ -450,6 +468,7 @@ public class FacesMessage implements Serializable {
 	 *
 	 * @param other The other object to be compared to
 	 */
+        @Override
 	public int compareTo(Object other) {
 	    return this.ordinal - ((Severity) other).ordinal;
 	}
@@ -458,6 +477,8 @@ public class FacesMessage implements Serializable {
 	/**
 	 * <p>Return the ordinal value of this {@link
 	 * FacesMessage.Severity} instance.</p>
+         * 
+         * @return the ordinal.
 	 */
 	public int getOrdinal() {
 	    return (this.ordinal);
@@ -468,6 +489,7 @@ public class FacesMessage implements Serializable {
 	 * <p>Return a String representation of this {@link
 	 * FacesMessage.Severity} instance.</p>
 	 */
+        @Override
 	public String toString() {
 	    if (null == severityName) {
 		return (String.valueOf(this.ordinal));

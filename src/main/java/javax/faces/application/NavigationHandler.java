@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -45,7 +45,7 @@ import javax.faces.context.FacesContext;
 
 
 /**
- * <p><span class="changed_modified_2_0 changed_modified_2_2">A</a> 
+ * <p><span class="changed_modified_2_0 changed_modified_2_2">A</span> 
  * <strong>NavigationHandler</strong> is passed the outcome string
  * returned by an application action invoked for this application, and will
  * use this (along with related state information) to choose the view to

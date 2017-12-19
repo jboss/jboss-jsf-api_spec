@@ -8,7 +8,7 @@
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -90,6 +90,7 @@ public class UIMessages extends UIComponentBase {
         PropertyKeys() {
         }
 
+        @Override
         public String toString() {
             return ((this.toString != null) ? this.toString : super.toString());
         }
@@ -113,6 +114,7 @@ public class UIMessages extends UIComponentBase {
     // -------------------------------------------------------------- Properties
 
 
+    @Override
     public String getFamily() {
 
         return (COMPONENT_FAMILY);
@@ -123,6 +125,8 @@ public class UIMessages extends UIComponentBase {
      * <p class="changed_added_2_0">Return the client identifier of the
      * component for which this component represents associated message(s)
      * (if any).</p>
+     * 
+     * @return the for client identifier.
      */
     public String getFor() {
 
@@ -148,7 +152,9 @@ public class UIMessages extends UIComponentBase {
      * <p>Return the flag indicating whether only global messages (that
      * is, messages with no associated client identifier) should be
      * rendered.  Mutually exclusive with the "for" property which takes
-	 * precedence. Defaults to false.</p>
+     * precedence. Defaults to false.</p>
+     * 
+     * @return <code>true</code> if only global messages are to be shown, <code>false</code> otherwise.
      */
     public boolean isGlobalOnly() {
 
@@ -173,6 +179,8 @@ public class UIMessages extends UIComponentBase {
      * <p>Return the flag indicating whether the <code>detail</code>
      * property of the associated message(s) should be displayed.
      * Defaults to false.</p>
+     * 
+     * @return <code>true</code> if detail is to be shown, <code>false</code> otherwise.
      */
     public boolean isShowDetail() {
 
@@ -197,6 +205,8 @@ public class UIMessages extends UIComponentBase {
      * <p>Return the flag indicating whether the <code>summary</code>
      * property of the associated message(s) should be displayed.
      * Defaults to true.</p>
+     * 
+     * @return <code>true</code> if the summary is to be shown, <code>false</code> otherwise.
      */
     public boolean isShowSummary() {
 

@@ -1,14 +1,14 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
  * and Distribution License("CDDL") (collectively, the "License").  You
  * may not use this file except in compliance with the License.  You can
  * obtain a copy of the License at
- * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * https://glassfish.java.net/public/CDDL+GPL_1_1.html
  * or packager/legal/LICENSE.txt.  See the License for the specific
  * language governing permissions and limitations under the License.
  *
@@ -42,6 +42,9 @@ package javax.faces.component;
 
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.visit.VisitCallback;
+import javax.faces.component.visit.VisitContext;
+import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
 
 
@@ -88,6 +91,19 @@ public class UISelectOne extends UIInput {
         "javax.faces.component.UISelectOne.INVALID";
 
 
+    enum PropertyKeys {
+
+        /**
+         * <p>
+         * Specifies the name of the radio button group.
+         *
+         * @since 2.3
+         */
+        group
+
+    }
+
+
     // ------------------------------------------------------------ Constructors
 
 
@@ -106,6 +122,7 @@ public class UISelectOne extends UIInput {
     // -------------------------------------------------------------- Properties
 
 
+    @Override
     public String getFamily() {
 
         return (COMPONENT_FAMILY);
@@ -113,7 +130,100 @@ public class UISelectOne extends UIInput {
     }
 
 
+    /**
+     * <p class="changed_added_2_3">
+     * Returns the name of the radio button group.
+     * <p>
+     * Radio button components having the same group within a <code>UIForm</code> parent will uncheck all others when
+     * being checked. If the <code>value</code> attribute is absent then the one from first component of the group will
+     * be used. If the <code>UISelectItem</code> child is absent then the one from first component of the group will be
+     * used.
+     *
+     * @return The name of the radio button group.
+     * @since 2.3
+     */
+    public String getGroup() {
+
+        return (String) getStateHelper().eval(PropertyKeys.group);
+
+    }
+
+
+    /**
+     * <p class="changed_added_2_3">
+     * Sets the name of the radio button group.
+     *
+     * @param group The name of the radio button group.
+     * @since 2.3
+     */
+    public void setGroup(String group) {
+
+        getStateHelper().put(PropertyKeys.group, group);
+
+    }
+
+
     // ------------------------------------------------------ Validation Methods
+
+
+    /**
+     * <p class="changed_added_2_3">If {@link #getGroup()} is set, and {@link #getSubmittedValue()} is empty, and at
+     * least one other component having the same group within a <code>UIForm</code> parent has a non-empty 
+     * {@link #getSubmittedValue()} or returns <code>true</code> on {@link #isLocalValueSet()} or returns 
+     * <code>false</code> on {@link #isValid()}, then skip validation for current component, else perform standard
+     * superclass processing by <code>super.processValidators(context)</code>.</p>
+     */
+    @Override
+    public void processValidators(FacesContext context) {
+
+        final String group = getGroup();
+
+        if (group != null && isEmpty(getSubmittedValue())) {
+            final String clientId = getClientId(context);
+            final UIComponent groupContainer = getGroupContainer(context, this);
+            final boolean[] alreadySubmittedOrValidatedAsGroup = new boolean[1];
+
+            groupContainer.visitTree(VisitContext.createVisitContext(context), new VisitCallback() {
+                @Override
+                public VisitResult visit(VisitContext visitContext, UIComponent target) {
+                    if (target instanceof UISelectOne) {
+                        UISelectOne radio = (UISelectOne) target;
+
+                        if (isOtherMemberOfSameGroup(context, group, clientId, radio) && isAlreadySubmittedOrValidated(radio)) {
+                            alreadySubmittedOrValidatedAsGroup[0] = true;
+                            return VisitResult.COMPLETE;
+                        }
+                    }
+
+                    return VisitResult.ACCEPT;
+                }
+            });
+
+            if (alreadySubmittedOrValidatedAsGroup[0]) {
+                return;
+            }
+        }
+
+        super.processValidators(context);
+    }
+
+    private static UIComponent getGroupContainer(FacesContext context, UISelectOne radio) {
+        UIComponent namingContainer = radio.getNamingContainer();
+
+        while (namingContainer != null && !(namingContainer instanceof UIForm) && namingContainer.getParent() != null) {
+            namingContainer = namingContainer.getParent().getNamingContainer();
+        }
+
+        return namingContainer != null ? namingContainer : context.getViewRoot();
+    }
+
+    private static boolean isOtherMemberOfSameGroup(FacesContext context, String group, String clientId, UISelectOne radio) {
+        return group.equals(radio.getGroup()) && !clientId.equals(radio.getClientId(context));
+    }
+
+    private static boolean isAlreadySubmittedOrValidated(EditableValueHolder input) {
+        return !isEmpty(input.getSubmittedValue()) || input.isLocalValueSet() || !input.isValid();
+    }
 
 
     /**
@@ -140,11 +250,12 @@ public class UISelectOne extends UIInput {
      * @throws NullPointerException if <code>context</code>
      *  is <code>null</code>
      */
+    @Override
     protected void validateValue(FacesContext context, Object value) {
-
-        // Skip validation if it is not necessary
+        
         super.validateValue(context, value);
 
+        // Skip validation if it is not necessary
         if (!isValid() || (value == null)) {
             return;
         }
@@ -163,7 +274,7 @@ public class UISelectOne extends UIInput {
                                                getConverter());
 
         // Enqueue an error message if an invalid value was specified
-        if ((!found) || 
+        if ((!found) ||
             (isRequired() && isNoSelection)) {
             FacesMessage message =
                 MessageFactory.getMessage(context, INVALID_MESSAGE_ID,
@@ -171,7 +282,7 @@ public class UISelectOne extends UIInput {
             context.addMessage(getClientId(context), message);
             setValid(false);
         }
-        
+
     }
 
 }
