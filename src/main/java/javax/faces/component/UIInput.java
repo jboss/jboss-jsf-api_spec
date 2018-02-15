@@ -259,9 +259,11 @@ public class UIInput extends UIOutput implements EditableValueHolder {
      * its corresponding {@link Renderer}.</p>
      */
     public Object getSubmittedValue() {
-
-        return (this.submittedValue);
-
+        if (submittedValue == null && !isValid() && considerEmptyStringNull(FacesContext.getCurrentInstance())) { // JAVASERVERFACES_SPEC_PUBLIC-671
+            return "";
+        } else {
+            return submittedValue;
+        }
     }
 
 
