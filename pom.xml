@@ -11,7 +11,7 @@
 
   <groupId>org.jboss.spec.javax.faces</groupId>
   <artifactId>jboss-jsf-api_2.2_spec</artifactId>
-  <version>2.2.13.SP1-SNAPSHOT</version>
+  <version>2.2.13.SP1</version>
   <packaging>jar</packaging>
 
   <name>JavaServer(TM) Faces 2.2 API</name>
@@ -34,7 +34,7 @@
     <connection>scm:git:git@github.com:jboss/jboss-jsf-api_spec.git</connection>
     <developerConnection>scm:git:git@github.com:jboss/jboss-jsf-api_spec.git</developerConnection>
     <url>https://github.com/jboss/jboss-jsf-api_spec</url>
-    <tag>HEAD</tag>
+    <tag>jboss-jsf-api_2.2_spec-2.2.13.SP1</tag>
   </scm>
   <distributionManagement>
     <repository>
