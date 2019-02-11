@@ -1,51 +1,27 @@
 /*
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ * Copyright (c) 1997, 2018 Oracle and/or its affiliates. All rights reserved.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0, which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
  *
- * The contents of this file are subject to the terms of either the GNU
- * General Public License Version 2 only ("GPL") or the Common Development
- * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License.  You can
- * obtain a copy of the License at
- * https://glassfish.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
- * language governing permissions and limitations under the License.
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the
+ * Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+ * version 2 with the GNU Classpath Exception, which is available at
+ * https://www.gnu.org/software/classpath/license.html.
  *
- * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
- *
- * GPL Classpath Exception:
- * Oracle designates this particular file as subject to the "Classpath"
- * exception as provided by Oracle in the GPL Version 2 section of the License
- * file that accompanied this code.
- *
- * Modifications:
- * If applicable, add the following below the License Header, with the fields
- * enclosed by brackets [] replaced by your own identifying information:
- * "Portions Copyright [year] [name of copyright owner]"
- *
- * Contributor(s):
- * If you wish your version of this file to be governed by only the CDDL or
- * only the GPL Version 2, indicate your decision by adding "[Contributor]
- * elects to include this software in this distribution under the [CDDL or GPL
- * Version 2] license."  If you don't indicate a single choice of license, a
- * recipient has the option to distribute your version of this file under
- * either the CDDL, the GPL Version 2 or to extend the choice of license to
- * its licensees as provided above.  However, if you add GPL Version 2 code
- * and therefore, elected the GPL Version 2 license, then the option applies
- * only if the new code is made subject to such option by the copyright
- * holder.
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
 package javax.faces.component;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.annotation.Inherited;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  * <p class="changed_added_2_0">The presence of this annotation on a
@@ -63,81 +39,80 @@ import java.lang.annotation.Inherited;
  * <code>addComponent()</code> happen during application startup time
  * and before any requests are serviced.</p>
 
- */ 
-
-/**
- * <p><span class="changed_modified_2_2">The</span> presence of this annotation
- * on a class that extends {@link UIComponent} must cause the runtime to 
- * register this class as a component suitable for inclusion in a view.
- * <span class="changed_added_2_2">If the <code>createTag</code> attribute
- * is <code>true</code>, the runtime must create a corresponding Facelet
- * tag handler according to the rules specified in the attributes of 
- * this annotation.</span></p>
- * 
  */
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+/**
+ * <p>
+ * <span class="changed_modified_2_2">The</span> presence of this annotation on a class that extends
+ * {@link UIComponent} must cause the runtime to register this class as a component suitable for
+ * inclusion in a view. <span class="changed_added_2_2">If the <code>createTag</code> attribute is
+ * <code>true</code>, the runtime must create a corresponding Facelet tag handler according to the
+ * rules specified in the attributes of this annotation.</span>
+ * </p>
+ * 
+ */
+@Retention(RUNTIME)
+@Target(TYPE)
 @Inherited
 public @interface FacesComponent {
-    
+
     /**
-     * <p class="changed_added_2_2">Components that declare a 
-     * <code>createTag = true</code> attribute will be placed into this tag
-     * namespace if the namespace attribute is omitted.</p>
+     * <p class="changed_added_2_2">
+     * Components that declare a <code>createTag = true</code> attribute will be placed into this
+     * tag namespace if the namespace attribute is omitted.
+     * </p>
      */
     public static final String NAMESPACE = "http://xmlns.jcp.org/jsf/component";
 
     /**
-     * <p class="changed_added_2_0"><span class="changed_modified_2_2">The</span>
-     * value of this annotation attribute is taken to be the 
-     * <em>component-type</em> with which instances of this class of component can be instantiated by
-     * calling {@link
-     * javax.faces.application.Application#createComponent(java.lang.String)}.
-     * <span class="changed_added_2_2">If no value is specified, or the value is
-     * <code>null</code>, the value is taken to be the return of calling
-     * <code>getSimpleName</code> on the class to which this annotation
-     * is attached and lowercasing the first character.  If more than one
-     * component with this derived name is found, the results are undefined.</span></p>
+     * <p class="changed_added_2_0">
+     * <span class="changed_modified_2_2">The</span> value of this annotation attribute is taken to
+     * be the <em>component-type</em> with which instances of this class of component can be
+     * instantiated by calling
+     * {@link javax.faces.application.Application#createComponent(java.lang.String)}.
+     * <span class="changed_added_2_2">If no value is specified, or the value is <code>null</code>,
+     * the value is taken to be the return of calling <code>getSimpleName</code> on the class to
+     * which this annotation is attached and lowercasing the first character. If more than one
+     * component with this derived name is found, the results are undefined.</span>
+     * </p>
      * 
      * @return the component type.
-     */ 
-
+     */
     String value() default "";
-    
+
     /**
-     * <p class="changed_added_2_2">If the value of this attribute is 
-     * <code>true</code>, the runtime must create a Facelet tag handler, 
-     * that extends from {@link javax.faces.view.facelets.ComponentHandler},
-     * suitable for use in pages under the tag library with namespace given
-     * by the value of the {@link #namespace} attribute.</p>
+     * <p class="changed_added_2_2">
+     * If the value of this attribute is <code>true</code>, the runtime must create a Facelet tag
+     * handler, that extends from {@link javax.faces.view.facelets.ComponentHandler}, suitable for
+     * use in pages under the tag library with namespace given by the value of the
+     * {@link #namespace} attribute.
+     * </p>
      * 
      * @return <code>true</code> to create the Facelet tag handler, <code>false</code> otherwise.
      */
-    
     boolean createTag() default false;
-    
+
     /**
-     * <p class="changed_added_2_2">If the value of the {@link #createTag} 
-     * attribute is <code>true</code>, the runtime must use this
-     * value as the tag name for including an instance of the component
-     * annotated with this annotation in a view.  If this attribute is not
-     * specified on a usage of this annotation, the simple name of the 
-     * class on which this annotation is declared, with the first character 
-     * lowercased, is taken to be the value.</p>
+     * <p class="changed_added_2_2">
+     * If the value of the {@link #createTag} attribute is <code>true</code>, the runtime must use
+     * this value as the tag name for including an instance of the component annotated with this
+     * annotation in a view. If this attribute is not specified on a usage of this annotation, the
+     * simple name of the class on which this annotation is declared, with the first character
+     * lowercased, is taken to be the value.
+     * </p>
      * 
      * @return the tag name.
      */
     String tagName() default "";
-    
+
     /**
-     * <p class="changed_added_2_2">If the value of the {@link #createTag} 
-     * attribute is <code>true</code>, the value of this attribute is taken
-     * to be the tag library namespace into which this component is placed.</p>
+     * <p class="changed_added_2_2">
+     * If the value of the {@link #createTag} attribute is <code>true</code>, the value of this
+     * attribute is taken to be the tag library namespace into which this component is placed.
+     * </p>
      * 
      * @return the namespace.
      */
-    
     String namespace() default NAMESPACE;
-    
+
 }

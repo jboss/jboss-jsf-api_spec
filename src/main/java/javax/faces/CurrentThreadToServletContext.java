@@ -1,206 +1,185 @@
 /*
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
- * 
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
- * 
- * The contents of this file are subject to the terms of either the GNU
- * General Public License Version 2 only ("GPL") or the Common Development
- * and Distribution License("CDDL") (collectively, the "License").  You
- * may not use this file except in compliance with the License.  You can
- * obtain a copy of the License at
- * https://glassfish.java.net/public/CDDL+GPL_1_1.html
- * or packager/legal/LICENSE.txt.  See the License for the specific
- * language governing permissions and limitations under the License.
- * 
- * When distributing the software, include this License Header Notice in each
- * file and include the License file at packager/legal/LICENSE.txt.
- * 
- * GPL Classpath Exception:
- * Oracle designates this particular file as subject to the "Classpath"
- * exception as provided by Oracle in the GPL Version 2 section of the License
- * file that accompanied this code.
- * 
- * Modifications:
- * If applicable, add the following below the License Header, with the fields
- * enclosed by brackets [] replaced by your own identifying information:
- * "Portions Copyright [year] [name of copyright owner]"
- * 
- * Contributor(s):
- * If you wish your version of this file to be governed by only the CDDL or
- * only the GPL Version 2, indicate your decision by adding "[Contributor]
- * elects to include this software in this distribution under the [CDDL or GPL
- * Version 2] license."  If you don't indicate a single choice of license, a
- * recipient has the option to distribute your version of this file under
- * either the CDDL, the GPL Version 2 or to extend the choice of license to
- * its licensees as provided above.  However, if you add GPL Version 2 code
- * and therefore, elected the GPL Version 2 license, then the option applies
- * only if the new code is made subject to such option by the copyright
- * holder.
-
+ * Copyright (c) 1997, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0, which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the
+ * Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+ * version 2 with the GNU Classpath Exception, which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
 package javax.faces;
+
+import static com.sun.faces.util.Util.coalesce;
+import static com.sun.faces.util.Util.getContextClassLoader2;
+import static com.sun.faces.util.Util.isAnyNull;
+import static java.lang.System.currentTimeMillis;
+import static java.lang.System.identityHashCode;
+import static java.util.logging.Level.WARNING;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
-// ----------------------------------------------------------- Inner Classes
 final class CurrentThreadToServletContext {
-    ConcurrentMap<FactoryManagerCacheKey, FactoryFinderInstance> applicationMap = new ConcurrentHashMap<>();
-    private AtomicBoolean logNullFacesContext = new AtomicBoolean(false);
-    private AtomicBoolean logNonNullFacesContext = new AtomicBoolean(false);
+    
+    private static final Logger LOGGER = Logger.getLogger("javax.faces", "javax.faces.LogStrings");
+    
     // Bug 20458755: This instance provides a method to look up the current FacesContext
     // that bypasses the additional check for the InitFacesContext introduced
     // by the fix for 20458755
-    private final ServletContextFacesContextFactory servletContextFacesContextFactory;
+    private final ServletContextFacesContextFactory servletContextFacesContextFactory = new ServletContextFacesContextFactory();
     
-    private static final Logger LOGGER;
-    
-    static {
-        LOGGER = Logger.getLogger("javax.faces", "javax.faces.LogStrings");
-    }
+    ConcurrentMap<FactoryFinderCacheKey, FactoryFinderInstance> factoryFinderMap = new ConcurrentHashMap<>();
+    private AtomicBoolean logNullFacesContext = new AtomicBoolean();
+    private AtomicBoolean logNonNullFacesContext = new AtomicBoolean();
 
-    CurrentThreadToServletContext() {
-        servletContextFacesContextFactory = new ServletContextFacesContextFactory();
-    }
+
     
     // ------------------------------------------------------ Public Methods
-    Object getFallbackFactory(FactoryFinderInstance brokenFactoryManager, String factoryName) {
-        Object result = null;
-        ClassLoader cl = getClassLoader();        
-        for (Map.Entry<FactoryManagerCacheKey, FactoryFinderInstance> cur : applicationMap.entrySet()) {
-            if (cur.getKey().getClassLoader().equals(cl) && !cur.getValue().equals(brokenFactoryManager)) {
-                result = cur.getValue().getFactory(factoryName);
-                if (null != result) {
-                    break;
-                }
-            }
-        }
-        return result;
+
+
+    FactoryFinderInstance getFactoryFinder() {
+        return getFactoryFinder(getContextClassLoader2(), true);
     }
 
-    FactoryFinderInstance getApplicationFactoryManager() {
-        ClassLoader cl = getClassLoader();
-        FactoryFinderInstance result = getApplicationFactoryManager(cl, true);
-        return result;
+    FactoryFinderInstance getFactoryFinder(boolean create) {
+        return getFactoryFinder(getContextClassLoader2(), create);
     }
-    
-    FactoryFinderInstance getApplicationFactoryManager(boolean create) {
-        ClassLoader cl = getClassLoader();
-        FactoryFinderInstance result = getApplicationFactoryManager(cl, create);
-        return result;
-    }
-    
-    private FactoryFinderInstance getApplicationFactoryManager(ClassLoader cl, boolean create) {
+
+    private FactoryFinderInstance getFactoryFinder(ClassLoader classLoader, boolean create) {
+       
         FacesContext facesContext = servletContextFacesContextFactory.getFacesContextWithoutServletContextLookup();
+       
         boolean isSpecialInitializationCase = detectSpecialInitializationCase(facesContext);
-        FactoryManagerCacheKey key = new FactoryManagerCacheKey(facesContext, cl, applicationMap);
-        FactoryFinderInstance result = applicationMap.get(key);
+        FactoryFinderCacheKey key = new FactoryFinderCacheKey(facesContext, classLoader, factoryFinderMap);
+        FactoryFinderInstance factoryFinder = factoryFinderMap.get(key);
         FactoryFinderInstance toCopy = null;
-        if (result == null && create) {
-            boolean createNewFactoryManagerInstance = false;
+        
+        if (factoryFinder == null && create) {
+            boolean createNewFactoryFinderInstance = false;
             if (isSpecialInitializationCase) {
-                // We need to obtain a reference to the correct
-                // FactoryFinderInstance.  Iterate through the data structure
-                // containing all FactoryFinderInstance instances for this VM.
-                FactoryManagerCacheKey curKey;
+                
+                // We need to obtain a reference to the correct FactoryFinderInstance. 
+                // Iterate through the data structure containing all FactoryFinderInstance instances for this VM.
                 boolean classLoadersMatchButContextsDoNotMatch = false;
                 boolean foundNoMatchInApplicationMap = true;
-                for (Map.Entry<FactoryManagerCacheKey, FactoryFinderInstance> cur : applicationMap.entrySet()) {
-                    curKey = cur.getKey();
-                    // If the current FactoryFinderInstance is for a
-                    // the same ClassLoader as the current ClassLoader...
-                    if (curKey.getClassLoader().equals(cl)) {
+                
+                for (Map.Entry<FactoryFinderCacheKey, FactoryFinderInstance> cur : factoryFinderMap.entrySet()) {
+                    FactoryFinderCacheKey curKey = cur.getKey();
+
+                    // If the current FactoryFinderInstance is for the same ClassLoader as the current ClassLoader...
+                    if (curKey.getClassLoader().equals(classLoader)) {
                         foundNoMatchInApplicationMap = false;
-                        // Check the other descriminator for the
-                        // key: the context.
-                        // If the context objects of the keys are
-                        // both non-null and non-equal, then *do*
+                        
+                        // Check the other discriminator for the key: the context.
+                        // If the context objects of the keys are both non-null and non-equal, then *do*
                         // create a new FactoryFinderInstance instance.
-                        if ((null != key.getContext() && null != curKey.getContext()) && (!key.getContext().equals(curKey.getContext()))) {
+                        
+                        if (!isAnyNull(key.getContext(), curKey.getContext()) && !key.getContext().equals(curKey.getContext())) {
                             classLoadersMatchButContextsDoNotMatch = true;
                             toCopy = cur.getValue();
                         } else {
-                            // Otherwise, use this FactoryFinderInstance
-                            // instance.
-                            result = cur.getValue();
+                            // Otherwise, use this FactoryFinderInstance instance.
+                            factoryFinder = cur.getValue();
                         }
+                        
                         break;
                     }
                 }
+                
                 // We must create a new FactoryFinderInstance if there was no matchingKey
                 // at all found in the applicationMap, or a matchingKey was found
                 // and the matchingKey is safe to use in this web app
-                createNewFactoryManagerInstance = foundNoMatchInApplicationMap || (null == result && classLoadersMatchButContextsDoNotMatch);
+                createNewFactoryFinderInstance = foundNoMatchInApplicationMap || (factoryFinder == null && classLoadersMatchButContextsDoNotMatch);
             } else {
-                createNewFactoryManagerInstance = true;
+                createNewFactoryFinderInstance = true;
             }
-            if (createNewFactoryManagerInstance) {
+            
+            if (createNewFactoryFinderInstance) {
                 FactoryFinderInstance newResult;
-                if (null != toCopy) {
-                    newResult = new FactoryFinderInstance(toCopy);
+                if (toCopy != null) {
+                    newResult = new FactoryFinderInstance(facesContext, toCopy);
                 } else {
-                    newResult = new FactoryFinderInstance();
+                    newResult = new FactoryFinderInstance(facesContext);
                 }
-                result = applicationMap.putIfAbsent(key, newResult);
-                result = (null != result) ? result : newResult;
+                
+                factoryFinder = coalesce(factoryFinderMap.putIfAbsent(key, newResult), newResult);
             }
         }
-        return result;
+        
+        return factoryFinder;
     }
     
-    /*
-     * Uses the FactoryManagerCacheKey system to find the ServletContext 
-     * associated with the current ClassLoader, if any.
-     */
-    Object getServletContextForCurrentClassLoader() {
-        Object result;
-        FactoryManagerCacheKey key = new FactoryManagerCacheKey(null, getClassLoader(), applicationMap);
-        result = key.getContext();
+    Object getFallbackFactory(FactoryFinderInstance brokenFactoryManager, String factoryName) {
         
-        return result;
+        ClassLoader classLoader = getContextClassLoader2();
+        for (Map.Entry<FactoryFinderCacheKey, FactoryFinderInstance> cur : factoryFinderMap.entrySet()) {
+            if (cur.getKey().getClassLoader().equals(classLoader) && !cur.getValue().equals(brokenFactoryManager)) {
+                Object factory = cur.getValue().getFactory(factoryName);
+                if (factory != null) {
+                    return factory;
+                }
+            }
+        }
+        
+        return null;
     }
 
     /**
-     * This method is used to detect the following special initialization case.
-     * IF no FactoryFinderInstance can be found for key,
-    AND this call to getApplicationFactoryFinderInstance() *does* have a currentKeyrent FacesContext
-    BUT a previous call to getApplicationFactoryFinderInstance *did not* have a currentKeyrent FacesContext
+     * Uses the FactoryManagerCacheKey system to find the ServletContext associated with the current
+     * ClassLoader, if any.
+     */
+    Object getServletContextForCurrentClassLoader() {
+        return new FactoryFinderCacheKey(null, getContextClassLoader2(), factoryFinderMap).getContext();
+    }
+
+    /**
+     * This method is used to detect the following special initialization case. IF no
+     * FactoryFinderInstance can be found for key, AND this call to
+     * getApplicationFactoryFinderInstance() *does* have a currentKeyrent FacesContext BUT a
+     * previous call to getApplicationFactoryFinderInstance *did not* have a currentKeyrent
+     * FacesContext
      *
      * @param facesContext the currentKeyrent FacesContext for this request
      * @return true if the currentKeyrent execution falls into the special initialization case.
      */
     private boolean detectSpecialInitializationCase(FacesContext facesContext) {
-        boolean result = false;
-        if (null == facesContext) {
+        if (facesContext == null) {
             logNullFacesContext.compareAndSet(false, true);
         } else {
             logNonNullFacesContext.compareAndSet(false, true);
         }
-        result = logNullFacesContext.get() && logNonNullFacesContext.get();
-        return result;
+        
+        return logNullFacesContext.get() && logNonNullFacesContext.get();
     }
 
-    void removeApplicationFactoryManager() {
-        ClassLoader cl = getClassLoader();
-        FactoryFinderInstance fm = this.getApplicationFactoryManager(cl, false);
-        if (null != fm) {
-            fm.clearInjectionProvider();
+    void removeFactoryFinder() {
+        ClassLoader classLoader = getContextClassLoader2();
+        FactoryFinderInstance factoryFinder = getFactoryFinder(classLoader, false);
+        if (factoryFinder != null) {
+            factoryFinder.clearInjectionProvider();
         }
+        
         FacesContext facesContext = servletContextFacesContextFactory.getFacesContextWithoutServletContextLookup();
         boolean isSpecialInitializationCase = detectSpecialInitializationCase(facesContext);
-        FactoryManagerCacheKey key = new FactoryManagerCacheKey(facesContext, cl, applicationMap);
-        applicationMap.remove(key);
+        
+        factoryFinderMap.remove(new FactoryFinderCacheKey(facesContext, classLoader, factoryFinderMap));
+       
         if (isSpecialInitializationCase) {
-            logNullFacesContext.set(false);
-            logNonNullFacesContext.set(false);
+            resetSpecialInitializationCaseFlags();
         }
     }
 
@@ -208,207 +187,185 @@ final class CurrentThreadToServletContext {
         logNullFacesContext.set(false);
         logNonNullFacesContext.set(false);
     }
-    
-    /**
-     * <p>Identify and return the class loader that is associated with the
-     * calling web application.</p>
-     *
-     * @throws FacesException if the web application class loader
-     *                        cannot be identified
-     */
-    private ClassLoader getClassLoader() throws FacesException {
 
-        // J2EE 1.3 (and later) containers are required to make the
-        // web application class loader visible through the context
-        // class loader of the current thread.
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        if (cl == null) {
-            throw new FacesException("getContextClassLoader");
-        }
-        return (cl);
-
-    }
-
-    private static final class FactoryManagerCacheKey {
-        // The ClassLoader that is active the first time this key
-        // is created.  At startup time, this is assumed to be the 
-        // web app ClassLoader
-        private ClassLoader cl;
-        // I marker that disambiguates the case when multiple
-        // web apps have the same web app ClassLoader but different
-        // ServletContext instances.  
+    private static final class FactoryFinderCacheKey {
+        
+        /**
+         * The ClassLoader that is active the first time this key is created. 
+         * At startup time, this is assumed to be the web app ClassLoader
+         */
+        private ClassLoader classLoader;
+        
+        /**
+         * A marker that disambiguates the case when multiple web apps have the same web app
+         * ClassLoader but different ServletContext instances.
+         */
         private Long marker;
-        // The ServletContext corresponding to this marker/ClassLoader pair.
+        
+        /**
+         * The ServletContext corresponding to this marker/ClassLoader pair.
+         */
         private Object context;
 
-        private static final String MARKER_KEY = FactoryFinder.class.getName() + "." +
-                FactoryManagerCacheKey.class.getSimpleName();
+        private static final String MARKER_KEY = FactoryFinder.class.getName() + "." + FactoryFinderCacheKey.class.getSimpleName();
         private static final String INIT_TIME_CL_KEY = MARKER_KEY + ".InitTimeCLKey";
 
-        // <editor-fold defaultstate="collapsed" desc="Constructors and helpers">
-        FactoryManagerCacheKey(FacesContext facesContext, ClassLoader cl,
-                Map<FactoryManagerCacheKey,FactoryFinderInstance> factoryMap) {
-            ExternalContext extContext = (null != facesContext) ? facesContext.getExternalContext()
-                    : null;
-            Object servletContext = (null != extContext) ? extContext.getContext() : null;
+        FactoryFinderCacheKey(FacesContext facesContext, ClassLoader classLoaderIn, Map<FactoryFinderCacheKey, FactoryFinderInstance> factoryMap) {
+            ExternalContext extContext = facesContext != null ? facesContext.getExternalContext() : null;
+            Object servletContext = extContext != null ? extContext.getContext() : null;
 
-            if (null == facesContext || null == extContext || null == servletContext) {
-                initFromFactoryMap(cl, factoryMap);
+            if (isAnyNull(facesContext, extContext, servletContext)) {
+                initFromFactoryMap(classLoaderIn, factoryMap);
             } else {
-                initFromAppMap(extContext, cl);
-            } 
+                initFromApplicationMap(extContext, classLoaderIn);
+            }
         }
-        
-        private void initFromFactoryMap(ClassLoader cl,
-                Map<FactoryManagerCacheKey,FactoryFinderInstance> factoryMap) {
+
+        private void initFromFactoryMap(ClassLoader classLoaderIn, Map<FactoryFinderCacheKey, FactoryFinderInstance> factoryFinderMap) {
+            
             // We don't have a FacesContext.
-            // Our only recourse is to inspect the keys of the
-            // factoryMap and see if any of them has a classloader
-            // equal to our argument cl.
-            Set<FactoryManagerCacheKey> keys = factoryMap.keySet();
-            FactoryManagerCacheKey matchingKey = null;
+            //
+            // Our only recourse is to inspect the keys of the factoryFinderMap and see if any of them has a classloader
+            // equal to our argument classLoader
             
+            Set<FactoryFinderCacheKey> keys = factoryFinderMap.keySet();
+            FactoryFinderCacheKey matchingKey = null;
+
             if (keys.isEmpty()) {
-                this.cl = cl;
-                this.marker = new Long(System.currentTimeMillis());
+                classLoader = classLoaderIn;
+                marker = currentTimeMillis();
             } else {
-            
+
                 // For each entry in the factoryMap's keySet...
-                for (FactoryManagerCacheKey currentKey : keys) {
-                    assert(null != currentKey.cl);
-                    ClassLoader matchingCL = findMatchConsideringParentClassLoader(cl, currentKey.cl);
+                for (FactoryFinderCacheKey currentKey : keys) {
+                    
+                    ClassLoader matchingClassLoader = findMatchConsideringParentClassLoader(classLoaderIn, currentKey.classLoader);
+                    
                     // If there is a match...
-                    if (null != matchingCL) {
+                    if (matchingClassLoader != null) {
                         // If the match was found on a previous iteration...
-                        if (null != matchingKey) {
-                            LOGGER.log(Level.WARNING, "Multiple JSF Applications found on same ClassLoader.  Unable to safely determine which FactoryManager instance to use. Defaulting to first match.");
+                        if (matchingKey != null) {
+                            LOGGER.log(WARNING,
+                                "Multiple JSF Applications found on same ClassLoader.  Unable to safely determine which FactoryFinder instance to use. Defaulting to first match.");
                             break;
                         }
                         matchingKey = currentKey;
-                        this.cl = matchingCL;
+                        classLoader = matchingClassLoader;
                     }
                 }
-                if (null != matchingKey) {
-                    this.marker = matchingKey.marker;
-                    this.context = matchingKey.context;
+                
+                if (matchingKey != null) {
+                    marker = matchingKey.marker;
+                    context = matchingKey.context;
+                }
+            }
+        }
+
+        private ClassLoader findMatchConsideringParentClassLoader(ClassLoader argumentClassLoader, ClassLoader currentKeyCL) {
+            ClassLoader currentClassLoader = argumentClassLoader;
+            
+            // For each ClassLoader in the hierarchy starting with the argument ClassLoader...
+            while (currentClassLoader != null) {
+                
+                // If the ClassLoader at this level in the hierarchy is equal to the argument ClassLoader, 
+                // consider it a matchingKey.
+                if (currentClassLoader.equals(currentKeyCL)) {
+                    return currentClassLoader;
+                } else {
+                    // If it's not a matchingKey, try the parent in the ClassLoader hierarchy.
+                    currentClassLoader = currentClassLoader.getParent();
                 }
             }
             
-        }
-
-        private ClassLoader findMatchConsideringParentClassLoader(ClassLoader argumentCL, ClassLoader currentKeyCL) {
-            ClassLoader curCL = argumentCL;
-            // For each ClassLoader in the hierarchy starting 
-            // with the argument ClassLoader...
-            while (null != curCL) {
-                // if the ClassLoader at this level in the hierarchy
-                // is equal to the argument ClassLoader, consider it a matchingKey.
-                if (curCL.equals(currentKeyCL)) {
-                    return curCL;
-                } else {
-                    // If it's not a matchingKey, try the parent in the ClassLoader
-                    // hierarchy.
-                    curCL = curCL.getParent();
-                } 
-            }
             return null;
         }
-        
-        private void initFromAppMap(ExternalContext extContext, ClassLoader cl) {
-            Map<String, Object> appMap = extContext.getApplicationMap();
-            
-            Long val = (Long) appMap.get(MARKER_KEY);
-            if (null == val) {
-                this.marker = new Long(System.currentTimeMillis());
-                appMap.put(MARKER_KEY, marker);
-                
-                // If we needed to create a marker, assume that the
-                // argument CL is safe to treat as the web app
-                // ClassLoader.  This assumption allows us 
-                // to bypass the ClassLoader resolution algorithm
-                // in resolveToFirstTimeUsedClassLoader() in all cases
-                // except when the TCCL has been replaced.
-                appMap.put(INIT_TIME_CL_KEY, new Integer(System.identityHashCode(cl)));
-                
-            } else {
-                this.marker = val;
-            }
-            this.cl = resolveToFirstTimeUsedClassLoader(cl, extContext);
-            this.context = extContext.getContext();
-        }
-        
-       /*
-        * Resolve the argument ClassLoader to be the ClassLoader that 
-        * was passed in to the ctor the first time a FactoryManagerCacheKey
-        * was created for this web app.  
-        */
 
-        private ClassLoader resolveToFirstTimeUsedClassLoader(ClassLoader toResolve, ExternalContext extContext) {
-            ClassLoader curCL = toResolve;
-            ClassLoader resolved = null;
-            Map<String, Object> appMap = extContext.getApplicationMap();
+        private void initFromApplicationMap(ExternalContext extContext, ClassLoader classLoaderIn) {
+            Map<String, Object> applicationMap = extContext.getApplicationMap();
+
+            Long val = (Long) applicationMap.get(MARKER_KEY);
+            if (val == null) {
+                marker = currentTimeMillis();
+                applicationMap.put(MARKER_KEY, marker);
+
+                // If we needed to create a marker, assume that the argument CL is safe to treat as the web app
+                // ClassLoader. 
+                //
+                // This assumption allows us to bypass the ClassLoader resolution algorithm in resolveToFirstTimeUsedClassLoader()
+                // in all cases except when the TCCL has been replaced.
+                
+                applicationMap.put(INIT_TIME_CL_KEY, identityHashCode(classLoaderIn));
+
+            } else {
+                marker = val;
+            }
             
-            // See if the argument curCL already is the web app class loader
+            classLoader = resolveToFirstTimeUsedClassLoader(classLoaderIn, extContext);
+            context = extContext.getContext();
+        }
+
+        /**
+         * Resolve the argument ClassLoader to be the ClassLoader that was passed in to the ctor the
+         * first time a FactoryManagerCacheKey was created for this web app.
+         */
+        private ClassLoader resolveToFirstTimeUsedClassLoader(ClassLoader classLoaderToResolve, ExternalContext extContext) {
+            ClassLoader currentClassLoader = classLoaderToResolve;
+            Map<String, Object> appMap = extContext.getApplicationMap();
+
+            // See if the argument currentClassLoader already is the web app class loader
             Integer webAppCLHashCode = (Integer) appMap.get(INIT_TIME_CL_KEY);
             boolean found = false;
-            if (null != webAppCLHashCode) {
-                int toResolveHashCode = System.identityHashCode(curCL);
-                while (!found && null != curCL) {
-                    found = (toResolveHashCode == webAppCLHashCode);
+            if (webAppCLHashCode != null) {
+                int toResolveHashCode = identityHashCode(currentClassLoader);
+                while (!found && currentClassLoader != null) {
+                    found = toResolveHashCode == webAppCLHashCode;
                     if (!found) {
-                        curCL = curCL.getParent();
-                        toResolveHashCode = System.identityHashCode(curCL);
+                        currentClassLoader = currentClassLoader.getParent();
+                        toResolveHashCode = identityHashCode(currentClassLoader);
                     }
                 }
             }
-            resolved = found ? curCL : toResolve;
-            
-            return resolved;
+
+            return found ? currentClassLoader : classLoaderToResolve;
         }
-        
-        // </editor-fold>
-        
+
         ClassLoader getClassLoader() {
-            return cl;
+            return classLoader;
         }
-        
+
         Object getContext() {
             return context;
         }
-        
-        private FactoryManagerCacheKey() {}
 
         @Override
         public boolean equals(Object obj) {
             if (obj == null) {
                 return false;
             }
+            
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            final FactoryManagerCacheKey other = (FactoryManagerCacheKey) obj;
-            if (this.cl != other.cl && (this.cl == null || !this.cl.equals(other.cl))) {
+            
+            final FactoryFinderCacheKey other = (FactoryFinderCacheKey) obj;
+            if (this.classLoader != other.classLoader && (this.classLoader == null || !this.classLoader.equals(other.classLoader))) {
                 return false;
             }
+            
             if (this.marker != other.marker && (this.marker == null || !this.marker.equals(other.marker))) {
                 return false;
             }
+            
             return true;
         }
 
         @Override
         public int hashCode() {
             int hash = 7;
-            hash = 97 * hash + (this.cl != null ? this.cl.hashCode() : 0);
-            hash = 97 * hash + (this.marker != null ? this.marker.hashCode() : 0);
-            return hash;
+            hash = 97 * hash + (classLoader != null ? this.classLoader.hashCode() : 0);
+            return 97 * hash + (marker != null ? marker.hashCode() : 0);
         }
 
-
-        
-
     }
-    
-    
 
-} // END FactoryCache
+}
